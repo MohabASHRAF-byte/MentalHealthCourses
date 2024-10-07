@@ -251,30 +251,13 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
 
                   });
 
-        modelBuilder.Entity<Category>(cc =>
-            {
-                cc.HasMany(cc => cc.Courses)
-                  .WithMany(c => c.categories);
-
-
-
-
-
-
-
-            });
+        modelBuilder.Entity<Category>(cc => { cc.HasMany(cc => cc.Courses).WithMany(c => c.categories); });
 
         modelBuilder.Entity<Author>(AU =>
-        {
-            AU.Property(Au => Au.AuthorId)
-            .UseIdentityColumn(10, 2);
-
-            AU.HasMany(AU => AU.Articles)   
+        { AU.Property(Au => Au.AuthorId)
+            .UseIdentityColumn(10, 2); AU.HasMany(AU => AU.Articles)   
             .WithOne(Ar => Ar.Authors)
-            .HasForeignKey(Ar => Ar.ArticleId)
-
-            
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey(Ar => Ar.ArticleId).OnDelete(DeleteBehavior.Cascade);
 
         });
 

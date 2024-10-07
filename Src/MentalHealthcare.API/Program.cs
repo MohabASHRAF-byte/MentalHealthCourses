@@ -13,6 +13,13 @@ builder.Services.AddScoped<GlobalErrorHandling>();
 builder.Services.AddScoped<RequestTimeLogging>();
 builder.Services.AddControllers();
 
+//Allow Dependency Injection of genericRepository of product
+//builder.Services.AddScoped(typeof(IGenericRepository<>)
+//    , typeof(GenericRepository<>));
+
+
+
+
 var app = builder.Build();
 app.UseMiddleware<GlobalErrorHandling>();
 app.UseMiddleware<RequestTimeLogging>();
