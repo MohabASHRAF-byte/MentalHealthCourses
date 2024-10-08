@@ -1,4 +1,9 @@
+using MentalHealthcare.Domain.Entities;
+using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Infrastructure.Persistence;
+using MentalHealthcare.Infrastructure.Repositories;
+using MentalHealthcare.Infrastructure.Seeders;
+using MentalHealthcare.Infrastructure.Validators;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -13,14 +18,15 @@ public static class ServiceCollectionExtensions
         services.AddDataBase(configuration);
         services.AddRepositories();
         services.AddIdentity();
+        
     }
 
-    // public static async void Seed(this IServiceProvider services)
-    // {
-    //     var scope = services.CreateScope();
-    //     var seeder = scope.ServiceProvider.GetRequiredService<IDriverSeeder>();
-    //     await seeder.Seed();
-    // }
+    public static async void Seed(this IServiceProvider services)
+    {
+        var scope = services.CreateScope();
+        var seeder = scope.ServiceProvider.GetRequiredService<IAdminSeeder>();
+        await seeder.seed();
+    }
     private static void AddDataBase(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection");
@@ -28,38 +34,31 @@ public static class ServiceCollectionExtensions
             options.UseNpgsql(connectionString)
                 .EnableSensitiveDataLogging()
         );
+        services.AddScoped<IUserValidator<User>, RegisterUserUserValidator<User>>();
 
-        // services.AddScoped<IDriverSeeder, DriverSeeder>();
     }
 
     private static void AddRepositories(this IServiceCollection services)
     {
-   }
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IAdminRepository, AdminRepository>();
+        services.AddScoped<IAdminSeeder, AdminSeeder>();
+    }
 
     private static void AddIdentity(this IServiceCollection services)
     {
-        // services.AddIdentity<User, IdentityRole>()
-        //     .AddEntityFrameworkStores<BookooDbContext>()
-        //     .AddDefaultTokenProviders();
-        // //Todo configure the password for letter 
-        // services.Configure<IdentityOptions>(options =>
-        // {
-        //     options.Password.RequireDigit = false;
-        //     options.Password.RequireLowercase = false;
-        //     options.Password.RequireUppercase = false;
-        //     options.Password.RequireNonAlphanumeric = false;
-        //     options.Password.RequiredUniqueChars = 1;
-        //     options.Password.RequiredLength = 3;
-        // });
-        // services.AddIdentityCore<User>()
-        //     .AddRoles<IdentityRole>()
-        //     .AddTokenProvider<DataProtectorTokenProvider<User>>("Bookoo")
-        //     .AddEntityFrameworkStores<BookooDbContext>()
-        //     .AddDefaultTokenProviders();
-
-        // services.AddIdentityApiEndpoints<User>()
-        //     .AddRoles<IdentityRole>()
-        // .AddClaimsPrincipalFactory<RestaurantUserClaimsPrincipalFactory>()
-        // .AddEntityFrameworkStores<BookooDbContext>();
+        services.AddIdentity<User, IdentityRole>()
+            .AddEntityFrameworkStores<MentalHealthDbContext>()
+            .AddDefaultTokenProviders();
+        //Todo configure the password for letter 
+        services.Configure<IdentityOptions>(options =>
+        {
+            options.Password.RequireDigit = false;
+            options.Password.RequireLowercase = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequiredUniqueChars = 1;
+            options.Password.RequiredLength = 3;
+        });
     }
 }
