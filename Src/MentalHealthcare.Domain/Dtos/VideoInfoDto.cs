@@ -10,6 +10,6 @@ public class VideoInfoDto
     public string Resolutions { get; set; } = default!;
     public string TotalWatchTime { get; set; } = default!;
     public string AverageWatchTime { get; set; } = default!;
-    
-    
+
+
 }

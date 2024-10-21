@@ -46,7 +46,7 @@ public class GetVideoInfoCommandHandler(
             return null;
         }
     }
-    
+
     private static string GetUrl(string libraryId, string videoId)
     {
         return $"https://video.bunnycdn.com/library/{libraryId}/videos/{videoId}";

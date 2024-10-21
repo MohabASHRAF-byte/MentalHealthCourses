@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using MentalHealthcare.Domain.Constants;
+﻿using MentalHealthcare.Domain.Constants;
+using System.ComponentModel.DataAnnotations;
 
 namespace MentalHealthcare.Domain.Entities;
 // Written By Marcelino , Reviewed by Mohab

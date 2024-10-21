@@ -1,5 +1,4 @@
 using MediatR;
-using MentalHealthcare.Application.Common;
 using Microsoft.Extensions.Configuration;
 using RestSharp;
 

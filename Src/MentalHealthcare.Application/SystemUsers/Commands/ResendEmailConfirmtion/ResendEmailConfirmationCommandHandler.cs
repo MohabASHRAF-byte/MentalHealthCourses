@@ -19,7 +19,7 @@ public class ResendEmailConfirmationCommandHandler(
         CancellationToken cancellationToken)
     {
         logger.LogInformation("Resend email confirmation to {@Email}", request.Email);
-        var user = await userRepository.GetUserByEmailAsync(request.Email,request.Tenant!);
+        var user = await userRepository.GetUserByEmailAsync(request.Email, request.Tenant!);
         if (user == null)
         {
             logger.LogInformation("User {Email} not found", request.Email);

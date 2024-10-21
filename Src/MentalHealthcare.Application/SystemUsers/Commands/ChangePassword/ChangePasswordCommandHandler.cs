@@ -26,14 +26,14 @@ public class ChangePasswordCommandHandler(
         }
 
         // Ensure the user exists in the UserManager
-        var user = await systemUserRepository.GetUserByUserNameAsync(currentUser.UserName,currentUser.Tenant);
+        var user = await systemUserRepository.GetUserByUserNameAsync(currentUser.UserName, currentUser.Tenant);
         if (user == null)
         {
             logger.LogWarning("Change password failed. User {UserName} could not be found in UserManager.",
                 currentUser.UserName);
             return OperationResult<string>.Failure("User not found");
         }
-        
+
         // Attempt to change the password
         var result = await userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
         if (!result.Succeeded)

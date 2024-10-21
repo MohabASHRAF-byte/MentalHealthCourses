@@ -25,7 +25,7 @@ public static class Roles
         return userRoles;
     }
 
-    public static long AddRoles( long userRoles, List<UserRoles> roles)
+    public static long AddRoles(long userRoles, List<UserRoles> roles)
     {
         foreach (var role in roles)
         {

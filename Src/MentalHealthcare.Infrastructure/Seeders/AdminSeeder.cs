@@ -1,7 +1,6 @@
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Infrastructure.Persistence;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace MentalHealthcare.Infrastructure.Seeders;
@@ -39,7 +38,7 @@ public class AdminSeeder(
             User = adminIdentity,
             FName = "admin",
             LName = "admin"
-        };   
+        };
         var adminIdentity1 = new User
         {
             Email = "admin1@admin.com",
@@ -69,5 +68,5 @@ public class AdminSeeder(
         await dbContext.AddAsync(admin1);
         await dbContext.SaveChangesAsync();
     }
-    
+
 }

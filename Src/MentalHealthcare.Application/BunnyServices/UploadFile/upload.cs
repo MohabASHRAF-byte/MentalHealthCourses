@@ -37,5 +37,5 @@ public class UploadFileCommand : IRequest<string>
 {
     public string FilePath { get; set; } = default!;
     public string FileName { get; set; } = default!;
-    
+
 }

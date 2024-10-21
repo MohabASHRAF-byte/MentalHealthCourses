@@ -1,17 +1,17 @@
-using System.Net;
-using System.Net.Mail;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
+using System.Net;
+using System.Net.Mail;
 
 namespace MentalHealthcare.Application.Utitlites.EmailProvider;
 
-public class EmailProvider(IConfiguration configuration): IEmailSender
+public class EmailProvider(IConfiguration configuration) : IEmailSender
 
 {
-    
+
     public async Task SendEmailAsync(string email, string subject, string sendMessage)
     {
-        var fromMail = configuration["Mail:senderMail"] ;
+        var fromMail = configuration["Mail:senderMail"];
         var fromMailPassword = configuration["Mail:senderPassword"];
 
         var message = new MailMessage()
@@ -29,5 +29,5 @@ public class EmailProvider(IConfiguration configuration): IEmailSender
         };
         await smtpClient.SendMailAsync(message);
     }
-        
+
 }

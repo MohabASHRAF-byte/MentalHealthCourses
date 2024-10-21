@@ -1,11 +1,10 @@
 using AutoMapper;
 using MentalHealthcare.Application.AdminUsers.Commands.Register;
-using MentalHealthcare.Application.AdminUsers.Queries;
 using MentalHealthcare.Domain.Entities;
 
 namespace MentalHealthcare.Application.AdminUsers;
 
-public class PendingAdminProfile:Profile
+public class PendingAdminProfile : Profile
 {
     public PendingAdminProfile()
     {

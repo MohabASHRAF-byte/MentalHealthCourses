@@ -1,5 +1,5 @@
-using System.ComponentModel.DataAnnotations;
 using MentalHealthcare.Domain.Constants;
+using System.ComponentModel.DataAnnotations;
 
 namespace MentalHealthcare.Domain.Entities;
 
@@ -13,7 +13,8 @@ namespace MentalHealthcare.Domain.Entities;
    - add reviewsCount
    - add is public
    - change rating to nullable decimal instead of int
- */public class Course
+ */
+public class Course
 {
     public int CourseId { set; get; }
     [MaxLength(Global.TitleMaxLength)] public string Name { set; get; } = default!;
@@ -26,8 +27,8 @@ namespace MentalHealthcare.Domain.Entities;
     public bool IsPublic { get; set; } = false;
 
     public List<CourseMateriel> CourseMateriels { set; get; } = new();
-    
-    [Required] 
+
+    [Required]
     public int InstructorId { get; set; } // Foreign Key property
     public Instructor Instructor { get; set; } = default!; // Navigation property
 

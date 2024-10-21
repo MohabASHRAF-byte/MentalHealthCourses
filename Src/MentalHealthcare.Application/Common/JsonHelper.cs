@@ -1,5 +1,5 @@
-using System.Text.Json;
 using RestSharp;
+using System.Text.Json;
 
 namespace MentalHealthcare.Application.Common;
 

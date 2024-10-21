@@ -1,10 +1,10 @@
-using System.Diagnostics.CodeAnalysis;
 using MediatR;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MentalHealthcare.Application.AdminUsers.Commands.Add;
 
@@ -24,7 +24,7 @@ public class AddAdminCommandHandler(
         }
 
         var admin = await adminRepository.GetAdminByIdentityAsync(currentUser.Id);
-        if(admin == null)
+        if (admin == null)
             throw new ForBidenException("Admin with given identity does not exist.");
         var adminId = admin.AdminId;
         if (await adminRepository.IsPendingExistAsync(request.Email))

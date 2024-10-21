@@ -8,8 +8,9 @@ public interface IUserRepository
     public Task<Guid?> GetUserTokenCodeAsync(User user);
     public Task<Guid> ChangePasswordAsync(User user);
 
-    public Task<long> GetUserRolesAsync(string username,string tenant);
-    public Task SetUserRolesAsync(string username,string tenant, long roles);
-    public Task<User?> GetUserByUserNameAsync(string userName,string tenant);
-    public Task<User?> GetUserByEmailAsync(string email,string tenant);
-    public Task<User?> GetUserByPhoneNumberAsync(string phoneNumber,string tenant);}
+    public Task<long> GetUserRolesAsync(string username, string tenant);
+    public Task SetUserRolesAsync(string username, string tenant, long roles);
+    public Task<User?> GetUserByUserNameAsync(string userName, string tenant);
+    public Task<User?> GetUserByEmailAsync(string email, string tenant);
+    public Task<User?> GetUserByPhoneNumberAsync(string phoneNumber, string tenant);
+}

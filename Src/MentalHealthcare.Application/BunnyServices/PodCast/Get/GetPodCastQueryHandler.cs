@@ -7,7 +7,7 @@ namespace MentalHealthcare.Application.BunnyServices.PodCast.Get;
 
 public class GetPodCastQueryHandler(
     IConfiguration configuration
-    ):IRequestHandler<GetPodCastQuery,PodCastDto>
+    ) : IRequestHandler<GetPodCastQuery, PodCastDto>
 {
     public async Task<PodCastDto> Handle(GetPodCastQuery request, CancellationToken cancellationToken)
     {

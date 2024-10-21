@@ -1,6 +1,6 @@
-using System.Security.Claims;
 using MentalHealthcare.Domain.Constants;
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace MentalHealthcare.Application.SystemUsers;
 

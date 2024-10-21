@@ -1,5 +1,5 @@
-using System.ComponentModel.DataAnnotations;
 using MentalHealthcare.Domain.Constants;
+using System.ComponentModel.DataAnnotations;
 // written By Mohab , No Reviews Yet
 namespace MentalHealthcare.Domain.Entities;
 
@@ -18,7 +18,7 @@ public class CourseMateriel
     public Admin Admin { get; set; } = default!;
 
     //
-    [MaxLength(Global.TitleMaxLength)] 
+    [MaxLength(Global.TitleMaxLength)]
     public string? Title { set; get; }
 
     //todo add max length to description 

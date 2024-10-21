@@ -6,10 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MentalHealthcare.Infrastructure.Repositories;
 
-public class AdminRepository(
-    MentalHealthDbContext dbContext,
-    UserManager<User> userManager
-) : IAdminRepository
+public class AdminRepository(MentalHealthDbContext dbContext, UserManager<User> userManager) : IAdminRepository
 {
     public async Task<bool> RegisterUser(User user, string password, Admin userToRegister)
     {
@@ -36,6 +33,10 @@ public class AdminRepository(
     public Task<bool> DeleteAsync(string email)
     {
         throw new NotImplementedException();
+
+
+
+
     }
 
     public async Task<bool> IsPendingExistAsync(string email)

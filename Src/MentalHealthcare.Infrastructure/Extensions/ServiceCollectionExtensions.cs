@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
         services.AddDataBase(configuration);
         services.AddRepositories();
         services.AddIdentity();
-        
+
     }
 
     public static async void Seed(this IServiceProvider services)

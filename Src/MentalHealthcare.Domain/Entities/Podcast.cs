@@ -9,7 +9,7 @@
  */
 namespace MentalHealthcare.Domain.Entities;
 
-public class Podcast : MaterialBe
+public class Podcast : MaterialBE
 {
     public int PodcastId { get; set; }
 

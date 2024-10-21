@@ -1,9 +1,12 @@
+using FluentValidation;
+using MediatR;
 using MentalHealthcare.API.Extensions;
 using MentalHealthcare.API.MiddleWares;
+using MentalHealthcare.Application.Common;
 using MentalHealthcare.Application.Extensions;
-using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Infrastructure.Extensions;
 using MentalHealthcare.Infrastructure.Seeders;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +17,16 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddScoped<GlobalErrorHandling>();
 builder.Services.AddScoped<RequestTimeLogging>();
 builder.Services.AddControllers();
+
+// Get Validators
+builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+// 
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(Validation_Behaviour<,>));
+
+
+
+
+
 
 var app = builder.Build();
 var scope = app.Services.CreateScope();

@@ -1,6 +1,6 @@
 namespace MentalHealthcare.Domain.Entities;
 
-public class SystemUser:HumanBe
+public class SystemUser : HumanBe
 {
     public int SystemUserId { get; set; }
     public DateTime Dof { get; set; }

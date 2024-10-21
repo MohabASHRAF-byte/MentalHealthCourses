@@ -2,9 +2,9 @@ using MediatR;
 
 namespace MentalHealthcare.Application.AdminUsers.Commands.Register;
 
-public class RegisterAdminCommand:IRequest
+public class RegisterAdminCommand : IRequest
 {
-    public string? Tenant { get; set; }=default!;
+    public string? Tenant { get; set; } = default!;
     public string UserName { get; set; } = default!;
     public string FirstName { get; set; } = default!;
     public string LastName { get; set; } = default!;

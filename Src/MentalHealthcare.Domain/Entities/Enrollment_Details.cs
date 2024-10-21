@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace MentalHealthcare.Domain.Entities;
+﻿namespace MentalHealthcare.Domain.Entities;
 
 // Written By Marcelino , Reviewed by Mohab
 // Reviewed

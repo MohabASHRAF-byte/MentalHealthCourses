@@ -10,12 +10,12 @@
    - remove url to avoid nulls
    - remove unmapped property
  */
-public class MaterialBe
+public class MaterialBE
 {
     public string Title { get; set; } = default!;
-    
+
     public int UploadedById { get; set; } // Foreign Key property
     public Admin UploadedBy { get; set; } = default!;
-    
+
     public DateTime CreatedDate { get; set; }
 }
