@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MentalHealthcare.Domain.Constants;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using MentalHealthcare.Domain.Constants;
 
 // Written By Marcelino , Reviewed by Mohab
 // Reviewed No Edits

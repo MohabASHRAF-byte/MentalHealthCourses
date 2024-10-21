@@ -22,10 +22,10 @@ public class ConfirmEmailCommandHandler(
             logger.LogInformation("Invalid Tenant ");
             return OperationResult<string>.Failure("Bad Request", StateCode.BadRequest);
         }
-        var user = await systemUserRepository.GetUserByEmailAsync(request.Email,request.Tenant!);
+        var user = await systemUserRepository.GetUserByEmailAsync(request.Email, request.Tenant!);
         if (user == null)
             throw new ApplicationException($"User with email {request.Email} does not exist");
-       
+
         logger.LogInformation("Authenticate the token for {@email}", request.Email);
         var result = await userManager.ConfirmEmailAsync(user, request.Token);
         if (!result.Succeeded)

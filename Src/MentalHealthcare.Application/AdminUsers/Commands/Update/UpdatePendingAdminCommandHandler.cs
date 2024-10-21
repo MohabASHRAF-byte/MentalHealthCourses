@@ -23,9 +23,9 @@ public class UpdatePendingAdminCommandHandler(
         }
 
         var admin = await adminRepository.GetAdminByIdentityAsync(currentUser.Id);
-        if(admin == null)
+        if (admin == null)
             throw new ForBidenException("Admin with given identity does not exist.");
-        
+
         var adminId = admin.AdminId;
         var result = await adminRepository.UpdatePendingAsync(request.OldEmail, request.NewEmail, adminId);
         if (!result)

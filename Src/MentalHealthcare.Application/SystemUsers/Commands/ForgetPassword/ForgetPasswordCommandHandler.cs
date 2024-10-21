@@ -28,16 +28,16 @@ public class ForgetPasswordCommandHandler(
             logger.LogInformation("Invalid Tenant ");
             return OperationResult<string>.Failure("Bad Request", StateCode.BadRequest);
         }
-        var user = await systemUserRepository.GetUserByEmailAsync(request.Email,request.Tenant);
+        var user = await systemUserRepository.GetUserByEmailAsync(request.Email, request.Tenant);
         if (user == null)
         {
-            logger.LogInformation("invalid email : {@email}",request.Email);
+            logger.LogInformation("invalid email : {@email}", request.Email);
             return OperationResult<string>.Failure("Invalid email");
         }
         var otp = GenerateOtp();
-        otpCleanupService.AddOrUpdateOtp(request.Email,request.Tenant, otp);
+        otpCleanupService.AddOrUpdateOtp(request.Email, request.Tenant, otp);
         await emailSender.SendEmailAsync(request.Email, "Reset Password", otp);
-        return OperationResult<string>.SuccessResult(null,"Password otp sent successfully",StateCode.Ok);
+        return OperationResult<string>.SuccessResult(null, "Password otp sent successfully", StateCode.Ok);
     }
     private string GenerateOtp()
     {

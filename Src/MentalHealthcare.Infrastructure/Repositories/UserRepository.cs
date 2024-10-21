@@ -6,10 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MentalHealthcare.Infrastructure.Repositories;
 
-public class UserRepository(
-    MentalHealthDbContext dbContext,
-    UserManager<User> userManager
-) : IUserRepository
+public class UserRepository(MentalHealthDbContext dbContext, UserManager<User> userManager) : IUserRepository
 {
     public async Task<bool> RegisterUser(User user, string password, SystemUser userToRegister)
     {
@@ -22,7 +19,7 @@ public class UserRepository(
         await dbContext.SaveChangesAsync();
         return true;
     }
-//todo implement the missing 
+    //todo implement the missing 
 
     public async Task<Guid?> GetUserTokenCodeAsync(User user)
     {
@@ -64,8 +61,8 @@ public class UserRepository(
     {
         // Query for the user based on username and tenant
         var user = await (from u in dbContext.Users
-            where u.UserName == username && u.Tenant == tenant
-            select new { u.Roles }).FirstOrDefaultAsync();
+                          where u.UserName == username && u.Tenant == tenant
+                          select new { u.Roles }).FirstOrDefaultAsync();
 
         // If the user is null, return -1 to indicate no such user
         if (user == null)

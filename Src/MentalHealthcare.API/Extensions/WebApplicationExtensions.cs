@@ -12,10 +12,10 @@ public static class WebApplicationExtensions
         builder.Services.AddSwaggerGen(c =>
             {
                 c.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme
-                    {
-                        Type = SecuritySchemeType.Http,
-                        Scheme = "bearer"
-                    }
+                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer"
+                }
                 );
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {

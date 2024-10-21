@@ -7,11 +7,11 @@ namespace MentalHealthcare.Application.BunnyServices.VideoContent.Collection.Inf
 
 public class GetCollectionInfoCommandHandler(
     IConfiguration configuration
-    ):IRequestHandler<GetCollectionInfoCommand, string>
+    ) : IRequestHandler<GetCollectionInfoCommand, string>
 {
     public async Task<string> Handle(GetCollectionInfoCommand request, CancellationToken cancellationToken)
     {
-        var url = GetUrl(request.LibraryId,request.CollectionId);
+        var url = GetUrl(request.LibraryId, request.CollectionId);
         var options = new RestClientOptions(url);
         var client = new RestClient(options);
         var httpRequest = new RestRequest("");
@@ -32,7 +32,7 @@ public class GetCollectionInfoCommandHandler(
         }
     }
 
-    private string GetUrl(string libraryId,string collectionId)
+    private string GetUrl(string libraryId, string collectionId)
     {
         return $"https://video.bunnycdn.com/library/{libraryId}/collections/{collectionId}";
     }

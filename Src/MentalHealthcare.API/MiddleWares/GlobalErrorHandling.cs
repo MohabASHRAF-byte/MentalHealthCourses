@@ -17,7 +17,7 @@ public class GlobalErrorHandling(
             logger.LogError(ex, ex.Message);
             context.Response.StatusCode = 400;
             await context.Response.WriteAsync(ex.Message);
-        } 
+        }
         catch (ResourceNotFound ex)
         {
             logger.LogError(ex, ex.Message);

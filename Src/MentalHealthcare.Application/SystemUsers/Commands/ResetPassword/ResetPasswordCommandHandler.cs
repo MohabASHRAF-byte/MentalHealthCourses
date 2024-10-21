@@ -24,13 +24,13 @@ public class ResetPasswordCommandHandler(
             logger.LogInformation("Invalid Tenant ");
             return OperationResult<string>.Failure("Bad Request", StateCode.BadRequest);
         }
-        var user = await systemUserRepository.GetUserByEmailAsync(request.Email,request.Tenant);
+        var user = await systemUserRepository.GetUserByEmailAsync(request.Email, request.Tenant);
         if (user == null)
         {
             return OperationResult<string>.Failure("Invalid email");
         }
         // Verify OTP
-        var otp = otpService.GetOtp(request.Email,request.Tenant);
+        var otp = otpService.GetOtp(request.Email, request.Tenant);
         if (otp == null || otp != request.ResetCode)
         {
             return OperationResult<string>.Failure("Invalid or expired OTP");

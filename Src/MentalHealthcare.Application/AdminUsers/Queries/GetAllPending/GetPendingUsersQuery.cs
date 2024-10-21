@@ -1,10 +1,10 @@
-using System.ComponentModel.DataAnnotations;
 using MediatR;
 using MentalHealthcare.Application.Common;
+using System.ComponentModel.DataAnnotations;
 
 namespace MentalHealthcare.Application.AdminUsers.Queries.GetAllPending;
 
-public class GetPendingUsersQuery:IRequest<PageResult<PendingUsersDto>>
+public class GetPendingUsersQuery : IRequest<PageResult<PendingUsersDto>>
 {
     [MaxLength(100)]
     public string? SearchText { get; set; }

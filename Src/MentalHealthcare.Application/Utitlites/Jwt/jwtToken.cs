@@ -1,11 +1,11 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using MentalHealthcare.Domain.Constants;
+﻿using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace MentalHealthcare.Application.Utitlites.Jwt;
 /*
@@ -113,7 +113,7 @@ public class JwtToken(
 
     private Task<bool> IsTokenValid(JwtSecurityToken token, string passcode)
     {
-        
+
         if (token.ValidTo < DateTime.Now)
         {
             return Task.FromResult(false);
@@ -132,7 +132,7 @@ public class JwtToken(
     public async Task<(string, string)> RefreshTokens(string token)
     {
         var tokenInfo = GetTokenInfo(token);
-        
+
         if (tokenInfo == null)
             return (null, null)!;
 
@@ -142,7 +142,7 @@ public class JwtToken(
         var tenant = tokenInfo.Claims.FirstOrDefault(x => x.Type == Global.TenantClaimType)?.Value;
         if (tenant == null)
             return (null, null)!;
-        var user = await userRepository.GetUserByUserNameAsync(userName,tenant);
+        var user = await userRepository.GetUserByUserNameAsync(userName, tenant);
         if (user == null)
             return (null, null)!;
         var passcode = await userRepository.GetUserTokenCodeAsync(user);

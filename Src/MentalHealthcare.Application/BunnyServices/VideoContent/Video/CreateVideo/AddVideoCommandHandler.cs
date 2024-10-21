@@ -23,7 +23,7 @@ public class CreateVideoCommandHandler(
         httpRequest.AddBody(new
         {
             title = "Hello1",
-            collectionId=request.CollectionId
+            collectionId = request.CollectionId
         });
         var response = await client.PostAsync(httpRequest, cancellationToken);
         var content = new JsonHelper(response);

@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using MentalHealthcare.Domain.Constants;
+﻿using MentalHealthcare.Domain.Constants;
+using System.ComponentModel.DataAnnotations;
 
 namespace MentalHealthcare.Domain.Entities;
 // Written By Marcelino , Reviewed by Mohab
@@ -11,15 +11,15 @@ namespace MentalHealthcare.Domain.Entities;
    - add title
  */
 
-public class Article : MaterialBe
+public class Article : MaterialBE
 {
     public int ArticleId { get; set; }
-    
+
     public int AuthorId { get; set; } // Foreign Key property
     public Author Author { get; set; } = default!;
-    
+
     public string Content { get; set; } = default!;
-    
-    [MaxLength(Global.UrlMaxLength)] 
+
+    [MaxLength(Global.UrlMaxLength)]
     public string PhotoUrl { get; set; } = default!;
 }

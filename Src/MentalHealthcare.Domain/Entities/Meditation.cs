@@ -3,7 +3,7 @@
 
 namespace MentalHealthcare.Domain.Entities;
 
-public class Meditation : MaterialBe
+public class Meditation : MaterialBE
 {
     public int MeditationId { get; set; }
 

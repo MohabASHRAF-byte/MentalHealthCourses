@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using MentalHealthcare.Domain.Constants;
+﻿using MentalHealthcare.Domain.Constants;
+using System.ComponentModel.DataAnnotations;
 
 // Written By Marcelino , Reviewed by Mohab
 // Reviewed
@@ -13,9 +13,9 @@ namespace MentalHealthcare.Domain.Entities;
 
 public class ContentCreatorBe
 {
-    [MaxLength(Global.MaxNameLength)] 
+    [MaxLength(Global.MaxNameLength)]
     public string Name { get; set; } = default!;
-    [MaxLength(Global.UrlMaxLength)] 
+    [MaxLength(Global.UrlMaxLength)]
     public string? ImageUrl { get; set; }
     public string? About { get; set; }
 

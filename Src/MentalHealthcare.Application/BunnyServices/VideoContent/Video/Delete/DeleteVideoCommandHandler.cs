@@ -1,6 +1,4 @@
 using MediatR;
-using MentalHealthcare.Application.Common;
-using MentalHealthcare.Domain.Dtos;
 using Microsoft.Extensions.Configuration;
 using RestSharp;
 

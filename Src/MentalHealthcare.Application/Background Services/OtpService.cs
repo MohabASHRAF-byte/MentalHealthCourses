@@ -1,6 +1,6 @@
-using System.Collections.Concurrent;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
 
 namespace MentalHealthcare.Application.Background_Services;
 
@@ -12,15 +12,15 @@ public class OtpService(
     private const int CleanupInterval = 10;
     private const int ExpirtyTime = 5;
 
-    private static readonly ConcurrentDictionary<(string,string), (string Otp, DateTime Expiry)> _otpStore =
-        new ();
+    private static readonly ConcurrentDictionary<(string, string), (string Otp, DateTime Expiry)> _otpStore =
+        new();
 
     /// <summary>
     /// Retrieves an OTP if it exists and hasn't expired, otherwise returns null.
     /// </summary>
-    public string? GetOtp(string key,string tenant)
+    public string? GetOtp(string key, string tenant)
     {
-        if (!_otpStore.TryGetValue((key,tenant), out var otpInfo))
+        if (!_otpStore.TryGetValue((key, tenant), out var otpInfo))
         {
             if (otpInfo.Expiry > DateTime.UtcNow)
             {
@@ -29,7 +29,7 @@ public class OtpService(
             else
             {
                 // Remove the expired OTP
-                _otpStore.Remove((key,tenant), out _);
+                _otpStore.Remove((key, tenant), out _);
                 logger.LogInformation("Expired OTP removed for key: {Key}", key);
             }
         }
@@ -41,10 +41,10 @@ public class OtpService(
     /// </summary>
 
 
-    public void AddOrUpdateOtp(string key,string tenant, string otp)
+    public void AddOrUpdateOtp(string key, string tenant, string otp)
     {
         var expiryTime = DateTime.UtcNow.AddMinutes(ExpirtyTime); // OTP expires in 5 minutes
-        _otpStore.AddOrUpdate((key,tenant), (otp, expiryTime), (existingKey, existingValue) => (otp, expiryTime));
+        _otpStore.AddOrUpdate((key, tenant), (otp, expiryTime), (existingKey, existingValue) => (otp, expiryTime));
         logger.LogInformation("OTP added/updated for key: {Key}", key);
     }
 

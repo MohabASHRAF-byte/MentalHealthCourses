@@ -12,7 +12,7 @@ public class DeletePendingUsersCommandHandler(
     ILogger<AddAdminCommandHandler> logger,
     IAdminRepository adminRepository,
     IUserContext userContext
-    ):IRequestHandler<DeletePendingUsersCommand>
+    ) : IRequestHandler<DeletePendingUsersCommand>
 {
     public async Task Handle(DeletePendingUsersCommand request, CancellationToken cancellationToken)
     {

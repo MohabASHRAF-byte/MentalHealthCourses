@@ -4,7 +4,7 @@ using MentalHealthcare.Domain.Entities;
 
 namespace MentalHealthcare.Application;
 
-public class AdminProfile:Profile
+public class AdminProfile : Profile
 {
     public AdminProfile()
     {
