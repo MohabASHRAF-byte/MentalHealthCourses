@@ -1,4 +1,5 @@
 using MentalHealthcare.Domain.Entities;
+using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
@@ -105,10 +106,14 @@ public class AdminRepository(
         return (totalCount, admins);
     }
 
-    public async Task<Admin?> GetAdminByIdentityAsync(string adminId)
+    public async Task<Admin> GetAdminByIdentityAsync(string adminId)
     {
-        return await dbContext.Admins.FirstOrDefaultAsync(
+        var admin = await dbContext.Admins.FirstOrDefaultAsync(
             a => a.UserId == adminId
         );
+
+        if (admin is null)
+            throw new ResourceNotFound(nameof(Admin), adminId);
+        return admin;
     }
 }

@@ -11,7 +11,8 @@ public class AddCollectionCommandHandler(
 {
     public async Task<string> Handle(AddCollectionCommand request, CancellationToken cancellationToken)
     {
-        var url = GetUrl(request.LibraryId);
+        var libraryId = configuration["BunnyCdn:LibraryId"]!;
+        var url = GetUrl(libraryId);
         var options = new RestClientOptions(url);
         var client = new RestClient(options);
         var httpRequest = new RestRequest("");

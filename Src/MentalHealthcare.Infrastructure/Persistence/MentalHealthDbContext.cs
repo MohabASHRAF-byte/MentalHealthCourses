@@ -31,7 +31,7 @@ public class MentalHealthDbContext : IdentityDbContext<User>
     public DbSet<EnrollmentDetails> EnrollmentDetails { get; set; }
     public DbSet<SystemUserTokenCode> SystemUserTokenCodes { get; set; }
     public DbSet<PendingAdmins> PendingAdmins { get; set; }
-
+    public DbSet<PendingVideoUpload> VideoUploads { get; set; }
     #endregion
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -232,17 +232,13 @@ public class MentalHealthDbContext : IdentityDbContext<User>
         modelBuilder.Entity<Course>(entity =>
         {
             entity.HasKey(c => c.CourseId);
-            entity.Property(c => c.CourseId).UseIdentityColumn(200, 1);
 
-            entity.HasMany(c => c.CourseMateriels)
-                .WithOne(cm => cm.Course)
-                .HasForeignKey(cm => cm.CourseId);
-
-            // Correct foreign key setup for Instructor
+            // Each course must have one instructor
             entity.HasOne(c => c.Instructor)
-                .WithMany(i => i.Courses)
-                .HasForeignKey(c => c.InstructorId) // Use the foreign key property directly
-                .OnDelete(DeleteBehavior.Cascade);
+                .WithMany(i => i.Courses)  // An instructor has many courses
+                .HasForeignKey(c => c.InstructorId)  // Foreign key is defined in the Course entity
+                .OnDelete(DeleteBehavior.Cascade);  // When the instructor is deleted, their courses will be deleted
+
 
             entity.HasMany(c => c.Categories)
                 .WithMany(cc => cc.Courses);
@@ -291,14 +287,18 @@ public class MentalHealthDbContext : IdentityDbContext<User>
         modelBuilder.Entity<Instructor>(entity =>
         {
             entity.HasKey(i => i.InstructorId);
+
+            // Configure auto-generated identity for InstructorId
             entity.Property(i => i.InstructorId).UseIdentityColumn(1, 1);
 
+            // An instructor can have many courses
             entity.HasMany(i => i.Courses)
-                .WithOne(c => c.Instructor)
-                .HasForeignKey(c => c.CourseId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .WithOne(c => c.Instructor)  // One instructor for each course
+                .HasForeignKey(c => c.InstructorId) // Define the foreign key on the Course
+                .OnDelete(DeleteBehavior.Cascade);  // Deleting an instructor will cascade delete their courses
         });
     }
+
 
     private void ConfigureLogs(ModelBuilder modelBuilder)
     {

@@ -1,0 +1,17 @@
+- Genearl 
+	- remove unnecessery imports to increase readablitiy 
+	- commit to naming convension to dotnet to make it more readalbe
+	- remove file scope namespace to imporve consitancy
+	- naming not singular
+ 
+
+- Pdf 
+	- add pdfurl
+	- remove nullable from course
+- PodCast
+	- add PodcastLength 
+	- podcast Descriptio
+
+
+- merge video and pdf in one entity courseMaterial to imporve speed
+

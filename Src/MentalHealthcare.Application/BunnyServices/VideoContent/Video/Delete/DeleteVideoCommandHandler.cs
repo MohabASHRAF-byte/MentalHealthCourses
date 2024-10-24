@@ -13,7 +13,8 @@ public class DeleteVideoCommandHandler(
     public async Task<bool> Handle(DeleteVideoCommand request, CancellationToken cancellationToken)
 
     {
-        var url = GetUrl(request.LibraryId, request.VideoId);
+        var libraryId = configuration["BunnyCdn:LibraryId"]!;
+        var url = GetUrl(libraryId, request.VideoId);
         var options = new RestClientOptions(url);
         var client = new RestClient(options);
         var httpRequest = new RestRequest("");

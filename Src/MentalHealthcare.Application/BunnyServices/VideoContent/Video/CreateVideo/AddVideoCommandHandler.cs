@@ -7,9 +7,9 @@ namespace MentalHealthcare.Application.BunnyServices.VideoContent.Video.CreateVi
 
 public class CreateVideoCommandHandler(
     IConfiguration configuration
-) : IRequestHandler<CreateVideoCommand, string?>
+) : IRequestHandler<AddVideoCommand, string?>
 {
-    public async Task<string?> Handle(CreateVideoCommand request, CancellationToken cancellationToken)
+    public async Task<string?> Handle(AddVideoCommand request, CancellationToken cancellationToken)
 
     {
         var url = GetUrl(request.LibraryId);
@@ -22,8 +22,8 @@ public class CreateVideoCommandHandler(
         httpRequest.AddHeader(accessKey, apiLibraryKey);
         httpRequest.AddBody(new
         {
-            title = "Hello1",
-            collectionId=request.CollectionId
+            title = request.VideoName,
+            collectionId = request.CollectionId
         });
         var response = await client.PostAsync(httpRequest, cancellationToken);
         var content = new JsonHelper(response);

@@ -12,11 +12,8 @@ public class AdminSeeder(
 {
     public async Task seed()
     {
-        if (!await dbContext.Database.CanConnectAsync())
-            return;
-        if (await dbContext.Users.AnyAsync())
-            return;
-
+        return;
+        await dbContext.Database.MigrateAsync();
         var adminIdentity = new User
         {
             Email = "admin@admin.com",
@@ -27,7 +24,7 @@ public class AdminSeeder(
             UserName = "admin",
             EmailConfirmed = true,
             LockoutEnabled = false,
-            PasswordHash = "sdfdsa",
+            PasswordHash = "AQAAAAIAAYagAAAAEFZJJnSw0p3qxEghLd+XzFTWCqqFculEJN0dq3I9VQWuR+8+PnGbnWEsOGzMF890EQ==",
             TwoFactorEnabled = false,
             AccessFailedCount = 0,
             NormalizedUserName = "admin".ToUpper(),
@@ -50,7 +47,7 @@ public class AdminSeeder(
             UserName = "admin1",
             EmailConfirmed = true,
             LockoutEnabled = false,
-            PasswordHash = "sdfdsa",
+            PasswordHash = "AQAAAAIAAYagAAAAEFZJJnSw0p3qxEghLd+XzFTWCqqFculEJN0dq3I9VQWuR+8+PnGbnWEsOGzMF890EQ==",
             TwoFactorEnabled = false,
             AccessFailedCount = 0,
             NormalizedUserName = "admin1".ToUpper(),
@@ -63,11 +60,83 @@ public class AdminSeeder(
             FName = "admin1",
             LName = "admin1"
         };
+        var cat1 = new Category()
+        {
+            Name = "Dev",
+            Description = "Development",
+        };
+        var cat2 = new Category
+        {
+            Name = "Think",
+            Description = "Thinking",
+
+        };
+        var instructor1 = new Instructor
+        {
+            Name = "John Doe",
+            About = "John Doe",
+            AddedBy = admin,
+        };
+        var instructor2 = new Instructor
+        {
+            Name = "John Doe 2",
+            About = "sadf",
+            AddedBy = admin
+        };      
+        var course = new Course()
+        {
+            Name = "DSP",
+            Description = "cous",
+            Categories = new List<Category> { cat1, cat2 },
+            Instructor = instructor1,
+            Price = 100,
+            Rating = 2.4M,
+            EnrollmentsCount = 5,
+            IsFree = false,
+            ReviewsCount = 2,
+            IsPublic = false,
+            ThumbnailUrl = "fsadfa",
+            CollectionId = "28d97e2c-2561-44a9-bb55-1cb8ed14807a",
+            
+        };
+        // var Matrials = new List<CourseMateriel>()
+        // {
+        //     new CourseMateriel()
+        //     {
+        //         Admin = admin,
+        //         Description = "mat 1",
+        //         Url = "safsadfasf.com",
+        //         Title = "Mat 1",
+        //         IsVideo = true,
+        //         ItemOrder = 1,
+        //         Course = course
+        //     },
+        //     new()
+        //     {
+        //         Admin = admin,
+        //         Description = "mat 2",
+        //         Url = "safsadfasf.com2",
+        //         Title = "Mat 2",
+        //         IsVideo = true,
+        //         ItemOrder = 2,
+        //         Course = course
+        //
+        //     }
+        // };
+        //
         await dbContext.AddAsync(adminIdentity);
         await dbContext.AddAsync(adminIdentity1);
         await dbContext.AddAsync(admin);
         await dbContext.AddAsync(admin1);
+        await dbContext.AddAsync(cat1);
+        await dbContext.AddAsync(cat2);
+        await dbContext.AddAsync(instructor1);
+        await dbContext.AddAsync(instructor2);
+        // await dbContext.AddRangeAsync(Matrials);
+        await dbContext.AddAsync(course);
         await dbContext.SaveChangesAsync();
     }
+
+   
     
 }

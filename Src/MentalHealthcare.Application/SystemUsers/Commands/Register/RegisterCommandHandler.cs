@@ -34,6 +34,9 @@ public class RegisterCommandHandler(
         user.Roles = Roles.AddRole(user.Roles, UserRoles.User);
         SystemUser systemUser = mapper.Map<SystemUser>(request);
         systemUser.User = user;
+        systemUser.FName = request.FirstName;
+        systemUser.LName = request.LastName;
+        
         logger.LogInformation("Inserting {@user} to the DB", request.UserName);
         var isInserted = await userRepository.RegisterUser(user, request.Password, systemUser);
         if (!isInserted)

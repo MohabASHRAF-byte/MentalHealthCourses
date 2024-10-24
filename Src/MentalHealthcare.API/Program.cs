@@ -15,18 +15,37 @@ builder.Services.AddScoped<GlobalErrorHandling>();
 builder.Services.AddScoped<RequestTimeLogging>();
 builder.Services.AddControllers();
 
+// Add CORS services
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
 var scope = app.Services.CreateScope();
 var serviceProvider = scope.ServiceProvider.GetRequiredService<IAdminSeeder>();
 await serviceProvider.seed();
+
+// Use middlewares
 app.UseMiddleware<GlobalErrorHandling>();
 app.UseMiddleware<RequestTimeLogging>();
+
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
 app.UseRouting();
+
+// Use CORS middleware
+app.UseCors("AllowAll");
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

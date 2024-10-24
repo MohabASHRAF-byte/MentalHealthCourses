@@ -22,7 +22,7 @@ public class ClientsUsersIdentityController(
 ) : ControllerBase
 {
     [HttpPost(nameof(Register))]
-    public async Task<IActionResult> Register([FromRoute] string tenant, RegisterCommand command)
+    public async Task<IActionResult> Register(RegisterCommand command)
     {
         command.Tenant = Global.ApplicationTenant;
         var commandResult = await mediator.Send(command);
@@ -32,7 +32,7 @@ public class ClientsUsersIdentityController(
     }
 
     [HttpPost(nameof(ConfirmEmail))]
-    public async Task<IActionResult> ConfirmEmail([FromRoute] string tenant, ConfirmEmailCommand command)
+    public async Task<IActionResult> ConfirmEmail(ConfirmEmailCommand command)
     {
         command.Tenant = Global.ApplicationTenant;
 
@@ -46,7 +46,7 @@ public class ClientsUsersIdentityController(
     }
 
     [HttpPost(nameof(Login))]
-    public async Task<IActionResult> Login([FromRoute] string tenant, LoginCommand command)
+    public async Task<IActionResult> Login(LoginCommand command)
     {
         command.Tenant = Global.ApplicationTenant;
 
@@ -67,7 +67,7 @@ public class ClientsUsersIdentityController(
     }
 
     [HttpPost(nameof(ResendConfirmationEmail))]
-    public async Task<IActionResult> ResendConfirmationEmail([FromRoute] string tenant,
+    public async Task<IActionResult> ResendConfirmationEmail(
         ResendEmailConfirmationCommand command)
     {
         command.Tenant = Global.ApplicationTenant;
@@ -82,7 +82,7 @@ public class ClientsUsersIdentityController(
     }
 
     [HttpPost(nameof(ForgetPassword))]
-    public async Task<IActionResult> ForgetPassword([FromRoute] string tenant, ForgetPasswordCommand command)
+    public async Task<IActionResult> ForgetPassword(ForgetPasswordCommand command)
     {
         command.Tenant = Global.ApplicationTenant;
 
@@ -96,7 +96,7 @@ public class ClientsUsersIdentityController(
     }
 
     [HttpPost(nameof(ResetPassword))]
-    public async Task<IActionResult> ResetPassword([FromRoute] string tenant, ResetPasswordCommand command)
+    public async Task<IActionResult> ResetPassword(ResetPasswordCommand command)
     {
         command.Tenant = Global.ApplicationTenant;
 

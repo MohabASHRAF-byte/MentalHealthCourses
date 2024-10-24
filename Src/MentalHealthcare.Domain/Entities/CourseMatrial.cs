@@ -29,8 +29,7 @@ public class CourseMateriel
 
     [MaxLength(Global.UrlMaxLength)] public string Url { set; get; } = default!;
 
-    //
-    public bool IsConfirmed { set; get; }
+    
 
     public bool IsVideo { set; get; }
     //

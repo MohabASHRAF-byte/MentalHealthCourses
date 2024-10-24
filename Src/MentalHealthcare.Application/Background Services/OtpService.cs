@@ -10,7 +10,7 @@ public class OtpService(
 {
     private Timer? _cleanupTimer;
     private const int CleanupInterval = 10;
-    private const int ExpirtyTime = 5;
+    private const int ExpirtyTime = 50;
 
     private static readonly ConcurrentDictionary<(string,string), (string Otp, DateTime Expiry)> _otpStore =
         new ();
@@ -18,23 +18,26 @@ public class OtpService(
     /// <summary>
     /// Retrieves an OTP if it exists and hasn't expired, otherwise returns null.
     /// </summary>
-    public string? GetOtp(string key,string tenant)
+    public string? GetOtp(string key, string tenant)
     {
-        if (!_otpStore.TryGetValue((key,tenant), out var otpInfo))
+        // Attempt to get the OTP information from the store
+        if (_otpStore.TryGetValue((key, tenant), out var otpInfo) && otpInfo.Expiry > DateTime.UtcNow)
         {
-            if (otpInfo.Expiry > DateTime.UtcNow)
-            {
-                return otpInfo.Otp; // OTP is still valid
-            }
-            else
-            {
-                // Remove the expired OTP
-                _otpStore.Remove((key,tenant), out _);
-                logger.LogInformation("Expired OTP removed for key: {Key}", key);
-            }
+            return otpInfo.Otp; // OTP is still valid
         }
-        return null; // No valid OTP found
+    
+        // If the OTP is not found or expired, remove it if it exists
+        if (_otpStore.TryGetValue((key, tenant), out otpInfo))
+        {
+            _otpStore.Remove((key, tenant), out _);
+            logger.LogInformation("Expired OTP removed for key: {Key}", key);
+        }
+    
+        // No valid OTP found
+        return null;
     }
+
+
 
     /// <summary>
     /// Adds or updates an OTP, setting its expiry to 5 minutes from now.

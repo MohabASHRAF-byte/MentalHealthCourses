@@ -1,4 +1,8 @@
+using System.Net;
+using MentalHealthcare.Application.Common;
+using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Exceptions;
+using Microsoft.ApplicationInsights.Extensibility.Implementation;
 
 namespace MentalHealthcare.API.MiddleWares;
 
@@ -20,15 +24,19 @@ public class GlobalErrorHandling(
         } 
         catch (ResourceNotFound ex)
         {
-            logger.LogError(ex, ex.Message);
-            context.Response.StatusCode = 404;
-            await context.Response.WriteAsync(ex.Message);
+            logger.LogError(ex, "Resource not found: {Message}", ex.Message);
+            context.Response.StatusCode = 404; 
+            var ret = OperationResult<string>.Failure(ex.Message, statusCode: StateCode.NotFound);
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsJsonAsync(ret);
         }
         catch (ForBidenException ex)
         {
-            logger.LogError(ex, ex.Message);
-            context.Response.StatusCode = 401;
-            await context.Response.WriteAsync(ex.Message);
+            logger.LogError(ex, "Forbiden: {Message}", ex.Message);
+            context.Response.StatusCode = 401; 
+            var ret = OperationResult<string>.Failure(ex.Message, statusCode: StateCode.Forbidden);
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsJsonAsync(ret);
         }
         catch (Exception ex)
         {
