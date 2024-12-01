@@ -651,6 +651,29 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.ToTable("SystemUserTokenCodes");
                 });
 
+            modelBuilder.Entity("MentalHealthcare.Domain.Entities.TermsAndConditions", b =>
+                {
+                    b.Property<int>("TermsAndConditionsId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TermsAndConditionsId"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("TermsAndConditionsId");
+
+                    b.ToTable("TermsAndConditions");
+                });
+
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.User", b =>
                 {
                     b.Property<string>("Id")

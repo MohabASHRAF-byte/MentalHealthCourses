@@ -14,4 +14,11 @@ public class Global
     public const string UserIdClaimType = "AdminId";
     public static string CourseThumbnailDirectory ="CoursesThumbnails";
     public static string ThumbnailFileExtension = ".jpeg";
+
+    #region Terms and Conditions 
+    public const int TermNameMaxLength = 50;
+    public const int TermDescriptionMaxLength = 500;
+    
+
+    #endregion
 }
