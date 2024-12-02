@@ -2,6 +2,7 @@ using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MentalHealthcare.Application.Background_Services;
+using MentalHealthcare.Application.BunnyServices;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Application.Utitlites.EmailProvider;
 using MentalHealthcare.Application.Utitlites.Jwt;
@@ -28,6 +29,7 @@ namespace MentalHealthcare.Application.Extensions
             services.AddHttpContextAccessor();
             services.ConfigureBunney(configuration);
             services.AddSingleton<IConfiguration>(configuration);
+            services.AddSingleton<BunnyClient>();
             services.AddSingleton<IHostedService, OtpService>();
             services.AddSingleton<OtpService>(); // Register it as a service that can be injected
             services.AddScoped<IEmailSender, EmailProvider>();

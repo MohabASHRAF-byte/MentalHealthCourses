@@ -12,8 +12,12 @@ public class AdminSeeder(
 {
     public async Task seed()
     {
-        return;
+        
+        if (await dbContext.Advertisements.AnyAsync())
+            return;
         await dbContext.Database.MigrateAsync();
+
+        #region Seed Admins
         var adminIdentity = new User
         {
             Email = "admin@admin.com",
@@ -36,7 +40,7 @@ public class AdminSeeder(
             User = adminIdentity,
             FName = "admin",
             LName = "admin"
-        };   
+        };
         var adminIdentity1 = new User
         {
             Email = "admin1@admin.com",
@@ -60,6 +64,12 @@ public class AdminSeeder(
             FName = "admin1",
             LName = "admin1"
         };
+        
+
+        #endregion
+
+        #region Seed Categories
+
         var cat1 = new Category()
         {
             Name = "Dev",
@@ -69,8 +79,11 @@ public class AdminSeeder(
         {
             Name = "Think",
             Description = "Thinking",
-
         };
+
+        #endregion
+
+        #region Seed instructor
         var instructor1 = new Instructor
         {
             Name = "John Doe",
@@ -82,7 +95,12 @@ public class AdminSeeder(
             Name = "John Doe 2",
             About = "sadf",
             AddedBy = admin
-        };      
+        };
+        
+
+        #endregion
+        
+        #region Seed Courses
         var course = new Course()
         {
             Name = "DSP",
@@ -97,7 +115,6 @@ public class AdminSeeder(
             IsPublic = false,
             ThumbnailUrl = "fsadfa",
             CollectionId = "28d97e2c-2561-44a9-bb55-1cb8ed14807a",
-            
         };
         // var Matrials = new List<CourseMateriel>()
         // {
@@ -124,6 +141,41 @@ public class AdminSeeder(
         //     }
         // };
         //
+        #endregion
+        
+        #region Add Advertisement
+        var ad1 = new Advertisement()
+        {
+            AdvertisementName = "Advertisement 1",
+            AdvertisementDescription = "Advertisement description",
+            IsActive = true,
+        };
+        var uploadedImages = new List<AdvertisementImageUrl>
+        {
+            new() { ImageUrl = "www.example1.com" ,Advertisement = ad1},
+            new() { ImageUrl = "www.example2.com" ,Advertisement = ad1},
+            new() { ImageUrl = "www.example3.com" ,Advertisement = ad1},
+        };
+        ad1.AdvertisementImageUrls = uploadedImages;
+        
+        var ad2 = new Advertisement()
+        {
+            AdvertisementName = "Advertisement 2",
+            AdvertisementDescription = "Advertisement description",
+            IsActive = false,
+        };
+        var uploadedImages2 = new List<AdvertisementImageUrl>
+        {
+            new() { ImageUrl = "www.example1.com" ,Advertisement = ad2},
+            new() { ImageUrl = "www.example2.com" ,Advertisement = ad2},
+            new() { ImageUrl = "www.example3.com" ,Advertisement = ad2},
+        };
+        ad2.AdvertisementImageUrls = uploadedImages2;
+
+        
+
+        #endregion
+        
         await dbContext.AddAsync(adminIdentity);
         await dbContext.AddAsync(adminIdentity1);
         await dbContext.AddAsync(admin);
@@ -134,9 +186,8 @@ public class AdminSeeder(
         await dbContext.AddAsync(instructor2);
         // await dbContext.AddRangeAsync(Matrials);
         await dbContext.AddAsync(course);
+        await dbContext.AddAsync(ad1);
+        await dbContext.AddAsync(ad2);
         await dbContext.SaveChangesAsync();
     }
-
-   
-    
 }

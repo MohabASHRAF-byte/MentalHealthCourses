@@ -1,8 +1,8 @@
+using System.Net.Http.Headers;
 using MediatR;
 using Microsoft.Extensions.Configuration;
-using System.Net.Http.Headers;
 
-namespace MentalHealthcare.Application.BunnyServices.UploadFile;
+namespace MentalHealthcare.Application.BunnyServices.Files.UploadFile;
 
 public class UploadFileCommandHandler(
     IConfiguration configuration

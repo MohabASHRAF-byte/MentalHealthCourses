@@ -16,9 +16,31 @@ public class Global
     public static string ThumbnailFileExtension = ".jpeg";
 
     #region Terms and Conditions 
-    public const int TermNameMaxLength = 50;
+    public enum HelpCenterItems
+    {
+        TermsConditions = 1,
+        PrivacyPolicy = 2,
+        FaQ = 3,
+    }
+    public const int TermNameMaxLength = 100;
     public const int TermDescriptionMaxLength = 500;
-    
-
     #endregion
+    
+    #region advertisement 
+    public const string AdvertisementFolderName = "Advertisements";
+     public const int AdvertisementNameMaxLength = 50;
+     public const int AdvertisementDescriptionMaxLength = 500;
+     public const int AdvertisementImgSize = 10;
+
+     #endregion
+
+     #region ContactUs
+     public const int ContactUsMaxNameLength = 50;
+     public const int ContactUsMaxEmailLength = 50;
+     public const int ContactUsMaxPhoneLength = 20;
+     public const int ContactUsMaxMsgLength = 500;
+     #endregion
+     
+
+     
 }

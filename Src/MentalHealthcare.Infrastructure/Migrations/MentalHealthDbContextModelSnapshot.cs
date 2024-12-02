@@ -101,6 +101,58 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.ToTable("Admins");
                 });
 
+            modelBuilder.Entity("MentalHealthcare.Domain.Entities.Advertisement", b =>
+                {
+                    b.Property<int>("AdvertisementId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AdvertisementId"));
+
+                    b.Property<string>("AdvertisementDescription")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("AdvertisementName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("LastUploadImgCnt")
+                        .HasColumnType("integer");
+
+                    b.HasKey("AdvertisementId");
+
+                    b.ToTable("Advertisements");
+                });
+
+            modelBuilder.Entity("MentalHealthcare.Domain.Entities.AdvertisementImageUrl", b =>
+                {
+                    b.Property<int>("AdvertisementImageUrlId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AdvertisementImageUrlId"));
+
+                    b.Property<int>("AdvertisementId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
+                    b.HasKey("AdvertisementImageUrlId");
+
+                    b.HasIndex("AdvertisementId");
+
+                    b.ToTable("AdvertisementImageUrls");
+                });
+
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.Article", b =>
                 {
                     b.Property<int>("ArticleId")
@@ -194,6 +246,43 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.HasKey("CategoryId");
 
                     b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("MentalHealthcare.Domain.Entities.ContactUsForm", b =>
+                {
+                    b.Property<int>("ContactUsFormId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ContactUsFormId"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("ContactUsFormId");
+
+                    b.ToTable("ContactUses");
                 });
 
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.Course", b =>
@@ -326,6 +415,32 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.HasIndex("SystemUserId");
 
                     b.ToTable("EnrollmentDetails");
+                });
+
+            modelBuilder.Entity("MentalHealthcare.Domain.Entities.HelpCenterItem", b =>
+                {
+                    b.Property<int>("HelpCenterItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("HelpCenterItemId"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("HelpCenterItemId");
+
+                    b.ToTable("HelpCenterItems");
                 });
 
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.Instructor", b =>
@@ -651,29 +766,6 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.ToTable("SystemUserTokenCodes");
                 });
 
-            modelBuilder.Entity("MentalHealthcare.Domain.Entities.TermsAndConditions", b =>
-                {
-                    b.Property<int>("TermsAndConditionsId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TermsAndConditionsId"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.HasKey("TermsAndConditionsId");
-
-                    b.ToTable("TermsAndConditions");
-                });
-
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.User", b =>
                 {
                     b.Property<string>("Id")
@@ -955,6 +1047,17 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("MentalHealthcare.Domain.Entities.AdvertisementImageUrl", b =>
+                {
+                    b.HasOne("MentalHealthcare.Domain.Entities.Advertisement", "Advertisement")
+                        .WithMany("AdvertisementImageUrls")
+                        .HasForeignKey("AdvertisementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Advertisement");
+                });
+
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.Article", b =>
                 {
                     b.HasOne("MentalHealthcare.Domain.Entities.Author", "Author")
@@ -1203,6 +1306,11 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.Navigation("Meditations");
 
                     b.Navigation("Podcasts");
+                });
+
+            modelBuilder.Entity("MentalHealthcare.Domain.Entities.Advertisement", b =>
+                {
+                    b.Navigation("AdvertisementImageUrls");
                 });
 
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.Author", b =>

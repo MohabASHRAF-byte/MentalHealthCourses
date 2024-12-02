@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Http;
 
-namespace MentalHealthcare.Application.BunnyServices.UploadFile;
+namespace MentalHealthcare.Application.BunnyServices.Files.UploadFile;
 
 public class UploadFileCommand : IRequest<string>
 {
