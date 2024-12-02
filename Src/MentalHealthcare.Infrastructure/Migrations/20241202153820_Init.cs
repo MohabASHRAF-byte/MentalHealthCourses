@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MentalHealthcare.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddTermsandCondations : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -81,6 +81,24 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.CategoryId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ContactUses",
+                columns: table => new
+                {
+                    ContactUsFormId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Email = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    PhoneNumber = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    Message = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    IsRead = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContactUses", x => x.ContactUsFormId);
                 });
 
             migrationBuilder.CreateTable(
@@ -891,6 +909,9 @@ namespace MentalHealthcare.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "CategoryCourse");
+
+            migrationBuilder.DropTable(
+                name: "ContactUses");
 
             migrationBuilder.DropTable(
                 name: "CourseMateriels");

@@ -16,7 +16,7 @@ namespace MentalHealthcare.API.Controllers;
 [Route("TermsAndConditions")]
 public class TermsController(
     IMediator mediator
-    ) : ControllerBase
+) : ControllerBase
 {
     /// <summary>
     /// Creates a new term or condition.
@@ -58,8 +58,8 @@ public class TermsController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     [SwaggerOperation(
         Summary = TermsAndConditionsControllerDocs.GetAllSummery,
-        Description = TermsAndConditionsControllerDocs.PatchDescription 
-                      )]
+        Description = TermsAndConditionsControllerDocs.PatchDescription
+    )]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetTerm()
@@ -74,10 +74,9 @@ public class TermsController(
     /// </summary>
     [SwaggerOperation(
         Summary = TermsAndConditionsControllerDocs.PatchSummery,
-        Description = TermsAndConditionsControllerDocs.PatchDescription )]
-    [HttpPatch]
+        Description = TermsAndConditionsControllerDocs.PatchDescription)]
+    [HttpPut]
     [Produces("application/json")]
-
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Update(UpdateTermCommand command)

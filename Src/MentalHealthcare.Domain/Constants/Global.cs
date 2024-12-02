@@ -27,4 +27,14 @@ public class Global
      public const int AdvertisementImgSize = 10;
 
      #endregion
+
+     #region ContactUs
+     public const int ContactUsMaxNameLength = 50;
+     public const int ContactUsMaxEmailLength = 50;
+     public const int ContactUsMaxPhoneLength = 20;
+     public const int ContactUsMaxMsgLength = 500;
+     #endregion
+     
+
+     
 }

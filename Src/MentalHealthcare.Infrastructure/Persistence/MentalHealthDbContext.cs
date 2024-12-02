@@ -37,6 +37,7 @@ public class MentalHealthDbContext : IdentityDbContext<User>
     public DbSet<Advertisement> Advertisements { get; set; }
     
     public DbSet<AdvertisementImageUrl> AdvertisementImageUrls { get; set; }
+    public DbSet<ContactUsForm> ContactUses { get; set; }
     #endregion
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
