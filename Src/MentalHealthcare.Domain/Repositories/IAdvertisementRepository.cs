@@ -9,4 +9,6 @@ public interface IAdvertisementRepository
     public Task UpdateAdvertisementAsync(Advertisement advertisement);
     public Task DeleteAdvertisementAsync(int advertisementId);
     public Task<(int TotalCount,IEnumerable<Advertisement>)> GetAdvertisementsAsync(int pageNumber, int pageSize , int isActive);
+    
+    public Task DeleteAdvertisementPhotosUrlsAsync(int advertisementId);
 }

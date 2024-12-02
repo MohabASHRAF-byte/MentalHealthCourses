@@ -28,6 +28,7 @@ public class AdvertisementRepository(
                 AdvertisementName = a.AdvertisementName,
                 AdvertisementDescription = a.AdvertisementDescription,
                 IsActive = a.IsActive,
+                LastUploadImgCnt = a.LastUploadImgCnt,
                 AdvertisementImageUrls = a.AdvertisementImageUrls
                     .Select(img => new AdvertisementImageUrl { ImageUrl = img.ImageUrl })
                     .ToList()
@@ -83,7 +84,7 @@ public class AdvertisementRepository(
         var advertisements = await baseQuery
             .OrderBy(ad => ad.AdvertisementId) // Order by ID
             .Skip(pageSize * (pageNumber - 1)) // Pagination: Skip
-            .Take(pageSize)                   // Pagination: Take
+            .Take(pageSize) // Pagination: Take
             .Select(ad => new Advertisement
             {
                 AdvertisementId = ad.AdvertisementId,
@@ -99,4 +100,13 @@ public class AdvertisementRepository(
         return (totalCount, advertisements);
     }
 
+    public async Task DeleteAdvertisementPhotosUrlsAsync(int advertisementId)
+    {
+        var adimgs = dbContext.AdvertisementImageUrls.Where(
+            img => img.AdvertisementId == advertisementId
+        );
+         dbContext.AdvertisementImageUrls.RemoveRange(adimgs);
+         await dbContext.SaveChangesAsync();
+       
+    }
 }
