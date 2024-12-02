@@ -1,11 +1,11 @@
 using FluentValidation;
 using MentalHealthcare.Domain.Constants;
 
-namespace MentalHealthcare.Application.TermsAndConditions.Commands.Create;
+namespace MentalHealthcare.Application.HelpCenterItem.Commands.Create;
 
-public class CreateTermValidator:AbstractValidator<CreateTermCommand>
+public class CreateHelpCenterItemValidator:AbstractValidator<CreateHelpCenterItemCommand>
 {
-    public CreateTermValidator()
+    public CreateHelpCenterItemValidator()
     {
         RuleFor(x => x.Name)
             .Length(1,Global.TermNameMaxLength)

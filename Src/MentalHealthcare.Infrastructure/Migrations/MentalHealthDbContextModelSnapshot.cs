@@ -417,6 +417,32 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.ToTable("EnrollmentDetails");
                 });
 
+            modelBuilder.Entity("MentalHealthcare.Domain.Entities.HelpCenterItem", b =>
+                {
+                    b.Property<int>("HelpCenterItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("HelpCenterItemId"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("HelpCenterItemId");
+
+                    b.ToTable("HelpCenterItems");
+                });
+
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.Instructor", b =>
                 {
                     b.Property<int>("InstructorId")
@@ -738,29 +764,6 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("SystemUserTokenCodes");
-                });
-
-            modelBuilder.Entity("MentalHealthcare.Domain.Entities.TermsAndConditions", b =>
-                {
-                    b.Property<int>("TermsAndConditionsId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TermsAndConditionsId"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.HasKey("TermsAndConditionsId");
-
-                    b.ToTable("TermsAndConditions");
                 });
 
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.User", b =>

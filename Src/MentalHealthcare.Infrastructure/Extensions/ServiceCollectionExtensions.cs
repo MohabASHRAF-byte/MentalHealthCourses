@@ -44,7 +44,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAdminRepository, AdminRepository>();
         services.AddScoped<IAdminSeeder, AdminSeeder>();
         services.AddScoped<ICourseRepository, CourseRepository>();
-        services.AddScoped<ITermsRepository, TermsRepository>();
+        services.AddScoped<IHelpCenterRepository, HelpCenterRepository>();
         services.AddScoped<IAdvertisementRepository, AdvertisementRepository>();
         services.AddScoped<IContactUsRepository, ContactUsRepository>();
     }

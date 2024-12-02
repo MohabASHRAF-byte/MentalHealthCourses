@@ -32,7 +32,7 @@ public class MentalHealthDbContext : IdentityDbContext<User>
     public DbSet<SystemUserTokenCode> SystemUserTokenCodes { get; set; }
     public DbSet<PendingAdmins> PendingAdmins { get; set; }
     public DbSet<PendingVideoUpload> VideoUploads { get; set; }
-    public DbSet<TermsAndConditions> TermsAndConditions { get; set; }
+    public DbSet<HelpCenterItem> HelpCenterItems { get; set; }
     
     public DbSet<Advertisement> Advertisements { get; set; }
     

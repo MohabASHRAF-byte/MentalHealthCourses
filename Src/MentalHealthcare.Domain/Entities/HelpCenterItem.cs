@@ -3,9 +3,10 @@ using MentalHealthcare.Domain.Constants;
 
 namespace MentalHealthcare.Domain.Entities;
 
-public class TermsAndConditions
+public class HelpCenterItem
 {
-    public int TermsAndConditionsId { get; set; }
+    public int HelpCenterItemId { get; set; }
+    public Global.HelpCenterItems Type { set; get; }
     [MaxLength(Global.TermNameMaxLength)]
     public string Name { get; set; } =string.Empty;
     [MaxLength(Global.TermDescriptionMaxLength)]

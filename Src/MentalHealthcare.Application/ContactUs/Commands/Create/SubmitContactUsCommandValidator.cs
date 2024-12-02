@@ -1,5 +1,4 @@
 using FluentValidation;
-using MentalHealthcare.Application.TermsAndConditions.Commands.Create;
 using MentalHealthcare.Domain.Constants;
 
 namespace MentalHealthcare.Application.ContactUs.Commands.Create;

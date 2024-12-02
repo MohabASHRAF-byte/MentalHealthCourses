@@ -16,7 +16,13 @@ public class Global
     public static string ThumbnailFileExtension = ".jpeg";
 
     #region Terms and Conditions 
-    public const int TermNameMaxLength = 50;
+    public enum HelpCenterItems
+    {
+        TermsConditions = 1,
+        PrivacyPolicy = 2,
+        FaQ = 3,
+    }
+    public const int TermNameMaxLength = 100;
     public const int TermDescriptionMaxLength = 500;
     #endregion
     

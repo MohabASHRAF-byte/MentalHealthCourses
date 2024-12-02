@@ -102,17 +102,18 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TermsAndConditions",
+                name: "HelpCenterItems",
                 columns: table => new
                 {
-                    TermsAndConditionsId = table.Column<int>(type: "integer", nullable: false)
+                    HelpCenterItemId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Type = table.Column<int>(type: "integer", nullable: false),
                     Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TermsAndConditions", x => x.TermsAndConditionsId);
+                    table.PrimaryKey("PK_HelpCenterItems", x => x.HelpCenterItemId);
                 });
 
             migrationBuilder.CreateTable(
@@ -926,6 +927,9 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 name: "EnrollmentDetails");
 
             migrationBuilder.DropTable(
+                name: "HelpCenterItems");
+
+            migrationBuilder.DropTable(
                 name: "Logs");
 
             migrationBuilder.DropTable(
@@ -942,9 +946,6 @@ namespace MentalHealthcare.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "SystemUserTokenCodes");
-
-            migrationBuilder.DropTable(
-                name: "TermsAndConditions");
 
             migrationBuilder.DropTable(
                 name: "VideoUploads");

@@ -1,5 +1,4 @@
 using MediatR;
-using MentalHealthcare.Application.TermsAndConditions.Commands.Delete;
 using MentalHealthcare.Domain.Repositories;
 using Microsoft.Extensions.Logging;
 
