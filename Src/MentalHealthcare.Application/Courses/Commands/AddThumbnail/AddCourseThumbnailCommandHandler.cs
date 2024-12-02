@@ -1,5 +1,5 @@
 using MediatR;
-using MentalHealthcare.Application.BunnyServices.UploadFile;
+using MentalHealthcare.Application.BunnyServices.Files.UploadFile;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Repositories;
 using Microsoft.Extensions.Logging;

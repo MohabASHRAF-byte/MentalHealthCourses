@@ -45,6 +45,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAdminSeeder, AdminSeeder>();
         services.AddScoped<ICourseRepository, CourseRepository>();
         services.AddScoped<ITermsRepository, TermsRepository>();
+        services.AddScoped<IAdvertisementRepository, AdvertisementRepository>();
     }
 
     private static void AddIdentity(this IServiceCollection services)

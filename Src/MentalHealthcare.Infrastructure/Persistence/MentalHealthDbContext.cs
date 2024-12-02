@@ -33,12 +33,14 @@ public class MentalHealthDbContext : IdentityDbContext<User>
     public DbSet<PendingAdmins> PendingAdmins { get; set; }
     public DbSet<PendingVideoUpload> VideoUploads { get; set; }
     public DbSet<TermsAndConditions> TermsAndConditions { get; set; }
+    
+    public DbSet<Advertisement> Advertisements { get; set; }
     #endregion
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
+        ConfigureAdvertisement(modelBuilder);
         ConfigureAdmin(modelBuilder);
         ConfigureUserEntity(modelBuilder);
         ConfigureSystemUser(modelBuilder);
@@ -55,6 +57,14 @@ public class MentalHealthDbContext : IdentityDbContext<User>
         ConfigurePayments(modelBuilder);
         ConfigureEnrollmentDetails(modelBuilder);
 
+    }
+
+    private void ConfigureAdvertisement(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Advertisement>()
+            .HasMany(a => a.AdvertisementImageUrls)
+            .WithOne(ai => ai.Advertisement)
+            .HasForeignKey(ai => ai.AdvertisementId);
     }
 
 

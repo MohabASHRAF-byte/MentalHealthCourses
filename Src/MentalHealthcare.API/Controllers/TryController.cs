@@ -1,47 +1,20 @@
-using System.Security.Claims;
-using MediatR;
-using MentalHealthcare.Application.BunnyServices.PodCast.Get;
-using MentalHealthcare.Application.BunnyServices.UploadFile;
-using MentalHealthcare.Application.BunnyServices.VideoContent.Collection.Add;
-using MentalHealthcare.Application.BunnyServices.VideoContent.Video.CreateVideo;
-using MentalHealthcare.Application.BunnyServices.VideoContent.Video.Delete;
-using MentalHealthcare.Application.Common;
-using MentalHealthcare.Application.SystemUsers;
-using MentalHealthcare.Application.Videos.Commands.CreateVideo;
-using MentalHealthcare.Domain.Constants;
-using Microsoft.ApplicationInsights.Extensibility.Implementation;
-using Microsoft.AspNetCore.Authorization;
+using MentalHealthcare.Application.BunnyServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MentalHealthcare.API.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-public class TryController(
-    IMediator mediator
+[Route("api/[controller]")]
+public class FileUploadController(
+    IConfiguration configuration
 ) : ControllerBase
 {
-    [HttpPost]
-    [Route("checkInfo")]
-    public async Task<IActionResult> ResendConfirmation([FromBody] AddCollectionCommand command)
+   
+    [HttpPost("upload")]
+    public async Task<IActionResult> UploadFileAsync(IFormFile file)
     {
-        var commandResult = await mediator.Send(command);
-        return Ok(commandResult);
+        var Cdn = new BunnyClient(configuration);
+        var response = await Cdn.DeleteFile("marwan2.png");
+        return Ok(response);
     }
-
-    [HttpGet]
-    [Route("any")]
-    [Authorize(AuthenticationSchemes = "Bearer")]
-    public async Task<IActionResult> Try()
-    {
-        return Ok("You're Authorized");
-    }
-
-    [HttpPost("uploadFile")]
-    public async Task<IActionResult> UploadFile(CreateVideoCommand command)
-    {
-        var commandResult = await mediator.Send(command);
-        return Ok(commandResult);
-    }
-    
 }

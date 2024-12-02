@@ -18,7 +18,13 @@ public class Global
     #region Terms and Conditions 
     public const int TermNameMaxLength = 50;
     public const int TermDescriptionMaxLength = 500;
-    
-
     #endregion
+    
+    #region advertisement 
+    public const string AdvertisementFolderName = "Advertisements";
+     public const int AdvertisementNameMaxLength = 50;
+     public const int AdvertisementDescriptionMaxLength = 500;
+     public const int AdvertisementImgSize = 10;
+
+     #endregion
 }

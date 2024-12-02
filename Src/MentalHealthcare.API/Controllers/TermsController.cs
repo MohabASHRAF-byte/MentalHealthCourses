@@ -1,4 +1,5 @@
 using MediatR;
+using MentalHealthcare.API.Docs;
 using MentalHealthcare.Application.TermsAndConditions.Commands.Create;
 using MentalHealthcare.Application.TermsAndConditions.Commands.Delete;
 using MentalHealthcare.Application.TermsAndConditions.Commands.Update;
@@ -13,15 +14,10 @@ namespace MentalHealthcare.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("TermsAndConditions")]
-public class TermsController : ControllerBase
+public class TermsController(
+    IMediator mediator
+    ) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public TermsController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
     /// <summary>
     /// Creates a new term or condition.
     /// </summary>
@@ -33,7 +29,7 @@ public class TermsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Post(CreateTermCommand command)
     {
-        await _mediator.Send(command);
+        await mediator.Send(command);
         return NoContent();
     }
 
@@ -48,7 +44,7 @@ public class TermsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(DeleteTermCommand command)
     {
-        await _mediator.Send(command);
+        await mediator.Send(command);
         return NoContent();
     }
 
@@ -61,40 +57,32 @@ public class TermsController : ControllerBase
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [SwaggerOperation(
-        Summary = "Get All Terms and Conditions",
-        Description = "No Need to send any information it will return the result\n" 
+        Summary = TermsAndConditionsControllerDocs.GetAllSummery,
+        Description = TermsAndConditionsControllerDocs.PatchDescription 
                       )]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetTerm()
     {
         var query = new GetTermsAndConditionsQuery();
-        var terms = await _mediator.Send(query);
+        var terms = await mediator.Send(query);
         return Ok(terms);
     }
 
     /// <summary>
     /// Updates an existing term or condition.
     /// </summary>
+    [SwaggerOperation(
+        Summary = TermsAndConditionsControllerDocs.PatchSummery,
+        Description = TermsAndConditionsControllerDocs.PatchDescription )]
     [HttpPatch]
     [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-    [SwaggerOperation(
-        Summary = "Update an existing term or condition",
-        Description = "To update a term, send an object with the following structure:\n" +
-                      @"```json
-                        {
-                          ""id"": 1,
-                          ""name"": ""Updated Term Name OR Existing Term Name"",
-                          ""description"": ""Updated description of the term. OR existing term doesn't exist.""
-                        }```")]
-    [HttpPatch]
+
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Update(UpdateTermCommand command)
     {
-        await _mediator.Send(command);
+        await mediator.Send(command);
         return NoContent();
     }
 }
