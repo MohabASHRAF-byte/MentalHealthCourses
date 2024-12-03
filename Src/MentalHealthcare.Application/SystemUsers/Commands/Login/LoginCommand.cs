@@ -8,4 +8,5 @@ public class LoginCommand : IRequest<OperationResult<LoginDto>>
     public string? Tenant { get; set; }
     public string UserIdentifier { get; set; }=default!;
     public string Password { get; set; }=default!;
+    public string? Otp { get; set; }
 }

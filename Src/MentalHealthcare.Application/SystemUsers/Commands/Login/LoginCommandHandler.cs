@@ -155,10 +155,17 @@ public class LoginCommandHandler(
             logger.LogInformation("2FA is enabled for user {UserIdentifier}. Sending 2FA code.",
                 request.UserIdentifier);
 
-            var otp = await userManager.GenerateTwoFactorTokenAsync(user, "Email");
-            await emailSender.SendEmailAsync(user.Email!, "Your 2FA Code", $"Your code is {otp}");
-            return OperationResult<LoginDto>.SuccessResult(new LoginDto(), "2FA code sent");
-            // TODO: Send OTP via phone
+            if (request.Otp == null)
+            {
+                var otp = await userManager.GenerateTwoFactorTokenAsync(user, "Email");
+                await emailSender.SendEmailAsync(user.Email!, "Your 2FA Code", $"Your code is {otp}");
+                return OperationResult<LoginDto>.SuccessResult(new LoginDto(){RequireOtp = true}, "2FA code sent"); 
+            }
+            if(!await userManager.VerifyTwoFactorTokenAsync(user, "Email", request.Otp))
+            {
+                return OperationResult<LoginDto>.Failure("Invalid 2FA code.", StateCode.BadRequest);
+            }
+           
         }
 
         logger.LogInformation("Returning token for user {UserIdentifier}.", user.UserName);

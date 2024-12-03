@@ -18,6 +18,10 @@ public class AdminSeeder(
         await dbContext.Database.MigrateAsync();
 
         #region Seed Admins
+        
+        var plainPassword = "test1";
+        // Create a PasswordHasher instance
+        var passwordHasher = new PasswordHasher<User>();
         var adminIdentity = new User
         {
             Email = "admin@admin.com",
@@ -28,12 +32,16 @@ public class AdminSeeder(
             UserName = "admin",
             EmailConfirmed = true,
             LockoutEnabled = false,
-            PasswordHash = "AQAAAAIAAYagAAAAEFZJJnSw0p3qxEghLd+XzFTWCqqFculEJN0dq3I9VQWuR+8+PnGbnWEsOGzMF890EQ==",
             TwoFactorEnabled = false,
             AccessFailedCount = 0,
             NormalizedUserName = "admin".ToUpper(),
             PhoneNumberConfirmed = true,
         };
+        var pass = passwordHasher.HashPassword(adminIdentity, plainPassword);
+
+        adminIdentity.PasswordHash = pass;
+
+
         var admin = new Admin
         {
             AdminId = 1,
@@ -41,6 +49,11 @@ public class AdminSeeder(
             FName = "admin",
             LName = "admin"
         };
+        await dbContext.PendingAdmins.AddAsync(new()
+        {
+            Admin = admin,
+            Email = "wowopa7014@jonespal.com",
+        });
         var adminIdentity1 = new User
         {
             Email = "admin1@admin.com",

@@ -19,6 +19,7 @@ public class AddRolesCommandHandler(
     {
         //todo check the auth
         var adminTenant = userContext.GetCurrentUser()?.Tenant;
+        
         if (string.IsNullOrEmpty(adminTenant))
         {
             return OperationResult<string>.Failure("Unauthorized", StateCode.Unauthorized);
