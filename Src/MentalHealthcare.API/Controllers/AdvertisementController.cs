@@ -16,18 +16,18 @@ namespace MentalHealthcare.API.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize(AuthenticationSchemes = "Bearer")]
+
 public class AdvertisementController(
     IMediator mediator
 ) : ControllerBase
 {
-    [Authorize(AuthenticationSchemes = "Bearer")]
     [HttpPost]
     [SwaggerOperation(
             Summary = "Creates new Advertisement",
             Description = "Creates new Advertisement with it's details"
         )
     ]
-   // https://GeneralCommitteeDev.b-cdn.net/Advertisements/3_0
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateAdvertisement([FromForm] CreateAdvertisementCommand command)
     {

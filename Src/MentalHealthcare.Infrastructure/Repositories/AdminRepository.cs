@@ -4,24 +4,52 @@ using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace MentalHealthcare.Infrastructure.Repositories;
 
 public class AdminRepository(
     MentalHealthDbContext dbContext,
-    UserManager<User> userManager
-) : IAdminRepository
+    UserManager<User> userManager,
+    ILogger<AdminRepository> logger) : IAdminRepository
 {
-    public async Task<bool> RegisterUser(User user, string password, Admin userToRegister)
+    public async Task<(bool Succeeded, List<string> Errors)> RegisterUser(User user, string password, Admin userToRegister)
     {
-        IdentityResult createUserResult = await userManager.CreateAsync(user, password);
-        if (!createUserResult.Succeeded)
-            return false;
-        //TODO return the error list 
-        createUserResult.Errors.ToList().ForEach(error => error.Description = error.Description);
-        await dbContext.AddAsync(userToRegister);
-        await dbContext.SaveChangesAsync();
-        return true;
+        var errors = new List<string>();
+        var existingUser = await dbContext.Users
+            .Where(u =>
+                u.NormalizedUserName== user.UserName ||
+                u.Email ==user.Email
+            ).ToListAsync();
+        var validUserName = !existingUser.Any(u =>
+            u.NormalizedUserName!.Equals(user.UserName));
+        var validEmail = !existingUser.Any(u => u.Email!.Equals(user.Email));
+        if (!validUserName)
+            errors.Add($"{user.UserName} is already taken.");
+        if (!validEmail)
+            errors.Add($"{user.Email} is already taken.");
+        if (errors.Count != 0)
+            return (false, errors);
+        try
+        {
+            IdentityResult createUserResult = await userManager.CreateAsync(user, password);
+            if (!createUserResult.Succeeded)
+                return (false, new());
+            await dbContext.Admins.AddAsync(userToRegister);
+            await dbContext.SaveChangesAsync();
+            return (true, new());
+        }
+        catch (Exception e)
+        {
+            var userCred = await dbContext.Users.FindAsync(user.Id);
+            if (userCred != null)
+                dbContext.Users.Remove(user);
+            var sysUser = await dbContext.Admins.FindAsync(userToRegister.AdminId);
+            if (sysUser != null)
+                dbContext.Admins.Remove(sysUser);
+            logger.LogWarning(e.Message);
+            return (false, new());
+        }
     }
 
     public async Task<bool> IsExistAsync(string email)

@@ -13,5 +13,4 @@ public class SubmitContactUsCommand:IRequest<int>
     public string? PhoneNumber { get; set; }
     [MaxLength(Global.ContactUsMaxMsgLength)]
     public string Message { get; set; }=string.Empty;
-    public bool IsRead { get; set; }
 }

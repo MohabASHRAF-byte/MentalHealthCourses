@@ -3,26 +3,54 @@ using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace MentalHealthcare.Infrastructure.Repositories;
 
 public class UserRepository(
     MentalHealthDbContext dbContext,
-    UserManager<User> userManager
-) : IUserRepository
+    UserManager<User> userManager,
+    ILogger<UserRepository> logger) : IUserRepository
 {
-    public async Task<bool> RegisterUser(User user, string password, SystemUser userToRegister)
+    public async Task<(bool, List<string>)> RegisterUser(User user, string password, SystemUser userToRegister)
     {
-        IdentityResult createUserResult = await userManager.CreateAsync(user, password);
-        if (!createUserResult.Succeeded)
-            return false;
-        //TODO return the error list 
-        createUserResult.Errors.ToList().ForEach(error => error.Description = error.Description);
-        await dbContext.AddAsync(userToRegister);
-        await dbContext.SaveChangesAsync();
-        return true;
+        var errors = new List<string>();
+        var existingUser = await dbContext.Users
+            .Where(u =>
+                u.NormalizedUserName== user.UserName ||
+                u.Email ==user.Email
+            ).ToListAsync();
+        var validUserName =! existingUser.Any(u =>
+            u.NormalizedUserName!.Equals(user.UserName));
+        var validEmail = !existingUser.Any(u => u.Email!.Equals(user.Email));
+        if (!validUserName)
+            errors.Add($"{user.UserName} is already taken.");
+        if (!validEmail)
+            errors.Add($"{user.Email} is already taken.");
+        if (errors.Count != 0)
+            return (false, errors);
+        try
+        {
+            IdentityResult createUserResult = await userManager.CreateAsync(user, password);
+            if (!createUserResult.Succeeded)
+                return (false, new());
+            await dbContext.AddAsync(userToRegister);
+            await dbContext.SaveChangesAsync();
+            return (true, new());
+        }
+        catch (Exception e)
+        {
+            var userCred = await dbContext.Users.FindAsync(user.Id);
+            if (userCred != null)
+                dbContext.Users.Remove(user);
+            var sysUser = await dbContext.SystemUsers.FindAsync(userToRegister.SystemUserId);
+            if (sysUser != null)
+                dbContext.SystemUsers.Remove(sysUser);
+            logger.LogWarning(e.Message);
+            return (false, new());
+        }
     }
-//todo implement the missing 
+
 
     public async Task<Guid?> GetUserTokenCodeAsync(User user)
     {

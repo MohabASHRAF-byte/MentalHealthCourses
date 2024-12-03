@@ -36,13 +36,16 @@ public class RegisterCommandHandler(
         systemUser.User = user;
         systemUser.FName = request.FirstName;
         systemUser.LName = request.LastName;
+        systemUser.Dof = DateTime.UtcNow;
         
         logger.LogInformation("Inserting {@user} to the DB", request.UserName);
         var isInserted = await userRepository.RegisterUser(user, request.Password, systemUser);
-        if (!isInserted)
+        if (!isInserted.Succeeded)
         {
             logger.LogInformation("User {@user} already exists", request.UserName);
-            return OperationResult<UserDto>.Failure("User Already Exist", StateCode.BadRequest);
+            var ret =  OperationResult<UserDto>.Failure("Try Again", StateCode.BadRequest);
+            ret.Errors.AddRange(isInserted.Errors);
+            return ret;
         }
 
         logger.LogError("User {@user} Registered successfully", request.UserName);

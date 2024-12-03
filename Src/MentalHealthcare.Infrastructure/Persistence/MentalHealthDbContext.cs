@@ -2,6 +2,7 @@ using MentalHealthcare.Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using MentalHealthcare.Infrastructure.Configurations;
 
 namespace MentalHealthcare.Infrastructure.Persistence;
 
@@ -43,9 +44,9 @@ public class MentalHealthDbContext : IdentityDbContext<User>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.ConfigureUserIdentity();
         ConfigureAdvertisement(modelBuilder);
         ConfigureAdmin(modelBuilder);
-        ConfigureUserEntity(modelBuilder);
         ConfigureSystemUser(modelBuilder);
         ConfigureArticle(modelBuilder);
         ConfigurePodcast(modelBuilder);
@@ -101,48 +102,7 @@ public class MentalHealthDbContext : IdentityDbContext<User>
         });
     }
 
-    private void ConfigureUserEntity(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<User>(entity =>
-        {
-            // Email and Tenant combination must be unique
-            entity.HasIndex(u => new { u.Email, u.Tenant })
-                .IsUnique();
-            entity.Property(u => u.Email)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            // NormalizedEmail and Tenant combination must be unique
-            entity.HasIndex(u => new { u.NormalizedEmail, u.Tenant })
-                .IsUnique();
-            entity.Property(u => u.NormalizedEmail)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            // NormalizedUserName and Tenant combination must be unique
-            entity.HasIndex(u => new { u.NormalizedUserName, u.Tenant })
-                .IsUnique();
-            entity.Property(u => u.NormalizedUserName)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            // UserName and Tenant combination must be unique
-            entity.HasIndex(u => new { u.UserName, u.Tenant })
-                .IsUnique();
-            entity.Property(u => u.UserName)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            // PhoneNumber and Tenant combination must be unique
-            entity.HasIndex(u => new { u.Tenant, u.PhoneNumber })
-                .IsUnique();
-            entity.Property(u => u.PhoneNumber)
-                .IsRequired()
-                .HasMaxLength(20);
-
-            // TODO: Consider making UserName not unique within the Tenant context if needed
-        });
-    }
+   
 
     private void ConfigureArticle(ModelBuilder modelBuilder)
     {

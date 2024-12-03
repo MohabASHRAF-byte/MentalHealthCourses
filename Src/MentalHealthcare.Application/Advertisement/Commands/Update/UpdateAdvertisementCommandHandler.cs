@@ -1,9 +1,11 @@
 using AutoMapper;
 using MediatR;
 using MentalHealthcare.Application.BunnyServices;
+using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos;
 using MentalHealthcare.Domain.Entities;
+using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -59,13 +61,19 @@ public class UpdateAdvertisementCommandHandler(
     ILogger<UpdateAdvertisementCommandHandler> logger,
     IAdvertisementRepository advertisementRepository,
     IMapper mapper,
-    IConfiguration configuration
+    IConfiguration configuration,
+    IUserContext userContext
 ) : IRequestHandler<UpdateAdvertisementCommand, int>
 {
     public async Task<int> Handle(UpdateAdvertisementCommand request, CancellationToken cancellationToken)
     {
         logger.LogInformation($"Starting update process for Advertisement ID {request.AdvertisementId}.");
-
+        var currentUser = userContext.GetCurrentUser();
+        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
+        {
+            logger.LogWarning("Unauthorized attempt to update advertisement by user: {UserId}", currentUser?.Id);
+            throw new ForBidenException("Don't have the permission to update advertisement.");
+        }
         if (request.AdvertisementId == null)
             return 0;
 
@@ -79,7 +87,8 @@ public class UpdateAdvertisementCommandHandler(
 
         HandleExistingImages(ref advertisement, request, bunnyClient);
         UploadNewImages(ref advertisement, request, bunnyClient);
-
+        if (!advertisement.AdvertisementImageUrls.Any())
+            advertisement.IsActive = false;
         await advertisementRepository.UpdateAdvertisementAsync(advertisement);
         return advertisement.AdvertisementId;
     }

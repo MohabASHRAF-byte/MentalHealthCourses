@@ -86,9 +86,9 @@ public class RegisterAdminCommandHandler(
     IEmailSender emailSender,
     UserManager<User> userManager,
     IMapper mapper
-) : IRequestHandler<RegisterAdminCommand>
+) : IRequestHandler<RegisterAdminCommand,OperationResult<string>>
 {
-    public async Task Handle(RegisterAdminCommand request, CancellationToken cancellationToken)
+    public async Task<OperationResult<string>> Handle(RegisterAdminCommand request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Register systemUser with Email : {@user}", request.Email);
 
@@ -109,22 +109,24 @@ public class RegisterAdminCommandHandler(
         {
             User = user,
             FName = request.FirstName,
-            LName = request.LastName
+            LName = request.LastName,
         };
         user.Roles = Roles.AddRole(user.Roles, UserRoles.Admin);
         logger.LogInformation("Inserting {@user} to the DB", request.UserName);
         var isInserted = await adminRepository.RegisterUser(user, request.Password, admin);
-        if (!isInserted)
+        if (!isInserted.Succeeded)
         {
-            //todo return error in the admin repo
             logger.LogInformation("User {@user} already exists", request.UserName);
-            throw new AlreadyExist($"{request.UserName} already exists");
+            var ret = OperationResult<string>.Failure("Try Again", StateCode.BadRequest);
+            ret.Errors.AddRange(isInserted.Errors);
+            return ret;
         }
 
         logger.LogError("User {@user} Registered successfully", request.UserName);
         await adminRepository.DeletePendingAsync([request.Email]);
         await SendConfirmation(user);
         logger.LogInformation("User {@user} Registered successfully", request.UserName);
+        return OperationResult<string>.SuccessResult(request.UserName);
     }
 
     private async Task SendConfirmation(User user)
