@@ -81,7 +81,7 @@ public class CreateAdvertisementCommandHandler(
         if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
         {
             logger.LogWarning("Unauthorized attempt to add advertisement by user: {UserId}", currentUser?.Id);
-            throw new ForBidenException("Don't have the permission to add advertisement users.");
+            throw new ForBidenException("Don't have the permission to add advertisement .");
         }
         CheckPhotosSize(ref request);
         
@@ -114,6 +114,8 @@ public class CreateAdvertisementCommandHandler(
             });
         }
 
+        if (!newAd.AdvertisementImageUrls.Any())
+            newAd.IsActive = false;
         await adRepository.UpdateAdvertisementAsync(newAd);
 
         return newAd.AdvertisementId;

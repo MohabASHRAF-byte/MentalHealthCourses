@@ -4,7 +4,7 @@ namespace MentalHealthcare.Domain.Repositories;
 
 public interface IUserRepository
 {
-    public Task<bool> RegisterUser(User user, string password, SystemUser userToRegister);
+    public Task<(bool Succeeded, List<string> Errors)> RegisterUser(User user, string password, SystemUser userToRegister);
     public Task<Guid?> GetUserTokenCodeAsync(User user);
     public Task<Guid> ChangePasswordAsync(User user);
 

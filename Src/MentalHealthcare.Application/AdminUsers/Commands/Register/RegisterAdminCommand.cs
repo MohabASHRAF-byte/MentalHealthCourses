@@ -1,8 +1,9 @@
 using MediatR;
+using MentalHealthcare.Application.Common;
 
 namespace MentalHealthcare.Application.AdminUsers.Commands.Register;
 
-public class RegisterAdminCommand:IRequest
+public class RegisterAdminCommand:IRequest<OperationResult<string>>
 {
     public string? Tenant { get; set; }=default!;
     public string UserName { get; set; } = default!;

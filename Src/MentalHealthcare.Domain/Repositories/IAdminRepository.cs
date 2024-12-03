@@ -4,7 +4,7 @@ namespace MentalHealthcare.Domain.Repositories;
 
 public interface IAdminRepository
 {
-    public Task<bool> RegisterUser(User user, string password, Admin userToRegister);
+    public Task<(bool Succeeded, List<string> Errors)> RegisterUser(User user, string password, Admin userToRegister);
 
     public Task<bool> IsExistAsync(string email);
     public Task<bool> UpdateAsync(string oldEmail, string newEmail);

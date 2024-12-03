@@ -77,8 +77,12 @@ public class AdminIdentityController(
     public async Task<IActionResult> Register(RegisterAdminCommand command)
     {
         command.Tenant = Global.ProgramName;
-        await mediator.Send(command);
-        return NoContent();
+        var result = await mediator.Send(command);
+        if (result.StatusCode == StateCode.Ok)
+        {
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpPost(nameof(ConfirmEmail))]

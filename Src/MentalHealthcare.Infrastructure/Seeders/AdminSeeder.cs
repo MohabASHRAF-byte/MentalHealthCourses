@@ -19,9 +19,7 @@ public class AdminSeeder(
 
         #region Seed Admins
         
-        var plainPassword = "test1";
         // Create a PasswordHasher instance
-        var passwordHasher = new PasswordHasher<User>();
         var adminIdentity = new User
         {
             Email = "admin@admin.com",
@@ -30,6 +28,8 @@ public class AdminSeeder(
             Tenant = Global.ProgramName,
             PhoneNumber = "0111111111111",
             UserName = "admin",
+            PasswordHash = "AQAAAAIAAYagAAAAEKjlm5QQZA9XA8FRFwwh/i57/vjMOj/Zuom12UHxYXW1G71RA8ytLh6CJAK5lBZQHA==",
+            //password = "test2"
             EmailConfirmed = true,
             LockoutEnabled = false,
             TwoFactorEnabled = false,
@@ -37,10 +37,6 @@ public class AdminSeeder(
             NormalizedUserName = "admin".ToUpper(),
             PhoneNumberConfirmed = true,
         };
-        var pass = passwordHasher.HashPassword(adminIdentity, plainPassword);
-
-        adminIdentity.PasswordHash = pass;
-
 
         var admin = new Admin
         {
@@ -64,7 +60,8 @@ public class AdminSeeder(
             UserName = "admin1",
             EmailConfirmed = true,
             LockoutEnabled = false,
-            PasswordHash = "AQAAAAIAAYagAAAAEFZJJnSw0p3qxEghLd+XzFTWCqqFculEJN0dq3I9VQWuR+8+PnGbnWEsOGzMF890EQ==",
+            PasswordHash = "AQAAAAIAAYagAAAAEKjlm5QQZA9XA8FRFwwh/i57/vjMOj/Zuom12UHxYXW1G71RA8ytLh6CJAK5lBZQHA==",
+            //password = "test2"
             TwoFactorEnabled = false,
             AccessFailedCount = 0,
             NormalizedUserName = "admin1".ToUpper(),

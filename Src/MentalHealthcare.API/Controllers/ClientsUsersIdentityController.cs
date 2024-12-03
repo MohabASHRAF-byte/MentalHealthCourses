@@ -1,4 +1,5 @@
 using MediatR;
+using MentalHealthcare.API.Docs;
 using MentalHealthcare.Application.SystemUsers.Commands.AddRoles;
 using MentalHealthcare.Application.SystemUsers.Commands.ChangePassword;
 using MentalHealthcare.Application.SystemUsers.Commands.ConfirmEmail;
@@ -12,6 +13,7 @@ using MentalHealthcare.Application.SystemUsers.Commands.ResetPassword;
 using MentalHealthcare.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace MentalHealthcare.API.Controllers;
 
@@ -46,6 +48,8 @@ public class ClientsUsersIdentityController(
     }
 
     [HttpPost(nameof(Login))]
+    [SwaggerOperation(Description = IdentityDocs.LoginDescription)]
+
     public async Task<IActionResult> Login(LoginCommand command)
     {
         command.Tenant = Global.ApplicationTenant;
@@ -94,6 +98,7 @@ public class ClientsUsersIdentityController(
             _ => BadRequest(commandResult)
         };
     }
+    [SwaggerOperation(Description = IdentityDocs.ResetPasswordDescription)]
 
     [HttpPost(nameof(ResetPassword))]
     public async Task<IActionResult> ResetPassword(ResetPasswordCommand command)
@@ -106,6 +111,8 @@ public class ClientsUsersIdentityController(
 
     [Authorize(AuthenticationSchemes = "Bearer")]
     [HttpPost(nameof(ChangePassword))]
+    [SwaggerOperation(Description = IdentityDocs.ChangePasswordDescription)]
+
     public async Task<IActionResult> ChangePassword(ChangePasswordCommand command)
     {
         var commandResult = await mediator.Send(command);
@@ -117,20 +124,5 @@ public class ClientsUsersIdentityController(
             _ => BadRequest(commandResult)
         };
     }
-
-    [Authorize(AuthenticationSchemes = "Bearer")]
-    [HttpPost(nameof(Roles))]
-    public async Task<IActionResult> Roles(AddRolesCommand command)
-    {
-        var commandResult = await mediator.Send(command);
-        return Ok(commandResult);
-    }
-
-    [Authorize(AuthenticationSchemes = "Bearer")]
-    [HttpDelete("Roles")]
-    public async Task<IActionResult> RemoveRoles(RemoveRolesCommand command)
-    {
-        var commandResult = await mediator.Send(command);
-        return Ok(commandResult);
-    }
+    
 }
