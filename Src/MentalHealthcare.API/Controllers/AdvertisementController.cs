@@ -7,10 +7,12 @@ using MentalHealthcare.Application.Advertisement.Queries.GetAll;
 using MentalHealthcare.Application.Advertisement.Queries.GetById;
 using MentalHealthcare.Application.Common;
 using MentalHealthcare.Domain.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace MentalHealthcare.API.Controllers;
+[AllowAnonymous]
 
 [ApiController]
 [Route("[controller]")]
@@ -18,6 +20,7 @@ public class AdvertisementController(
     IMediator mediator
 ) : ControllerBase
 {
+    [Authorize(AuthenticationSchemes = "Bearer")]
     [HttpPost]
     [SwaggerOperation(
             Summary = "Creates new Advertisement",

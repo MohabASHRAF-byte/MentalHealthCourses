@@ -1,8 +1,10 @@
 using AutoMapper;
 using MediatR;
 using MentalHealthcare.Application.BunnyServices;
+using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
+using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -14,7 +16,9 @@ public class CreateAdvertisementCommandHandler(
     ILogger<CreateAdvertisementCommandHandler> logger,
     IAdvertisementRepository adRepository,
     IConfiguration configuration,
-    IMapper mapper
+    IMapper mapper,
+    IUserContext userContext
+
 ) : IRequestHandler<CreateAdvertisementCommand, int>
 {
     /// <summary>
@@ -72,8 +76,13 @@ public class CreateAdvertisementCommandHandler(
     public async Task<int> Handle(CreateAdvertisementCommand request, CancellationToken cancellationToken)
     {
         logger.LogInformation(@"Creating advertisement with name {ad}", request.AdvertisementName);
-        //todo 
-        // add auth
+
+        var currentUser = userContext.GetCurrentUser();
+        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
+        {
+            logger.LogWarning("Unauthorized attempt to add advertisement by user: {UserId}", currentUser?.Id);
+            throw new ForBidenException("Don't have the permission to add advertisement users.");
+        }
         CheckPhotosSize(ref request);
         
         var newAd = mapper.Map<Domain.Entities.Advertisement>(request);

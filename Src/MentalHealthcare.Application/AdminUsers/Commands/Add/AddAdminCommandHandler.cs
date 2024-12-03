@@ -76,7 +76,7 @@ public class AddAdminCommandHandler(
             currentUser.Id, request.Email);
 
         var admin = await adminRepository.GetAdminByIdentityAsync(currentUser.Id);
-
+        
         if (await adminRepository.IsPendingExistAsync(request.Email))
         {
             logger.LogWarning("Pending admin user already exists with Email: {Email}", request.Email);
