@@ -7,6 +7,7 @@ namespace MentalHealthcare.Domain.Repositories;
 public interface ICourseRepository
 {
     public Task<int> CreateAsync(Course course);
+    public Task UpdateCourse(Course course);
     public Task<CourseDto> GetByIdAsync(int id);
     public Task<Course> GetCourseByIdAsync(int id);
     
@@ -17,5 +18,10 @@ public interface ICourseRepository
     public Task<PendingVideoUpload> GetPendingUpload(string requestVideoId);
     public int GetVideoOrder(int pendingCourseId);
     public Task AddCourseMatrial(CourseMateriel courseMateriel);
-
+    public Task<int> AddCourseSection(CourseSection courseSection);
+    
+    public Task<List<CourseSection>> GetCourseSections(int courseId);
+    public Task UpdateCourseSectionsAsync(List<CourseSection> courseSection);
+    
+    public Task DeleteCourseSectionAsync(CourseSection courseSection);
 }

@@ -43,7 +43,13 @@ public class CourseRepository(
 
         return course.CourseId;
     }
-    
+
+    public async Task UpdateCourse(Course course)
+    {
+         dbContext.Courses.Update(course);
+        await dbContext.SaveChangesAsync();
+    }
+
     public async Task<CourseDto> GetByIdAsync(int id)
     {
         var course = await dbContext.Courses
@@ -96,7 +102,7 @@ public class CourseRepository(
     public async Task<Course> GetCourseByIdAsync(int id)
     {
         var course = await dbContext.Courses
-            .Include(c=>c.CourseMateriels)
+            .Include(c => c.CourseMateriels)
             .FirstOrDefaultAsync(c => c.CourseId == id);
         if (course == null)
         {
@@ -161,18 +167,50 @@ public class CourseRepository(
     public int GetVideoOrder(int pendingCourseId)
     {
         var maxValue = dbContext.CourseMateriels
-            .Where(c => c.CourseId == pendingCourseId)
-            .Select(c => (int?)c.ItemOrder).ToList()  // Use nullable to handle empty result sets
+                .Where(c => c.CourseId == pendingCourseId)
+                .Select(c => (int?)c.ItemOrder).ToList() // Use nullable to handle empty result sets
             ;
         var ret = maxValue.Max();
 
-        return ret.HasValue ? ret.Value : 1;  // Return 1 if maxValue is null
+        return ret.HasValue ? ret.Value : 1; // Return 1 if maxValue is null
     }
 
 
     public async Task AddCourseMatrial(CourseMateriel courseMateriel)
     {
-       await dbContext.CourseMateriels.AddAsync(courseMateriel);
-       await dbContext.SaveChangesAsync();
+        await dbContext.CourseMateriels.AddAsync(courseMateriel);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task<int> AddCourseSection(CourseSection courseSection)
+    {
+        var maxOrder = await dbContext.CourseSections
+            .Where(c => c.CourseId == courseSection.CourseId)
+            .MaxAsync(c => (int?)c.Order) ?? 0;
+
+        courseSection.Order = maxOrder + 1;
+
+        await dbContext.CourseSections.AddAsync(courseSection);
+        return await dbContext.SaveChangesAsync();
+    }
+
+    public async Task<List<CourseSection>> GetCourseSections(int courseId)
+    {
+        var sections = await dbContext.CourseSections.Where(c => c.CourseId == courseId).ToListAsync();
+        return sections;
+    }
+
+
+
+    public async Task UpdateCourseSectionsAsync(List<CourseSection> courseSection)
+    {
+        dbContext.CourseSections.UpdateRange(courseSection);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteCourseSectionAsync(CourseSection courseSection)
+    {
+        dbContext.CourseSections.Remove(courseSection);
+        await dbContext.SaveChangesAsync();
     }
 }

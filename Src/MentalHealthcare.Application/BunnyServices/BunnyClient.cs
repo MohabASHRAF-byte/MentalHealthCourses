@@ -16,18 +16,20 @@ public class BunnyClient(
     IConfiguration configuration
 )
 {
-    private readonly string _region = configuration["BunnyCdn:Region"]!; 
-    private readonly string _baseHostname = configuration["BunnyCdn:BaseHostname"]!;
-    private readonly string _storageZoneName = configuration["BunnyCdn:StorageZoneName"]!;
-    private readonly string _accessKey = configuration["BunnyCdn:StorageZoneAuthenticationKey"]!;
-    private readonly string _hostName = configuration["BunnyCdn:Hostname"]!;
-    private readonly string _apiKey = configuration["BunnyCdn:ApiLibraryKey"]!;
+    internal readonly string Region = configuration["BunnyCdn:Region"]!; 
+    internal readonly string BaseHostname = configuration["BunnyCdn:BaseHostname"]!;
+    internal readonly string StorageZoneName = configuration["BunnyCdn:StorageZoneName"]!;
+    internal readonly string AccessKey = configuration["BunnyCdn:StorageZoneAuthenticationKey"]!;
+    internal readonly string HostName = configuration["BunnyCdn:Hostname"]!;
+    internal readonly string ApiKey = configuration["BunnyCdn:ApiLibraryKey"]!;
+    internal readonly string VideoLibraryId = configuration["BunnyCdn:LibraryId"]!;
+    internal readonly string VideoLibraryKey = configuration["BunnyCdn:ApiLibraryKey"]!;
 
     public CreateVideoCommandResponse GenerateSignature(string libraryId, string collectionId, string videoId)
     {
         var expirationTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + 3600; // 1-hour expiration
 
-        var signatureString = $"{libraryId}{_apiKey}{expirationTime}{videoId}";
+        var signatureString = $"{libraryId}{ApiKey}{expirationTime}{videoId}";
         var signature = GenerateSha256Signature(signatureString);
 
         var response = new CreateVideoCommandResponse
@@ -64,13 +66,13 @@ public class BunnyClient(
         }
 
         var filename = fileName;
-        string hostname = string.IsNullOrEmpty(_region) ? _baseHostname : $"{_region}.{_baseHostname}";
-        string url = $"https://{hostname}/{_storageZoneName}/{folder}/{filename}";
-        string accessUrl = $"https://{_hostName}/{folder}/{filename}";
+        string hostname = string.IsNullOrEmpty(Region) ? BaseHostname : $"{Region}.{BaseHostname}";
+        string url = $"https://{hostname}/{StorageZoneName}/{folder}/{filename}";
+        string accessUrl = $"https://{HostName}/{folder}/{filename}";
         HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
         request.Method = "PUT";
         request.ContentType = "image/jpeg";
-        request.Headers.Add("AccessKey", _accessKey);
+        request.Headers.Add("AccessKey", AccessKey);
         try
         {
             using (Stream fileStream = file.OpenReadStream())
@@ -110,7 +112,7 @@ public class BunnyClient(
 
     public async Task<DeleteFileResponse> DeleteFile(string fileName, string folder = null)
     {
-        string url = $"https://{_baseHostname}/{_storageZoneName}/";
+        string url = $"https://{BaseHostname}/{StorageZoneName}/";
         if (!string.IsNullOrEmpty(folder))
         {
             url += $"{folder}/";
@@ -121,7 +123,7 @@ public class BunnyClient(
         var options = new RestClientOptions(url);
         var client = new RestClient(options);
         var request = new RestRequest("");
-        request.AddHeader("AccessKey", _accessKey);
+        request.AddHeader("AccessKey", AccessKey);
         try
         {
             var response = await client.DeleteAsync(request);

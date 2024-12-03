@@ -1,27 +1,22 @@
-using MediatR;
 using MentalHealthcare.Application.Common;
-using Microsoft.Extensions.Configuration;
 using RestSharp;
 
 namespace MentalHealthcare.Application.BunnyServices.VideoContent.Collection.Add;
 
-public class AddCollectionCommandHandler(
-    IConfiguration configuration
-) : IRequestHandler<AddCollectionCommand, string>
+public static class MakeNewVideoCollection
 {
-    public async Task<string> Handle(AddCollectionCommand request, CancellationToken cancellationToken)
+    public static async Task<string?> CreateVideoFolderAsync(this BunnyClient bunnyClient, string collectionName)
     {
-        var libraryId = configuration["BunnyCdn:LibraryId"]!;
+        var libraryId = bunnyClient.VideoLibraryId;
         var url = GetUrl(libraryId);
         var options = new RestClientOptions(url);
         var client = new RestClient(options);
         var httpRequest = new RestRequest("");
-        var apiLibraryKey = configuration["BunnyCdn:ApiLibraryKey"]!;
-        var accessKey = configuration["BunnyCdn:AccessKey"]!;
+        var apiLibraryKey = bunnyClient.VideoLibraryKey;
         httpRequest.AddHeader("accept", "application/json");
-        httpRequest.AddHeader(accessKey, apiLibraryKey);
-        httpRequest.AddBody(new { name = request.CollectionName });
-        var response = await client.PostAsync(httpRequest, cancellationToken);
+        httpRequest.AddHeader("AccessKey", apiLibraryKey);
+        httpRequest.AddBody(new { name = collectionName });
+        var response = await client.PostAsync(httpRequest);
         var content = new JsonHelper(response);
         try
         {
@@ -34,23 +29,8 @@ public class AddCollectionCommandHandler(
         }
     }
 
-    private string GetUrl(string requestLibraryId)
+    private static string GetUrl(string requestLibraryId)
     {
         return $"https://video.bunnycdn.com/library/{requestLibraryId}/collections";
     }
 }
-/*
- * using RestSharp;
-
-
-   var options = new RestClientOptions("https://video.bunnycdn.com/library/317728/collections");
-   var client = new RestClient(options);
-   var request = new RestRequest("");
-   request.AddHeader("accept", "application/json");
-   request.AddHeader("AccessKey", "709aef68-e4a2-4587-b27d90b0fc7b-7ac0-4fc3");
-   request.AddJsonBody("{\"name\":\"colcol\"}", false);
-   var response = await client.PostAsync(request);
-
-   Console.WriteLine("{0}", response.Content);
-
- */

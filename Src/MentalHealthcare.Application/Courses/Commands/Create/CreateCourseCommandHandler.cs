@@ -1,20 +1,15 @@
 using AutoMapper;
 using MediatR;
+using MentalHealthcare.Application.BunnyServices;
 using MentalHealthcare.Application.BunnyServices.VideoContent.Collection.Add;
 using MentalHealthcare.Domain.Entities;
+using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace MentalHealthcare.Application.Courses.Commands.Create;
-
-public class CreateCourseCommandHandler(
-    ILogger<CreateCourseCommandHandler> logger,
-    IMapper mapper,
-    ICourseRepository courseRepository,
-    IMediator mediator
-    ): IRequestHandler<CreateCourseCommand, CreateCourseCommandResponse>
-{
-    /// <summary>
+  /// <summary>
     /// Processes the creation of a new course based on the given command.
     /// </summary>
     /// <param name="request">The command containing the details required to create a new course.</param>
@@ -62,32 +57,43 @@ public class CreateCourseCommandHandler(
     /// <exception cref="Exception">
     /// Thrown if there is an error during the creation of the course or collection.
     /// </exception>
+public class CreateCourseCommandHandler(
+    ILogger<CreateCourseCommandHandler> logger,
+    IMapper mapper,
+    ICourseRepository courseRepository,
+    IMediator mediator,
+    IConfiguration configuration
+    ): IRequestHandler<CreateCourseCommand, CreateCourseCommandResponse>
+{
+  
     public async Task<CreateCourseCommandResponse> Handle(CreateCourseCommand request, CancellationToken cancellationToken)
     {
         // Log the start of the course creation process
         logger.LogInformation("Creating new course: {CourseName}", request.Name);
-    
-        // Todo: upload image
-        var collectionId = new AddCollectionCommand()
+        //Todo: add auth 
+        var bunny = new BunnyClient(configuration);
+        var thumbnailResponse = await bunny.UploadFile(request.Thumbnail, $"{request.Name}.jpeg", $"CoursesThumbnail");
+        if (!thumbnailResponse.IsSuccessful)
         {
-            CollectionName = request.Name
-        };
-
-        // Log the creation of the collection
+            logger.LogWarning("Failed to upload thumbnail image: {ErrorMessage}", thumbnailResponse.Message);
+            throw new TryAgain();
+        }
         logger.LogInformation("Creating collection for course: {CourseName}", request.Name);
-        var result = await mediator.Send(collectionId, cancellationToken);
-    
-        // Log the created collection ID
-        logger.LogInformation("Collection created with ID: {CollectionId}", result);
+        var collectionId = await bunny.CreateVideoFolderAsync(request.Name);
+        if (collectionId == null)
+        {
+            logger.LogWarning($"Cannot create folder {request.Name}");
+            throw new TryAgain();
+        }
+        logger.LogInformation("Collection created with ID: {CollectionId}", collectionId);
     
         var course = mapper.Map<Course>(request);
-        course.CollectionId = result;
-
-        // Log the insertion of the course into the repository
-        logger.LogInformation("Inserting course into the repository: {CourseName}", request.Name);
+        course.CollectionId = collectionId;
+        course.ThumbnailUrl = thumbnailResponse.Url;
+        course.ThumbnailName = $"{request.Name}.jpeg";
+        logger.LogInformation("Inserting  {CourseName} into dataBase :", request.Name);
         var id = await courseRepository.CreateAsync(course);
     
-        // Log the successful creation of the course
         logger.LogInformation("Course created successfully with ID: {CourseId}", id);
     
         var ret = new CreateCourseCommandResponse

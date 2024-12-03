@@ -42,6 +42,8 @@ public class UploadFileCommandHandler(
         // Handle response
         if (response.IsSuccessStatusCode)
         {
+            var bunny = new BunnyClient(configuration);
+            await bunny.ClearCacheAsync(publicUrl);
             return publicUrl;
         }
 

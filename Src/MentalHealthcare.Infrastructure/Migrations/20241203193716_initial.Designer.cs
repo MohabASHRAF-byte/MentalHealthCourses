@@ -14,7 +14,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MentalHealthcare.Infrastructure.Migrations
 {
     [DbContext(typeof(MentalHealthDbContext))]
-    [Migration("20241203162747_initial")]
+    [Migration("20241203193716_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -384,6 +384,32 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.HasIndex("CourseId");
 
                     b.ToTable("CourseMateriels");
+                });
+
+            modelBuilder.Entity("MentalHealthcare.Domain.Entities.CourseSection", b =>
+                {
+                    b.Property<int>("CourseSectionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CourseSectionId"));
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.HasKey("CourseSectionId");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("CourseSections");
                 });
 
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.EnrollmentDetails", b =>
@@ -1121,6 +1147,17 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.Navigation("Course");
                 });
 
+            modelBuilder.Entity("MentalHealthcare.Domain.Entities.CourseSection", b =>
+                {
+                    b.HasOne("MentalHealthcare.Domain.Entities.Course", "Course")
+                        .WithMany("CourseSections")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+                });
+
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.EnrollmentDetails", b =>
                 {
                     b.HasOne("MentalHealthcare.Domain.Entities.Course", "Course")
@@ -1324,6 +1361,8 @@ namespace MentalHealthcare.Infrastructure.Migrations
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.Course", b =>
                 {
                     b.Navigation("CourseMateriels");
+
+                    b.Navigation("CourseSections");
                 });
 
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.Instructor", b =>

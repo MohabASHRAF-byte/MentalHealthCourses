@@ -626,6 +626,27 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CourseSections",
+                columns: table => new
+                {
+                    CourseSectionId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Order = table.Column<int>(type: "integer", nullable: false),
+                    CourseId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CourseSections", x => x.CourseSectionId);
+                    table.ForeignKey(
+                        name: "FK_CourseSections_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "CourseId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CourseSystemUser",
                 columns: table => new
                 {
@@ -817,6 +838,11 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 column: "InstructorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CourseSections_CourseId",
+                table: "CourseSections",
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CourseSystemUser_UsersRatesSystemUserId",
                 table: "CourseSystemUser",
                 column: "UsersRatesSystemUserId");
@@ -924,6 +950,9 @@ namespace MentalHealthcare.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "CourseMateriels");
+
+            migrationBuilder.DropTable(
+                name: "CourseSections");
 
             migrationBuilder.DropTable(
                 name: "CourseSystemUser");
