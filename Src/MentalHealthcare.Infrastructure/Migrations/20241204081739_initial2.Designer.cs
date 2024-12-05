@@ -5,6 +5,7 @@ using MentalHealthcare.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -13,9 +14,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MentalHealthcare.Infrastructure.Migrations
 {
     [DbContext(typeof(MentalHealthDbContext))]
-    partial class MentalHealthDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241204081739_initial2")]
+    partial class initial2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -387,7 +390,7 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("CourseLessonId")
+                    b.Property<int?>("CourseLessonId")
                         .HasColumnType("integer");
 
                     b.Property<int>("CourseSectionId")
@@ -689,12 +692,6 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("CourseLessonId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("CourseSectionId")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -711,10 +708,6 @@ namespace MentalHealthcare.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("PendingVideoUploadId");
-
-                    b.HasIndex("CourseLessonId");
-
-                    b.HasIndex("CourseSectionId");
 
                     b.ToTable("VideoUploads");
                 });
@@ -1209,11 +1202,9 @@ namespace MentalHealthcare.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MentalHealthcare.Domain.Entities.CourseLesson", "CourseLesson")
+                    b.HasOne("MentalHealthcare.Domain.Entities.CourseLesson", null)
                         .WithMany("CourseMateriels")
-                        .HasForeignKey("CourseLessonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CourseLessonId");
 
                     b.HasOne("MentalHealthcare.Domain.Entities.CourseSection", "CourseSection")
                         .WithMany()
@@ -1224,8 +1215,6 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.Navigation("Admin");
 
                     b.Navigation("Course");
-
-                    b.Navigation("CourseLesson");
 
                     b.Navigation("CourseSection");
                 });
@@ -1317,25 +1306,6 @@ namespace MentalHealthcare.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Admin");
-                });
-
-            modelBuilder.Entity("MentalHealthcare.Domain.Entities.PendingVideoUpload", b =>
-                {
-                    b.HasOne("MentalHealthcare.Domain.Entities.CourseLesson", "Lesson")
-                        .WithMany()
-                        .HasForeignKey("CourseLessonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MentalHealthcare.Domain.Entities.CourseSection", "Section")
-                        .WithMany()
-                        .HasForeignKey("CourseSectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Lesson");
-
-                    b.Navigation("Section");
                 });
 
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.PodCaster", b =>

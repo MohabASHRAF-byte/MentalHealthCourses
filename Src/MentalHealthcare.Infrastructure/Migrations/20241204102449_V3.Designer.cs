@@ -5,6 +5,7 @@ using MentalHealthcare.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -13,9 +14,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MentalHealthcare.Infrastructure.Migrations
 {
     [DbContext(typeof(MentalHealthDbContext))]
-    partial class MentalHealthDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241204102449_V3")]
+    partial class V3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -387,7 +390,7 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("CourseLessonId")
+                    b.Property<int?>("CourseLessonId")
                         .HasColumnType("integer");
 
                     b.Property<int>("CourseSectionId")
@@ -1209,11 +1212,9 @@ namespace MentalHealthcare.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MentalHealthcare.Domain.Entities.CourseLesson", "CourseLesson")
+                    b.HasOne("MentalHealthcare.Domain.Entities.CourseLesson", null)
                         .WithMany("CourseMateriels")
-                        .HasForeignKey("CourseLessonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CourseLessonId");
 
                     b.HasOne("MentalHealthcare.Domain.Entities.CourseSection", "CourseSection")
                         .WithMany()
@@ -1224,8 +1225,6 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.Navigation("Admin");
 
                     b.Navigation("Course");
-
-                    b.Navigation("CourseLesson");
 
                     b.Navigation("CourseSection");
                 });

@@ -2,6 +2,8 @@ using AutoMapper;
 using MediatR;
 using MentalHealthcare.Application.Courses.Commands.Create;
 using MentalHealthcare.Domain.Dtos;
+using MentalHealthcare.Domain.Dtos.course;
+using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -16,6 +18,10 @@ public class GetCourseByIdQueryHandler(
     public async Task<CourseDto> Handle(GetCourseByIdQuery request, CancellationToken cancellationToken)
     {
         var course = await courseRepository.GetByIdAsync(request.Id);
-        return course;
+        var courseDto = mapper.Map<CourseDto>(course);
+        courseDto.Rating ??= 0;
+        if (courseDto.ReviewsCount!= 0)
+            courseDto.Rating /= courseDto.ReviewsCount;
+        return courseDto;
     }
 }

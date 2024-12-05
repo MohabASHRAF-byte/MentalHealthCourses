@@ -8,7 +8,7 @@ public interface ICourseRepository
 {
     public Task<int> CreateAsync(Course course);
     public Task UpdateCourse(Course course);
-    public Task<CourseDto> GetByIdAsync(int id);
+    public Task<Course> GetByIdAsync(int id);
     public Task<Course> GetCourseByIdAsync(int id);
     
     public Task<(int, IEnumerable<Course>)> GetAllAsync(string? search, int requestPageNumber, int requestPageSize);
@@ -24,4 +24,12 @@ public interface ICourseRepository
     public Task UpdateCourseSectionsAsync(List<CourseSection> courseSection);
     
     public Task DeleteCourseSectionAsync(CourseSection courseSection);
+    public Task<CourseSection> GetCourseSectionByIdAsync(int id);
+    
+    public Task<int> AddCourseLesson(CourseLesson courseLesson);
+    public Task<List<CourseLesson>> GetCourseLessons(int courseId,int sectionId);
+    public Task DeleteCourseLessonAsync(CourseLesson targetLesson);
+    public Task UpdateCourseLessonsAsync(List<CourseLesson> updatedLessons);
+    public Task<CourseLesson> GetCourseLessonByIdAsync(int id);
+    public Task<CourseMateriel> GetCourseMaterielByIdAsync(int id);
 }

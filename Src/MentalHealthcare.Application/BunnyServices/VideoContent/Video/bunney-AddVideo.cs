@@ -1,31 +1,28 @@
-using MediatR;
 using MentalHealthcare.Application.Common;
-using Microsoft.Extensions.Configuration;
 using RestSharp;
 
-namespace MentalHealthcare.Application.BunnyServices.VideoContent.Video.CreateVideo;
+namespace MentalHealthcare.Application.BunnyServices.VideoContent.Video;
 
-public class CreateVideoCommandHandler(
-    IConfiguration configuration
-) : IRequestHandler<AddVideoCommand, string?>
+public static class CreateBunnyVideo
 {
-    public async Task<string?> Handle(AddVideoCommand request, CancellationToken cancellationToken)
-
+    public static async Task<string?> CreateVideoAsync(this BunnyClient bunny ,string videoName , string collectionId)
     {
-        var url = GetUrl(request.LibraryId);
+
+        var url = GetUrl(bunny.VideoLibraryId);
         var options = new RestClientOptions(url);
         var client = new RestClient(options);
         var httpRequest = new RestRequest("");
-        var apiLibraryKey = configuration["BunnyCdn:ApiLibraryKey"]!;
-        var accessKey = configuration["BunnyCdn:AccessKey"]!;
+        var apiLibraryKey = bunny.ApiKey;
+        var accessKey =bunny.ApiAccessKey;
         httpRequest.AddHeader("accept", "application/json");
         httpRequest.AddHeader(accessKey, apiLibraryKey);
         httpRequest.AddBody(new
         {
-            title = request.VideoName,
-            collectionId = request.CollectionId
+            title = videoName,
+            collectionId = collectionId
         });
-        var response = await client.PostAsync(httpRequest, cancellationToken);
+        
+        var response = await client.PostAsync(httpRequest);
         var content = new JsonHelper(response);
         try
         {

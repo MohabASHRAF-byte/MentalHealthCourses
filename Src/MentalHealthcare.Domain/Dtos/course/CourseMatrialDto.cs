@@ -1,12 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using MentalHealthcare.Domain.Constants;
+using MentalHealthcare.Domain.Entities;
 
-namespace MentalHealthcare.Domain.Dtos;
+// written By Mohab , No Reviews Yet
+namespace MentalHealthcare.Domain.Dtos.course;
 
 public class CourseMaterielDto
 {
     public int CourseMaterielId { get; set; }
-
+    
     [MaxLength(Global.TitleMaxLength)] 
     public string? Title { set; get; }
 
@@ -16,7 +18,10 @@ public class CourseMaterielDto
     //
     public int ItemOrder { get; set; }
 
-    [MaxLength(Global.UrlMaxLength)] 
-    public string Url { set; get; } = default!;
+    [MaxLength(Global.UrlMaxLength)] public string Url { set; get; } = default!;
+
+    
+
     public bool IsVideo { set; get; }
+    //
 }

@@ -16,7 +16,7 @@ public class BunnyClient(
     IConfiguration configuration
 )
 {
-    internal readonly string Region = configuration["BunnyCdn:Region"]!; 
+    internal readonly string Region = configuration["BunnyCdn:Region"]!;
     internal readonly string BaseHostname = configuration["BunnyCdn:BaseHostname"]!;
     internal readonly string StorageZoneName = configuration["BunnyCdn:StorageZoneName"]!;
     internal readonly string AccessKey = configuration["BunnyCdn:StorageZoneAuthenticationKey"]!;
@@ -24,9 +24,11 @@ public class BunnyClient(
     internal readonly string ApiKey = configuration["BunnyCdn:ApiLibraryKey"]!;
     internal readonly string VideoLibraryId = configuration["BunnyCdn:LibraryId"]!;
     internal readonly string VideoLibraryKey = configuration["BunnyCdn:ApiLibraryKey"]!;
+    internal readonly string ApiAccessKey = configuration["BunnyCdn:AccessKey"]!;
 
-    public CreateVideoCommandResponse GenerateSignature(string libraryId, string collectionId, string videoId)
+    public CreateVideoCommandResponse GenerateSignature(string collectionId, string videoId)
     {
+        var libraryId = VideoLibraryId;
         var expirationTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + 3600; // 1-hour expiration
 
         var signatureString = $"{libraryId}{ApiKey}{expirationTime}{videoId}";

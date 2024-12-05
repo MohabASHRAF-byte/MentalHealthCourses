@@ -7,7 +7,6 @@ using MentalHealthcare.Application.Courses.Commands.DeleteThumbnail;
 using MentalHealthcare.Application.Courses.Queries.GetAll;
 using MentalHealthcare.Application.Courses.Queries.GetById;
 using MentalHealthcare.Application.Courses.Sections.Commands.Add_Section;
-using MentalHealthcare.Application.Videos.Commands.ConfirmUpload;
 using MentalHealthcare.Application.Videos.Commands.CreateVideo;
 using MentalHealthcare.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -59,23 +58,6 @@ public class CourseController(
         {
             CourseId = courseId
         };
-        await mediator.Send(command);
-        return NoContent();
-    }
-    [Authorize(AuthenticationSchemes = "Bearer")]
-
-    [HttpPost("{courseId}/Video")]
-    public async Task<IActionResult> AddVideo([FromRoute] int courseId,CreateVideoCommand command)
-    {
-        command.CourseId = courseId;
-        var result = await mediator.Send(command);
-        return Ok(result);
-    }
-    [Authorize(AuthenticationSchemes = "Bearer")]
-
-    [HttpPost("{courseId}/ConfirmVideo")]
-    public async Task<IActionResult> ConfirmVideo([FromRoute] int courseId, ConfirmUploadCommand command)
-    {
         await mediator.Send(command);
         return NoContent();
     }

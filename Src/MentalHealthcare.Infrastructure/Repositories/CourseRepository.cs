@@ -46,55 +46,48 @@ public class CourseRepository(
 
     public async Task UpdateCourse(Course course)
     {
-         dbContext.Courses.Update(course);
+        dbContext.Courses.Update(course);
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task<CourseDto> GetByIdAsync(int id)
+    public async Task<Course> GetByIdAsync(int id)
     {
         var course = await dbContext.Courses
-            .AsNoTracking()
-            .Where(c => c.CourseId == id)
-            .Select(c => new CourseDto
-            {
-                CourseId = c.CourseId,
-                Name = c.Name,
-                ThumbnailUrl = c.ThumbnailUrl,
-                Price = c.Price,
-                Rating = c.Rating,
-                ReviewsCount = c.ReviewsCount,
-                EnrollmentsCount = c.EnrollmentsCount,
-                Description = c.Description,
-                IsFree = c.IsFree,
-                IsPublic = c.IsPublic,
-                favouritesCount = c.UsersFavCourse.Count(),
-                Instructor = new InstructorDto
-                {
-                    InstructorId = c.Instructor.InstructorId,
-                    Name = c.Instructor.Name
-                },
-                CourseMateriels = c.CourseMateriels
-                    .Select(cm => new CourseMaterielDto
-                    {
-                        ItemOrder = cm.ItemOrder,
-                        Description = cm.Description,
-                        Title = cm.Title,
-                        Url = cm.Url,
-                        IsVideo = cm.IsVideo,
-                        CourseMaterielId = cm.CourseMaterielId,
-                    }).ToList(),
-                Categories = c.Categories.Select(cat => new CategoryDto
-                {
-                    CategoryId = cat.CategoryId,
-                    Name = cat.Name
-                }).ToList()
-            })
-            .FirstOrDefaultAsync();
+            .AsNoTracking() // Avoid tracking for read-only queries
+            .Include(c=>c.Instructor)
+            .Include(c => c.CourseSections) // Include sections
+            .ThenInclude(cs => cs.Lessons) // Include lessons within sections
+            .ThenInclude(cl => cl.CourseMateriels) // Include materials within lessons
+            .Include(c => c.CourseMateriels) // Include materials directly under the course
+            .Include(c => c.Categories) // Include categories
+            .Include(c => c.UsersFavCourse) // Include users who favorited the course
+            .FirstOrDefaultAsync(c => c.CourseId == id);
 
         if (course == null)
         {
             throw new ResourceNotFound(nameof(Course), id.ToString());
         }
+
+        // Sort sections, lessons, and materials
+        course.CourseSections = course.CourseSections
+            .OrderBy(cs => cs.Order)
+            .Select(cs =>
+            {
+                cs.Lessons = cs.Lessons
+                    .OrderBy(cl => cl.Order)
+                    .Select(cl =>
+                    {
+                        cl.CourseMateriels = cl.CourseMateriels
+                            .OrderBy(cm => cm.ItemOrder)
+                            .ToList();
+                        return cl;
+                    }).ToList();
+                return cs;
+            }).ToList();
+
+        course.CourseMateriels = course.CourseMateriels
+            .OrderBy(cm => cm.ItemOrder)
+            .ToList();
 
         return course;
     }
@@ -201,7 +194,6 @@ public class CourseRepository(
     }
 
 
-
     public async Task UpdateCourseSectionsAsync(List<CourseSection> courseSection)
     {
         dbContext.CourseSections.UpdateRange(courseSection);
@@ -212,5 +204,75 @@ public class CourseRepository(
     {
         dbContext.CourseSections.Remove(courseSection);
         await dbContext.SaveChangesAsync();
+    }
+
+    public async Task<CourseSection> GetCourseSectionByIdAsync(int id)
+    {
+        var courseSection = await dbContext.CourseSections
+            .FirstOrDefaultAsync(c => c.CourseSectionId == id);
+        if (courseSection == null)
+        {
+            throw new ResourceNotFound(nameof(CourseSection), id.ToString());
+        }
+
+        return courseSection;
+    }
+
+    public async Task<int> AddCourseLesson(CourseLesson courseLesson)
+    {
+        var maxOrder = await dbContext.CourseLessons
+            .Where(c => c.CourseId == courseLesson.CourseId
+                        && c.CourseSectionId == courseLesson.CourseSectionId
+            )
+            .MaxAsync(c => (int?)c.Order) ?? 0;
+
+        courseLesson.Order = maxOrder + 1;
+        dbContext.CourseLessons.Add(courseLesson);
+        await dbContext.SaveChangesAsync();
+        return courseLesson.CourseLessonId;
+    }
+
+    public async Task<List<CourseLesson>> GetCourseLessons(int courseId, int sectionId)
+    {
+        var lessons = dbContext.CourseLessons
+            .Where(c => c.CourseId == courseId
+                        && c.CourseSectionId == sectionId
+            );
+        return await lessons.ToListAsync();
+    }
+
+    public async Task DeleteCourseLessonAsync(CourseLesson targetLesson)
+    {
+        dbContext.Remove(targetLesson);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task UpdateCourseLessonsAsync(List<CourseLesson> updatedLessons)
+    {
+        dbContext.CourseLessons.UpdateRange(updatedLessons);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task<CourseLesson> GetCourseLessonByIdAsync(int id)
+    {
+        var courseLesson = await dbContext.CourseLessons
+            .FirstOrDefaultAsync(c => c.CourseLessonId == id);
+        if (courseLesson == null)
+        {
+            throw new ResourceNotFound(nameof(courseLesson), id.ToString());
+        }
+        return courseLesson;
+        
+    }
+
+    public async Task<CourseMateriel> GetCourseMaterielByIdAsync(int id)
+    {
+        var courseMateriel = await dbContext.CourseMateriels
+            .FirstOrDefaultAsync(c => c.CourseMaterielId == id);
+        if (courseMateriel == null)
+        {
+            throw new ResourceNotFound(nameof(courseMateriel), id.ToString());
+        }
+        return courseMateriel;
     }
 }

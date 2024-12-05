@@ -6,17 +6,23 @@ namespace MentalHealthcare.Domain.Entities;
 public class CourseMateriel
 {
     public int CourseMaterielId { get; set; }
+    public string MaterielBunneyId { get; set; }=string.Empty;
 
+    public int AdminId { get; set; }
+
+    public Admin Admin { get; set; } = default!;
     //
     public int CourseId { get; set; }
 
     public Course Course { get; set; } = default!;
 
     //
-    public int AdminId { get; set; }
-
-    public Admin Admin { get; set; } = default!;
-
+    //
+    public int CourseSectionId { get; set; }
+    public CourseSection CourseSection { get; set; } = default!;
+    //
+    public int CourseLessonId { get; set; }
+    public CourseLesson CourseLesson { get; set; } = default!;
     //
     [MaxLength(Global.TitleMaxLength)] 
     public string? Title { set; get; }

@@ -41,6 +41,7 @@ public class MentalHealthDbContext : IdentityDbContext<User>
     public DbSet<ContactUsForm> ContactUses { get; set; }
     
     public DbSet<CourseSection> CourseSections { get; set; }
+    public DbSet<CourseLesson> CourseLessons { get; set; }
     #endregion
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
