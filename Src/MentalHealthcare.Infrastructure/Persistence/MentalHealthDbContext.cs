@@ -16,7 +16,7 @@ public class MentalHealthDbContext : IdentityDbContext<User>
     #region DbSets of Tables
 
     public DbSet<Course> Courses { get; set; }
-    public DbSet<CourseMateriel> CourseMateriels { get; set; }
+    public DbSet<CourseLessonResource> CourseLessonResources { get; set; }
     public DbSet<Admin> Admins { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<SystemUser> SystemUsers { get; set; }
@@ -39,6 +39,9 @@ public class MentalHealthDbContext : IdentityDbContext<User>
     
     public DbSet<AdvertisementImageUrl> AdvertisementImageUrls { get; set; }
     public DbSet<ContactUsForm> ContactUses { get; set; }
+    
+    public DbSet<CourseSection> CourseSections { get; set; }
+    public DbSet<CourseLesson> CourseLessons { get; set; }
     #endregion
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

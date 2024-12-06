@@ -14,6 +14,11 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddScoped<GlobalErrorHandling>();
 builder.Services.AddScoped<RequestTimeLogging>();
 builder.Services.AddControllers();
+// builder.Services.AddControllers()
+//     .AddJsonOptions(options =>
+//     {
+//         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+//     });
 
 // Add CORS services
 builder.Services.AddCors(options =>

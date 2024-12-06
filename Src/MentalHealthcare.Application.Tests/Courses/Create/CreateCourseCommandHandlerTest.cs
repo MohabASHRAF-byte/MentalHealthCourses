@@ -6,6 +6,7 @@ using MediatR;
 using MentalHealthcare.Application.Courses.Commands.Create;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Repositories;
+using MentalHealthcare.Domain.Repositories.Course;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Contrib.ExpressionBuilders.Logging; // Add this for logging support

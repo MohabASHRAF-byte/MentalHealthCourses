@@ -12,7 +12,7 @@ public class Admin : HumanBe
     public List<Meditation> Meditations { get; set; } = new();
 
 
-    public List<CourseMateriel> CourseMateriels { get; set; } = new();
+    public List<CourseLessonResource> CourseLessonResources { get; set; } = new();
 
     #endregion
 }

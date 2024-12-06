@@ -21,11 +21,11 @@ public class GlobalErrorHandling(
             logger.LogError(ex, ex.Message);
             context.Response.StatusCode = 400;
             await context.Response.WriteAsync(ex.Message);
-        } 
+        }
         catch (ResourceNotFound ex)
         {
             logger.LogError(ex, "Resource not found: {Message}", ex.Message);
-            context.Response.StatusCode = 404; 
+            context.Response.StatusCode = 404;
             var ret = OperationResult<string>.Failure(ex.Message, statusCode: StateCode.NotFound);
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsJsonAsync(ret);
@@ -33,9 +33,19 @@ public class GlobalErrorHandling(
         catch (ForBidenException ex)
         {
             logger.LogError(ex, "Forbiden: {Message}", ex.Message);
-            context.Response.StatusCode = 401; 
+            context.Response.StatusCode = 401;
             var ret = OperationResult<string>.Failure(ex.Message, statusCode: StateCode.Forbidden);
             context.Response.ContentType = "application/json";
+            await context.Response.WriteAsJsonAsync(ret);
+        }
+        catch (ArgumentException ex)
+        {
+            logger.LogError(ex, "Argument: {Message}", ex.Message);
+            context.Response.StatusCode = 400;
+            var ret = OperationResult<string>.Failure(ex.Message, statusCode: StateCode.Forbidden);
+            ret.Errors.Add(ex.Message);
+            context.Response.ContentType = "application/json";
+            
             await context.Response.WriteAsJsonAsync(ret);
         }
         catch (Exception ex)

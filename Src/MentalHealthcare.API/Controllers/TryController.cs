@@ -1,4 +1,5 @@
 // using MentalHealthcare.Application.BunnyServices;
+// using MentalHealthcare.Application.BunnyServices.VideoContent.Video;
 // using Microsoft.AspNetCore.Mvc;
 //
 // namespace MentalHealthcare.API.Controllers;
@@ -9,12 +10,11 @@
 //     IConfiguration configuration
 // ) : ControllerBase
 // {
-//    
-//     [HttpPost("upload")]
-//     public async Task<IActionResult> UploadFileAsync(IFormFile file)
+//     [HttpPost("create")]
+//     public async Task<IActionResult> UploadFileAsync(IFormFile file, string filename, string extension = ".mp3")
 //     {
 //         var Cdn = new BunnyClient(configuration);
-//         var response = await Cdn.DeleteFile("marwan2.png");
+//         var response = await Cdn.UploadFileAsync(file, filename + extension, "Podcast");
 //         return Ok(response);
 //     }
 // }

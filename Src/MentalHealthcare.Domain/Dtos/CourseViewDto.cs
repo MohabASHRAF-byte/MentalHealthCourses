@@ -1,9 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using MentalHealthcare.Domain.Constants;
-using MentalHealthcare.Domain.Entities;
-
-namespace MentalHealthcare.Application.Courses;
+namespace MentalHealthcare.Domain.Dtos;
 
 public class CourseViewDto
 {

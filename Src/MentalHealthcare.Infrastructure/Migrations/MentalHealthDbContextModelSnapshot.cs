@@ -307,6 +307,12 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.Property<int>("InstructorId")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsFree")
                         .HasColumnType("boolean");
 
@@ -342,25 +348,76 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.ToTable("Courses");
                 });
 
-            modelBuilder.Entity("MentalHealthcare.Domain.Entities.CourseMateriel", b =>
+            modelBuilder.Entity("MentalHealthcare.Domain.Entities.CourseLesson", b =>
                 {
-                    b.Property<int>("CourseMaterielId")
+                    b.Property<int>("CourseLessonId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CourseMaterielId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CourseLessonId"));
 
                     b.Property<int>("AdminId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("CourseId")
+                    b.Property<int>("ContentType")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Description")
+                    b.Property<int>("CourseSectionId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("LessonBunnyName")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsVideo")
-                        .HasColumnType("boolean");
+                    b.Property<string>("LessonName")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("MaterielBunneyId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("CourseLessonId");
+
+                    b.HasIndex("AdminId");
+
+                    b.HasIndex("CourseSectionId");
+
+                    b.ToTable("CourseLessons");
+                });
+
+            modelBuilder.Entity("MentalHealthcare.Domain.Entities.CourseLessonResource", b =>
+                {
+                    b.Property<int>("CourseLessonResourceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CourseLessonResourceId"));
+
+                    b.Property<int?>("AdminId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("BunnyId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("BunnyPath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ContentType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CourseLessonId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("ItemOrder")
                         .HasColumnType("integer");
@@ -374,13 +431,39 @@ namespace MentalHealthcare.Infrastructure.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)");
 
-                    b.HasKey("CourseMaterielId");
+                    b.HasKey("CourseLessonResourceId");
 
                     b.HasIndex("AdminId");
 
+                    b.HasIndex("CourseLessonId");
+
+                    b.ToTable("CourseLessonResources");
+                });
+
+            modelBuilder.Entity("MentalHealthcare.Domain.Entities.CourseSection", b =>
+                {
+                    b.Property<int>("CourseSectionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CourseSectionId"));
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.HasKey("CourseSectionId");
+
                     b.HasIndex("CourseId");
 
-                    b.ToTable("CourseMateriels");
+                    b.ToTable("CourseSections");
                 });
 
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.EnrollmentDetails", b =>
@@ -619,7 +702,7 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.Property<int>("AdminId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("CourseId")
+                    b.Property<int>("CourseSectionId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedDate")
@@ -638,6 +721,8 @@ namespace MentalHealthcare.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("PendingVideoUploadId");
+
+                    b.HasIndex("CourseSectionId");
 
                     b.ToTable("VideoUploads");
                 });
@@ -1099,21 +1184,47 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.Navigation("Instructor");
                 });
 
-            modelBuilder.Entity("MentalHealthcare.Domain.Entities.CourseMateriel", b =>
+            modelBuilder.Entity("MentalHealthcare.Domain.Entities.CourseLesson", b =>
                 {
                     b.HasOne("MentalHealthcare.Domain.Entities.Admin", "Admin")
-                        .WithMany("CourseMateriels")
+                        .WithMany()
                         .HasForeignKey("AdminId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MentalHealthcare.Domain.Entities.Course", "Course")
-                        .WithMany("CourseMateriels")
-                        .HasForeignKey("CourseId")
+                    b.HasOne("MentalHealthcare.Domain.Entities.CourseSection", "CourseSection")
+                        .WithMany("Lessons")
+                        .HasForeignKey("CourseSectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Admin");
+
+                    b.Navigation("CourseSection");
+                });
+
+            modelBuilder.Entity("MentalHealthcare.Domain.Entities.CourseLessonResource", b =>
+                {
+                    b.HasOne("MentalHealthcare.Domain.Entities.Admin", null)
+                        .WithMany("CourseLessonResources")
+                        .HasForeignKey("AdminId");
+
+                    b.HasOne("MentalHealthcare.Domain.Entities.CourseLesson", "CourseLesson")
+                        .WithMany("CourseLessonResources")
+                        .HasForeignKey("CourseLessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CourseLesson");
+                });
+
+            modelBuilder.Entity("MentalHealthcare.Domain.Entities.CourseSection", b =>
+                {
+                    b.HasOne("MentalHealthcare.Domain.Entities.Course", "Course")
+                        .WithMany("CourseSections")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Course");
                 });
@@ -1194,6 +1305,17 @@ namespace MentalHealthcare.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Admin");
+                });
+
+            modelBuilder.Entity("MentalHealthcare.Domain.Entities.PendingVideoUpload", b =>
+                {
+                    b.HasOne("MentalHealthcare.Domain.Entities.CourseSection", "Section")
+                        .WithMany()
+                        .HasForeignKey("CourseSectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Section");
                 });
 
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.PodCaster", b =>
@@ -1301,7 +1423,7 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.Navigation("Articles");
 
-                    b.Navigation("CourseMateriels");
+                    b.Navigation("CourseLessonResources");
 
                     b.Navigation("Meditations");
 
@@ -1320,7 +1442,17 @@ namespace MentalHealthcare.Infrastructure.Migrations
 
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.Course", b =>
                 {
-                    b.Navigation("CourseMateriels");
+                    b.Navigation("CourseSections");
+                });
+
+            modelBuilder.Entity("MentalHealthcare.Domain.Entities.CourseLesson", b =>
+                {
+                    b.Navigation("CourseLessonResources");
+                });
+
+            modelBuilder.Entity("MentalHealthcare.Domain.Entities.CourseSection", b =>
+                {
+                    b.Navigation("Lessons");
                 });
 
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.Instructor", b =>

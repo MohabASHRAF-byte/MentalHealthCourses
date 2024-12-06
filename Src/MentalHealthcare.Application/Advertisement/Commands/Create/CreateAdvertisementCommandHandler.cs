@@ -97,7 +97,7 @@ public class CreateAdvertisementCommandHandler(
             newAd.LastUploadImgCnt++;  // Increment image count for uniqueness
 
             // Upload the image to BunnyCDN
-            var response = await bunny.UploadFile(img, newImageName, Global.AdvertisementFolderName);
+            var response = await bunny.UploadFileAsync(img, newImageName, Global.AdvertisementFolderName);
             
             if (!response.IsSuccessful || response.Url == null)
             {
