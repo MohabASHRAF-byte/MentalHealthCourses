@@ -12,33 +12,45 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace MentalHealthcare.API.Controllers.Course;
 
 [ApiController]
-[Route("Api/{courseId}/Sections")]
+[Route("api/courses/{courseId}/sections")]
 public class CoursesSectionController(
     IMediator mediator
 ) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> AddNewSection([FromRoute] int courseId, AddCourseSectionCommand command)
+    [SwaggerOperation(
+        Summary = "Add a new section to a course",
+        Description = "Adds a new section to the specified course."
+    )]
+    public async Task<IActionResult> AddNewSection(
+        [FromRoute] int courseId, 
+        AddCourseSectionCommand command)
     {
         command.CourseId = courseId;
         var result = await mediator.Send(command);
-        //todo
-        //created
-        return Ok(result);
+        return CreatedAtAction(nameof(GetSectionById), new { courseId, sectionId = result }, result);
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> RemoveSection([FromRoute] int courseId, RemoveCourseSectionCommand command)
+    [HttpDelete("{sectionId}")]
+    [SwaggerOperation(
+        Summary = "Remove a section from a course",
+        Description = "Deletes the specified section from the course."
+    )]
+    public async Task<IActionResult> RemoveSection([FromRoute] int courseId, [FromRoute] int sectionId,
+        RemoveCourseSectionCommand command)
     {
         command.CourseId = courseId;
+        command.SectionId = sectionId;
         await mediator.Send(command);
         return NoContent();
     }
 
     [HttpPut("{sectionId}")]
-    public async Task<IActionResult> ChangeSectionOrder(
-        [FromRoute] int courseId,
-        [FromRoute] int sectionId,
+    [SwaggerOperation(
+        Summary = "Update section details in a course",
+        Description = "Updates the details of the specified section in the course."
+    )]
+    public async Task<IActionResult> UpdateSection([FromRoute] int courseId, [FromRoute] int sectionId,
         [FromBody] UpdateSectionCommand command)
     {
         command.CourseId = courseId;
@@ -47,12 +59,12 @@ public class CoursesSectionController(
         return NoContent();
     }
 
-    [HttpPatch]
+    [HttpPatch("order")]
     [SwaggerOperation(
-        Description = CourseDocs.UpdateSectionOrderDescription
+        Summary = "Change the order of sections in a course",
+        Description = "Updates the order of sections within the specified course."
     )]
-    public async Task<IActionResult> ChangeSectionOrder(
-        [FromRoute] int courseId,
+    public async Task<IActionResult> ChangeSectionOrder([FromRoute] int courseId,
         [FromBody] UpdateSectionsOrderCommand command)
     {
         command.CourseId = courseId;
@@ -61,9 +73,11 @@ public class CoursesSectionController(
     }
 
     [HttpGet("{sectionId}")]
-    public async Task<IActionResult> GetSectionById(
-        [FromRoute] int courseId,
-        [FromRoute] int sectionId)
+    [SwaggerOperation(
+        Summary = "Get a section by its ID",
+        Description = "Fetches details of a specific section from the course."
+    )]
+    public async Task<IActionResult> GetSectionById([FromRoute] int courseId, [FromRoute] int sectionId)
     {
         var query = new GetSectionByIdCommand()
         {
@@ -76,10 +90,11 @@ public class CoursesSectionController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetSections(
-        [FromRoute] int courseId,
-        [FromQuery]GetAllCourseSectionsQuery query
-    )
+    [SwaggerOperation(
+        Summary = "Get all sections in a course",
+        Description = "Fetches all sections within the specified course."
+    )]
+    public async Task<IActionResult> GetSections([FromRoute] int courseId, [FromQuery] GetAllCourseSectionsQuery query)
     {
         query.courseId = courseId;
         var result = await mediator.Send(query);

@@ -1,19 +1,14 @@
 using MediatR;
 using MentalHealthcare.Application.Common;
-using MentalHealthcare.Application.Courses;
 using MentalHealthcare.Application.Courses.Commands.AddThumbnail;
 using MentalHealthcare.Application.Courses.Commands.Create;
 using MentalHealthcare.Application.Courses.Commands.DeleteThumbnail;
 using MentalHealthcare.Application.Courses.Queries.GetAll;
 using MentalHealthcare.Application.Courses.Queries.GetById;
-using MentalHealthcare.Application.Courses.Sections.Commands.Add_Section;
-using MentalHealthcare.Application.Videos.Commands.CreateVideo;
 using MentalHealthcare.Domain.Dtos;
-using MentalHealthcare.Domain.Entities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MentalHealthcare.API.Controllers;
+namespace MentalHealthcare.API.Controllers.Course;
 
 [ApiController]
 [Route("Api/[controller]")]

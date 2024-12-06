@@ -1,6 +1,14 @@
-namespace MentalHealthcare.Application.Courses.Lessons.Queries.GetLessonsByCourseId;
+using MediatR;
+using MentalHealthcare.Domain.Dtos.course;
 
-public class GetLessonsBySectionIdQuery
+namespace MentalHealthcare.Application.Courses.Lessons.Queries.GetLessonsBySectionId;
+
+public class GetLessonsBySectionIdQuery:IRequest<List<CourseLessonViewDto>>
 {
-    
+    [System.Text.Json.Serialization.JsonIgnore]
+    public int CourseId { get; set; }
+
+    [System.Text.Json.Serialization.JsonIgnore]
+
+    public int CourseSectionId { get; set; }
 }

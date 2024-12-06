@@ -51,13 +51,12 @@ public class CourseRepository(
     {
         var course = await dbContext.Courses
             .AsNoTracking() // Avoid tracking for read-only queries
-            // .Include(c=>c.Instructor)
-            // .Include(c => c.CourseSections) // Include sections
-            // .ThenInclude(cs => cs.Lessons) // Include lessons within sections
-            // .ThenInclude(cl => cl.CourseMateriels) // Include materials within lessons
-            // .Include(c => c.CourseMateriels) // Include materials directly under the course
-            // .Include(c => c.Categories) // Include categories
-            // .Include(c => c.UsersFavCourse) // Include users who favorited the course
+            .Include(c=>c.Instructor)
+            .Include(c => c.CourseSections) // Include sections
+            .ThenInclude(cs => cs.Lessons) // Include lessons within sections
+            .ThenInclude(cl => cl.CourseLessonResources) // Include materials within lessons
+            .Include(c => c.Categories) // Include categories
+            .Include(c => c.UsersFavCourse) // Include users who favorited the course
             .FirstOrDefaultAsync(c => c.CourseId == id);
 
         if (course == null)

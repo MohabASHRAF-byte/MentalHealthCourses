@@ -53,6 +53,6 @@ public class Global
     
     public const int CourseRecourseSize = 10;//Mb
     public const string CourseRecoursesPath = "CourseResourses";
-
+    public const int CourseLessonPdfSize = 10;//Mb
     #endregion
 }

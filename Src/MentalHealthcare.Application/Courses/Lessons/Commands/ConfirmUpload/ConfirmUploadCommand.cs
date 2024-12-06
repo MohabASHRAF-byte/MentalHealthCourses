@@ -1,8 +1,8 @@
 using MediatR;
 
-namespace MentalHealthcare.Application.Courses.Materials.Commands.ConfirmUpload;
+namespace MentalHealthcare.Application.Courses.Lessons.Commands.ConfirmUpload;
 
-public class ConfirmUploadCommand : IRequest
+public class ConfirmUploadCommand : IRequest<int>
 {
     [System.Text.Json.Serialization.JsonIgnore]
     public int CourseId { get; set; }

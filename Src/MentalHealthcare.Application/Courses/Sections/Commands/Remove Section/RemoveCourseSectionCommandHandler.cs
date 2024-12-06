@@ -1,4 +1,6 @@
 using MediatR;
+using MentalHealthcare.Application.Courses.LessonResources.Commands.Delete_Resource;
+using MentalHealthcare.Application.Courses.Lessons.Commands.RemoveLesson;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Domain.Repositories.Course;
@@ -8,7 +10,8 @@ namespace MentalHealthcare.Application.Courses.Sections.Commands.Remove_Section;
 
 public class RemoveCourseSectionCommandHandler(
     ILogger<RemoveCourseSectionCommandHandler> logger,
-    ICourseSectionRepository courseSectionRepository
+    ICourseSectionRepository courseSectionRepository,
+    IMediator mediator
 ) : IRequestHandler<RemoveCourseSectionCommand>
 {
     public async Task Handle(RemoveCourseSectionCommand request, CancellationToken cancellationToken)
@@ -22,6 +25,19 @@ public class RemoveCourseSectionCommandHandler(
         }
 
         var targetSection = sections.FirstOrDefault(section => section.CourseSectionId == request.SectionId);
+        var delSection = await courseSectionRepository
+            .GetCourseSectionByIdUnTrackedAsync(request.SectionId);
+        foreach (var lesson in delSection.Lessons)
+        {
+            var delLessonResource = new RemoveLessonCommand()
+            {
+                CourseId = request.CourseId,
+                SectionId = request.SectionId,
+                LessonId = lesson.CourseLessonId,
+            };
+            await mediator.Send(delLessonResource, cancellationToken);
+        }
+
         if (targetSection == null)
         {
             logger.LogWarning($"No section found for id {request.SectionId}");
@@ -44,7 +60,5 @@ public class RemoveCourseSectionCommandHandler(
         {
             await courseSectionRepository.UpdateCourseSectionsAsync(updatedSections);
         }
-
-        
     }
 }

@@ -76,6 +76,26 @@ public class CourseSectionRepository(
         }
         return courseSection;
     }
+    public async Task<CourseSection> GetCourseSectionByIdUnTrackedAsync(int id)
+    {
+        var courseSection = await dbContext.CourseSections
+            .AsNoTracking()
+            .Include(cs => cs.Lessons)
+            .ThenInclude(l => l.CourseLessonResources)
+            .FirstOrDefaultAsync(c => c.CourseSectionId == id);
+        if (courseSection == null)
+        {
+            throw new ResourceNotFound(nameof(CourseSection), id.ToString());
+        }
+        foreach (var lesson in courseSection.Lessons)
+        {
+            if (lesson.CourseLessonResources != null)
+                lesson.CourseLessonResources = lesson.CourseLessonResources
+                    .OrderBy(r => r.ItemOrder) // Replace 'SomeProperty' with the field to sort by
+                    .ToList();
+        }
+        return courseSection;
+    }
 
     public async Task<(int, IEnumerable<CourseSectionViewDto>)> GetCourseSectionsByCourseIdAsync(
         int courseId, 

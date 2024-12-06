@@ -13,6 +13,7 @@ public interface ICourseSectionRepository
 
     public Task DeleteCourseSectionAsync(CourseSection courseSection);
     public Task<CourseSection> GetCourseSectionByIdAsync(int id);
+    public Task<CourseSection> GetCourseSectionByIdUnTrackedAsync(int id);
     public Task<(int, IEnumerable<CourseSectionViewDto>)> GetCourseSectionsByCourseIdAsync(
         int courseId,
         string? search, int requestPageNumber, int requestPageSize
