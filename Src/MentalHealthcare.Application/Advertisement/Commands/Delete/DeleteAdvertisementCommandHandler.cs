@@ -30,7 +30,7 @@ public class DeleteAdvertisementCommandHandler(
        foreach (var img in ad.AdvertisementImageUrls)
        {
            var imgName = GetImageName(img.ImageUrl);
-          await bunny.DeleteFile(imgName,Global.AdvertisementFolderName);
+          await bunny.DeleteFileAsync(imgName,Global.AdvertisementFolderName);
        }
        await adRepository.DeleteAdvertisementAsync(request.AdvertisementId);
     }

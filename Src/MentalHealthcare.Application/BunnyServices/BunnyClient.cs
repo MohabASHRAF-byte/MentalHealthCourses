@@ -56,7 +56,7 @@ public class BunnyClient(
 
     // 1 - check if the file is empty 
     // 2 -
-    public async Task<UploadFileResponse> UploadFile(IFormFile? file, string fileName, string folder)
+    public async Task<UploadFileResponse> UploadFileAsync(IFormFile? file, string fileName, string folder)
     {
         if (file == null || file.Length == 0)
         {
@@ -112,7 +112,7 @@ public class BunnyClient(
         }
     }
 
-    public async Task<DeleteFileResponse> DeleteFile(string fileName, string folder = null)
+    public async Task<DeleteFileResponse> DeleteFileAsync(string fileName, string folder = null)
     {
         string url = $"https://{BaseHostname}/{StorageZoneName}/";
         if (!string.IsNullOrEmpty(folder))

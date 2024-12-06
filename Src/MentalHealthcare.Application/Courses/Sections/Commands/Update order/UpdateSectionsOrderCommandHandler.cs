@@ -1,12 +1,14 @@
 using MediatR;
 using MentalHealthcare.Domain.Repositories;
+using MentalHealthcare.Domain.Repositories.Course;
 using Microsoft.Extensions.Logging;
 
 namespace MentalHealthcare.Application.Courses.Sections.Commands.Update_order;
 
 public class UpdateSectionsOrderCommandHandler(
     ILogger<UpdateSectionsOrderCommandHandler> logger,
-    ICourseRepository courseRepository
+    
+    ICourseSectionRepository sectionRepository
 ) : IRequestHandler<UpdateSectionsOrderCommand>
 {
     public async Task Handle(UpdateSectionsOrderCommand request, CancellationToken cancellationToken)
@@ -14,7 +16,7 @@ public class UpdateSectionsOrderCommandHandler(
         logger.LogInformation($"Handling updated sections order for course {request.CourseId}");
 
         // Fetch existing sections
-        var sections = await courseRepository.GetCourseSections(request.CourseId);
+        var sections = await sectionRepository.GetCourseSections(request.CourseId);
         if (sections == null || sections.Count == 0)
         {
             logger.LogWarning($"No sections found for course ID {request.CourseId}");
@@ -63,7 +65,7 @@ public class UpdateSectionsOrderCommandHandler(
         // Save changes if any updates were made
         if (changesMade)
         {
-            await courseRepository.UpdateCourseSectionsAsync(sections);
+            await sectionRepository.UpdateCourseSectionsAsync(sections);
             logger.LogInformation("Successfully updated sections order for course {CourseId}.", request.CourseId);
         }
         else

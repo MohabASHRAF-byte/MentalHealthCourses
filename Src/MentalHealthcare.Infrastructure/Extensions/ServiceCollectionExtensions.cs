@@ -1,7 +1,9 @@
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Repositories;
+using MentalHealthcare.Domain.Repositories.Course;
 using MentalHealthcare.Infrastructure.Persistence;
 using MentalHealthcare.Infrastructure.Repositories;
+using MentalHealthcare.Infrastructure.Repositories.Course;
 using MentalHealthcare.Infrastructure.Seeders;
 using MentalHealthcare.Infrastructure.Validators;
 using Microsoft.AspNetCore.Identity;
@@ -47,6 +49,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IHelpCenterRepository, HelpCenterRepository>();
         services.AddScoped<IAdvertisementRepository, AdvertisementRepository>();
         services.AddScoped<IContactUsRepository, ContactUsRepository>();
+        services.AddScoped<ICourseSectionRepository, CourseSectionRepository>();
+        services.AddScoped<ICourseLessonRepository, CourseLessonRepository>();
+        services.AddScoped<ICourseResourcesRepository, CourseResourcesRepository>();
     }
 
     private static void AddIdentity(this IServiceCollection services)

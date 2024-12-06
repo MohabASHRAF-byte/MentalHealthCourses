@@ -10,6 +10,6 @@ public class CourseLessonDto
     public string LessonName { get; set; } = string.Empty;
     public int Order { get; set; }
 
-    public List<CourseMaterielDto> CourseMateriels { get; set; } = new();
+    public List<CourseResourceDto> CourseLessonResources { get; set; } = new();
     
 }

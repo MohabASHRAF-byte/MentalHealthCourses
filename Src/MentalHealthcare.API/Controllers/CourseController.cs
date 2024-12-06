@@ -8,6 +8,7 @@ using MentalHealthcare.Application.Courses.Queries.GetAll;
 using MentalHealthcare.Application.Courses.Queries.GetById;
 using MentalHealthcare.Application.Courses.Sections.Commands.Add_Section;
 using MentalHealthcare.Application.Videos.Commands.CreateVideo;
+using MentalHealthcare.Domain.Dtos;
 using MentalHealthcare.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Infrastructure.Persistence;
 using MentalHealthcare.Infrastructure.Repositories;
+using MentalHealthcare.Infrastructure.Repositories.Course;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;

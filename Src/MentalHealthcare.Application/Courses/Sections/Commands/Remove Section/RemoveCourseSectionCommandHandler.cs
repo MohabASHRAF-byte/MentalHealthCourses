@@ -1,19 +1,20 @@
 using MediatR;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
+using MentalHealthcare.Domain.Repositories.Course;
 using Microsoft.Extensions.Logging;
 
 namespace MentalHealthcare.Application.Courses.Sections.Commands.Remove_Section;
 
 public class RemoveCourseSectionCommandHandler(
     ILogger<RemoveCourseSectionCommandHandler> logger,
-    ICourseRepository courseRepository
+    ICourseSectionRepository courseSectionRepository
 ) : IRequestHandler<RemoveCourseSectionCommand>
 {
     public async Task Handle(RemoveCourseSectionCommand request, CancellationToken cancellationToken)
     {
         logger.LogInformation($"Handling RemoveCourseSectionCommand for course{request.CourseId}");
-        var sections = await courseRepository.GetCourseSections(request.CourseId);
+        var sections = await courseSectionRepository.GetCourseSections(request.CourseId);
         if (sections.Count == 0)
         {
             logger.LogWarning($"No course found for id {request.SectionId}");
@@ -27,7 +28,7 @@ public class RemoveCourseSectionCommandHandler(
             throw new ResourceNotFound("Section ", request.SectionId.ToString());
         }
 
-        await courseRepository.DeleteCourseSectionAsync(targetSection);
+        await courseSectionRepository.DeleteCourseSectionAsync(targetSection);
         // Adjust orders of remaining sections
         var targetOrder = targetSection.Order;
         var updatedSections = sections
@@ -41,7 +42,7 @@ public class RemoveCourseSectionCommandHandler(
 
         if (updatedSections.Any())
         {
-            await courseRepository.UpdateCourseSectionsAsync(updatedSections);
+            await courseSectionRepository.UpdateCourseSectionsAsync(updatedSections);
         }
 
         

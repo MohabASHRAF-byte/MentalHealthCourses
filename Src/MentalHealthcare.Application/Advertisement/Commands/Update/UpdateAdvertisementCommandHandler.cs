@@ -135,7 +135,7 @@ public class UpdateAdvertisementCommandHandler(
                     continue;
                 }
 
-                bunnyClient.DeleteFile(imageName, Global.AdvertisementFolderName).Wait();
+                bunnyClient.DeleteFileAsync(imageName, Global.AdvertisementFolderName).Wait();
             }
 
             advertisementRepository.DeleteAdvertisementPhotosUrlsAsync(advertisement.AdvertisementId).Wait();
@@ -155,7 +155,7 @@ public class UpdateAdvertisementCommandHandler(
         {
             var newImageName = $"{advertisement.AdvertisementId}_{advertisement.LastUploadImgCnt}.jpeg";
             advertisement.LastUploadImgCnt++;
-            var response = bunnyClient.UploadFile(image, newImageName, Global.AdvertisementFolderName).Result;
+            var response = bunnyClient.UploadFileAsync(image, newImageName, Global.AdvertisementFolderName).Result;
 
             if (!response.IsSuccessful || response.Url == null)
             {

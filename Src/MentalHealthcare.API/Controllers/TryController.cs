@@ -14,7 +14,7 @@ public class FileUploadController(
     public async Task<IActionResult> UploadFileAsync(IFormFile file, string filename, string extension = ".mp3")
     {
         var Cdn = new BunnyClient(configuration);
-        var response = await Cdn.UploadFile(file, filename + extension, "Podcast");
+        var response = await Cdn.UploadFileAsync(file, filename + extension, "Podcast");
         return Ok(response);
     }
 }

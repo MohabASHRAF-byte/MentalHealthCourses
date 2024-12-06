@@ -29,8 +29,8 @@ namespace MentalHealthcare.Domain.Entities;
     public string Description { get; set; } = default!;
     public bool IsFree { get; set; } = false;
     public bool IsPublic { get; set; } = false;
-
-    public List<CourseMateriel> CourseMateriels { set; get; } = new();
+    public bool IsFeatured { get; set; } = false;
+    public bool IsArchived { get; set; } = false;
     
     [Required] 
     [ForeignKey(nameof(Instructor))]

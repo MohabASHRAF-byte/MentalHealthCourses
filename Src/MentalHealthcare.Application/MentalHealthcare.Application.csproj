@@ -20,8 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Courses\Lessons\Queries\" />
-    <Folder Include="Courses\Sections\Queries\" />
     <Folder Include="SystemUsers\Queries\" />
     <Folder Include="Repositories\" />
   </ItemGroup>

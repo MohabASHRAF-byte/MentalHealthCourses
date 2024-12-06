@@ -1,54 +1,86 @@
 using MediatR;
-using MentalHealthcare.Application.Courses.Lessons.Commands;
-using MentalHealthcare.Application.Courses.Lessons.Commands.Add_Lesson;
 using MentalHealthcare.Application.Courses.Lessons.Commands.RemoveLesson;
 using MentalHealthcare.Application.Courses.Lessons.Commands.Update_Lesson;
 using MentalHealthcare.Application.Courses.Lessons.Commands.Update_order;
+using MentalHealthcare.Application.Courses.Lessons.Commands.Upload_pdf;
+using MentalHealthcare.Application.Courses.Materials.Commands.ConfirmUpload;
+using MentalHealthcare.Application.Courses.Materials.Commands.CreateVideo;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MentalHealthcare.API.Controllers.Course;
 
 [ApiController]
+[Route("Api/{courseId}/{sectionId}/Lesson/")]
+
 public class CoursesLessonController(
     IMediator mediator
 ) : ControllerBase
-{
-    [HttpPost]
-    [Route("Api/{courseId}/{sectionId}/Lesson/")]
-    public async Task<IActionResult> PostNewLesson(
+{   
+    // [Authorize(AuthenticationSchemes = "Bearer")]
+
+    [HttpPost("VideoLesson")]
+    public async Task<IActionResult> AddVideoLesson(
         [FromRoute] int courseId,
         [FromRoute] int sectionId,
-        [FromBody] AddLessonCommand command)
+        CreateVideoCommand command)
     {
         command.CourseId = courseId;
         command.SectionId = sectionId;
         var result = await mediator.Send(command);
-        //todo 
-        // create at action
         return Ok(result);
     }
-
-    [HttpDelete]
-    [Route("Api/{courseId}/{sectionId}/Lesson/")]
-    public async Task<IActionResult> DeleteLesson(
+    [HttpPost("ConfirmVideoLesson")]
+    public async Task<IActionResult> ConfirmVideoLesson(
         [FromRoute] int courseId,
         [FromRoute] int sectionId,
-        [FromBody] RemoveLessonCommand command)
+        CreateVideoCommand command)
+    {
+        command.CourseId = courseId;
+        command.SectionId = sectionId;
+        var result = await mediator.Send(command);
+        return Ok(result);
+    }
+    [HttpPost("AddPdfLesson")]
+    public async Task<IActionResult> ConfirmVideoLesson(
+        [FromRoute] int courseId,
+        [FromRoute] int sectionId,
+        UploadPdfLessonCommand command)
+    {
+        command.CourseId = courseId;
+        command.SectionId = sectionId;
+        var result = await mediator.Send(command);
+        return Ok(result);
+    }
+    [HttpPatch("Lesson")]
+    public async Task<IActionResult> UpdateLesson(
+        [FromRoute] int courseId,
+        [FromRoute] int sectionId,
+        UpdateLessonCommand command)
+    {
+        command.CourseId = courseId;
+        command.SectionId = sectionId;
+        var result = await mediator.Send(command);
+        return Ok(result);
+    }
+    [HttpPatch("UpdateOrder")]
+    public async Task<IActionResult> UpdateLesson(
+        [FromRoute] int courseId,
+        [FromRoute] int sectionId,
+        UpdateLessonsOrderCommand command)
     {
         command.CourseId = courseId;
         command.SectionId = sectionId;
         await mediator.Send(command);
         return NoContent();
     }
-
-    [HttpPut]
-    [Route("Api/{courseId}/{sectionId}/{lessonId}/")]
-    public async Task<IActionResult> UpdateLessonData(
+    [HttpDelete("{lessonId}")]
+    public async Task<IActionResult> UpdateLesson(
         [FromRoute] int courseId,
         [FromRoute] int sectionId,
-        [FromRoute] int lessonId,
-        [FromBody] UpdateLessonCommand command)
+        [FromRoute] int lessonId
+        )
     {
+        var command = new RemoveLessonCommand();
         command.CourseId = courseId;
         command.SectionId = sectionId;
         command.LessonId = lessonId;
@@ -56,16 +88,5 @@ public class CoursesLessonController(
         return NoContent();
     }
 
-    [HttpPatch]
-    [Route("Api/{courseId}/{sectionId}/")]
-    public async Task<IActionResult> UpdateLessonOrder(
-        [FromRoute] int courseId,
-        [FromRoute] int sectionId,
-        [FromBody] UpdateLessonsOrderCommand command)
-    {
-        command.CourseId = courseId;
-        command.SectionId = sectionId;
-        await mediator.Send(command);
-        return NoContent();
-    }
+
 }

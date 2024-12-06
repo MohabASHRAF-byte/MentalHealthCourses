@@ -50,6 +50,9 @@ public class Global
     #region Courses
 
     public const int CourseSectionNameMaxLength = 50;
+    
+    public const int CourseRecourseSize = 10;//Mb
+    public const string CourseRecoursesPath = "CourseResourses";
 
     #endregion
 }
