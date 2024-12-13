@@ -20,6 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Instructors\Queries\GetAll\" />
+    <Folder Include="Instructors\Queries\GetById\" />
+    <Folder Include="Notifications\" />
     <Folder Include="SystemUsers\Queries\" />
     <Folder Include="Repositories\" />
   </ItemGroup>

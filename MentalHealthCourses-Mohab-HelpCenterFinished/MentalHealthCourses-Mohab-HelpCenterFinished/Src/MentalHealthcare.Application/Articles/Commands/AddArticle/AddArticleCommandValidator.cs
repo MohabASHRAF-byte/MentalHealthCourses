@@ -21,7 +21,7 @@ namespace MentalHealthcare.Application.Articles.Commands.AddArticle
             RuleFor(x => x.CreatedDate)
                 .LessThanOrEqualTo(DateTime.UtcNow).WithMessage("Created date cannot be in the future.");
 
-            RuleFor(x => x.Author)
+            RuleFor(x => x.AuthorId)
                 .NotNull().WithMessage("Author information is required.");
         }
     }

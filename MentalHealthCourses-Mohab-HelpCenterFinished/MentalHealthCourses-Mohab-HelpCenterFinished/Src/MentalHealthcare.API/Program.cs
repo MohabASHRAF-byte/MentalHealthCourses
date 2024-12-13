@@ -3,6 +3,7 @@ using MentalHealthcare.API.MiddleWares;
 using MentalHealthcare.Application.Extensions;
 using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Infrastructure.Extensions;
+using MentalHealthcare.Infrastructure.Hubs;
 using MentalHealthcare.Infrastructure.Persistence;
 using MentalHealthcare.Infrastructure.Repositories;
 using MentalHealthcare.Infrastructure.Seeders;
@@ -24,7 +25,9 @@ builder.Services.AddScoped<IArticleRepository , ArticleRepository>();
 builder.Services.AddScoped<IMeditationRepository , MeditationRepository>();
 builder.Services.AddScoped<IPodcastRepository , PodcastRepository>();
 builder.Services.AddScoped<IHelpCenterRepository, HelpCenterRepository>();
-
+builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
+builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+builder.Services.AddSignalR();  
 // Add CORS services
 builder.Services.AddCors(options =>
 {
@@ -55,6 +58,7 @@ app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<NotificationHub>("/NotificationSystem");
 
 if (app.Environment.IsDevelopment())
 {

@@ -13,8 +13,8 @@ public class AdminSeeder(
     public async Task seed()
     {
 
-        if (await dbContext.Advertisements.AnyAsync())
-            return;
+        // if (await dbContext.Advertisements.AnyAsync())
+        //     return;
         await dbContext.Database.MigrateAsync();
 
         #region Seed Admins

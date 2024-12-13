@@ -64,7 +64,12 @@ public class Global
     public const int InstructorDescriptionMaxLength = 500;
     public const int InstructorImgSize = 10;
     #endregion
-
+    #region Author
+    public const string AuthorFolderName = "Author";
+    public const int AuthorNameMaxLength = 50;
+    public const int AuthorDescriptionMaxLength = 500;
+    public const int AuthorImgSize = 10;
+    #endregion
 
     #region ContactUs
     public const int ContactUsMaxNameLength = 50;

@@ -45,7 +45,7 @@ namespace MentalHealthcare.Application.Articles.Commands.DeleteArticle
             }
 
 
- if (Article is null || !await articleRepository.IsExistByTitle(request.title))
+ if (Article is null )
             {logger.LogWarning("Article with ID {ArticleId} not found.", request.ArticleId);
              throw new ResourceNotFound(nameof(Article), request.ArticleId.ToString());}
            

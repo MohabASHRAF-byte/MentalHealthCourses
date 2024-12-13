@@ -11,9 +11,11 @@ namespace MentalHealthcare.Domain.Repositories
     {
 
         public Task<int> AddInstructor(Instructor instructor);
-        public Task DeleteInstructor(int? InstructorId, string Name);
+        public Task DeleteInstructor(int InstructorId);
+        public Task UpdateInstructorAsync(Instructor instructor);
+
         public Task<(int, IEnumerable<Instructor>)> GetAllInstructors(string? search, int requestPageNumber, int requestPageSize);
-        public Task<Instructor> GetInstructorByIdOrName(int? Id, string name);
+        public Task<Instructor> GetInstructorById(int Id);
 
 
 

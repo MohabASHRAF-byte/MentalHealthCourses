@@ -20,4 +20,6 @@ public class HumanBe
     [ForeignKey(nameof(User))]
     public string UserId { get; set; }
     public User User { get; set; }
+    public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
 }

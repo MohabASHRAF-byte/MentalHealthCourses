@@ -8,7 +8,7 @@ public class SystemUser:HumanBe
 
     public List<Course>? CourseRates { get; set; } = new();
 
-    public List<Logs>? Logs { get; set; } = new();
+  //  public List<Logs>? Logs { get; set; } = new();
     public List<Payments>? Payments { get; set; } = new();
     //
     public User User { get; set; }

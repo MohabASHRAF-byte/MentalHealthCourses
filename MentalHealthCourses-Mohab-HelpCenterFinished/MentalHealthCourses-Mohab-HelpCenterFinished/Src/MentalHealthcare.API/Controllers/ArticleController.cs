@@ -5,6 +5,7 @@ using MentalHealthcare.Application.Advertisement.Queries.GetAll;
 using MentalHealthcare.Application.Advertisement.Queries.GetById;
 using MentalHealthcare.Application.Articles.Commands.AddArticle;
 using MentalHealthcare.Application.Articles.Commands.DeleteArticle;
+using MentalHealthcare.Application.Articles.Commands.UpdateArticle;
 using MentalHealthcare.Application.Articles.Queries.GetAll;
 using MentalHealthcare.Application.Articles.Queries.GetById;
 using MentalHealthcare.Application.Common;
@@ -32,7 +33,6 @@ namespace MentalHealthcare.API.Controllers
         [HttpPost]
         [SwaggerOperation(Summary = "Creates new Article", Description = "Creates new Article with its details")]
         [ProducesResponseType(StatusCodes.Status201Created)]
-
         public async Task<IActionResult> AddArticle([FromForm] AddArticleCommand command)
         {
             var ArticleID = await _mediator.Send(command);
@@ -48,17 +48,18 @@ namespace MentalHealthcare.API.Controllers
             return Ok(articles);
         }
 
-      [HttpGet("{articleId}")]
+        [HttpGet("{articleId}")]
         [SwaggerOperation(Summary = "Get the Article by its ID")]
         [ProducesResponseType(typeof(ArticleDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetArticleById([FromRoute] int ArticleId)
         {
-            var query = new GetArticleByIdQuery {Id  = ArticleId };
+            var query = new GetArticleByIdQuery { Id = ArticleId };
             var article = await _mediator.Send(query);
             return Ok(article);
         }
 
         [HttpDelete("{articleId}")]
+        [SwaggerOperation(Summary = "Delete the Article by Taking ID")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeleteArticle([FromRoute] int ArticleId)
         {
@@ -68,8 +69,17 @@ namespace MentalHealthcare.API.Controllers
         }
 
 
+        [HttpPut]
+        [SwaggerOperation(Summary = "Update Any Detail Of Article")]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateArticle(UpdateArticleCommand command)
+        {
+            await _mediator.Send(command);
+            return NoContent();
+        }
 
 
-
-    } 
+    }
 }

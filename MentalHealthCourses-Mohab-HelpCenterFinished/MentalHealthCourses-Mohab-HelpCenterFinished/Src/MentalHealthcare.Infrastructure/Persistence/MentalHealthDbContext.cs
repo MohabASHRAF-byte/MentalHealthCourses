@@ -19,7 +19,7 @@ public class MentalHealthDbContext : IdentityDbContext<User>
     public DbSet<Admin> Admins { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<SystemUser> SystemUsers { get; set; }
-    public DbSet<Logs> Logs { get; set; }
+    //public DbSet<Logs> Logs { get; set; }
     public DbSet<Article> Articles { get; set; }
     public DbSet<Meditation> Meditations { get; set; }
     public DbSet<Podcast> Podcasts { get; set; }
@@ -33,11 +33,12 @@ public class MentalHealthDbContext : IdentityDbContext<User>
     public DbSet<PendingAdmins> PendingAdmins { get; set; }
     public DbSet<PendingVideoUpload> VideoUploads { get; set; }
     public DbSet<HelpCenterItem> HelpCenterItems { get; set; }
-    
+
     public DbSet<Advertisement> Advertisements { get; set; }
-    
+
     public DbSet<AdvertisementImageUrl> AdvertisementImageUrls { get; set; }
     public DbSet<ContactUsForm> ContactUses { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
     #endregion
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -56,9 +57,11 @@ public class MentalHealthDbContext : IdentityDbContext<User>
         ConfigureAuthor(modelBuilder);
         ConfigurePodCaster(modelBuilder);
         ConfigureInstructor(modelBuilder);
-        ConfigureLogs(modelBuilder);
+        //ConfigureLogs(modelBuilder);
         ConfigurePayments(modelBuilder);
         ConfigureEnrollmentDetails(modelBuilder);
+        ConfigureNotification(modelBuilder);
+
 
     }
 
@@ -314,14 +317,14 @@ public class MentalHealthDbContext : IdentityDbContext<User>
     }
 
 
-    private void ConfigureLogs(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<Logs>(entity =>
-        {
-            entity.HasKey(l => l.Id);
-            entity.Property(l => l.Id).UseIdentityColumn(1, 1);
-        });
-    }
+    //private void ConfigureLogs(ModelBuilder modelBuilder)
+    //{
+    //    modelBuilder.Entity<Logs>(entity =>
+    //    {
+    //        entity.HasKey(l => l.Id);
+    //        entity.Property(l => l.Id).UseIdentityColumn(1, 1);
+    //    });
+    //}
 
     private void ConfigurePayments(ModelBuilder modelBuilder)
     {
@@ -354,5 +357,35 @@ public class MentalHealthDbContext : IdentityDbContext<User>
                 .HasForeignKey(e => e.CourseId)
                 .OnDelete(DeleteBehavior.Cascade); // Configure delete behavior
         });
+    }
+
+
+
+    private void ConfigureNotification(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Notification>()
+            .HasKey(n => n.NotificationId);
+
+        modelBuilder.Entity<Notification>()
+            .Property(n => n.ContentOfNotification)
+            .IsRequired();
+
+        // Configuring many-to-many relationship
+        modelBuilder.Entity<Notification>()
+            .HasMany(n => n.Users)
+            .WithMany(u => u.Notifications)
+            .UsingEntity<Dictionary<string, object>>(
+                "NotificationUser", // Join table name
+                j => j
+                    .HasOne<HumanBe>()
+                    .WithMany()
+                    .HasForeignKey("UserId") // Foreign key to HumanBe
+                    .OnDelete(DeleteBehavior.Cascade),
+                j => j
+                    .HasOne<Notification>()
+                    .WithMany()
+                    .HasForeignKey("NotificationId") // Foreign key to Notification
+                    .OnDelete(DeleteBehavior.Cascade)
+            );
     }
 }

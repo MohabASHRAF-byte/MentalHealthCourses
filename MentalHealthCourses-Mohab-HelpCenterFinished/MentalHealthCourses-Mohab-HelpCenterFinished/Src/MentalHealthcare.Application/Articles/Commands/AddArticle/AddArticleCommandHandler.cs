@@ -15,7 +15,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace MentalHealthcare.Application.Articles.Commands.AddArticle
-{
+{/// <summary> 
+ /// Handler for adding a new article. 
+ /// </summary>
+ /// <param name="Ar_Repository">Repository for accessing articles.</param> 
+ /// <param name="configuration">Application configuration settings.</param> 
+ /// <param name="mapper">Mapper for converting between models and entities.</param> 
+ /// <param name="logger">Logger for logging information and errors.</param> 
+ /// <param name="mediator">Mediator for handling requests.</param>
     public class AddArticleCommandHandler(
     IArticleRepository Ar_Repository,
     IConfiguration configuration,
@@ -37,41 +44,28 @@ namespace MentalHealthcare.Application.Articles.Commands.AddArticle
             //  logger.LogError("Unauthorized access attempt by user.");
             //throw new UnauthorizedAccessException();
             //var admin = await adminRepository.GetAdminByIdentityAsync(currentUser.Id);
-
-            logger.LogInformation(@"Creating advertisement with name {ad}", request.Title);
-
+            try{
+            logger.LogInformation("Creating article with title {Title}", request.Title);
             CheckPhotosSize(ref request);
-
-            var new_Article = mapper.Map<Article>(request);
-
-            await Ar_Repository.CreateAsync(new_Article);
-
-
+            var NewArticle = mapper.Map<Article>(request);
+            await Ar_Repository.CreateAsync(NewArticle);
             var bunny = new BunnyClient(configuration);
+           foreach (var img in request.Image_Article)
+    {var newImageName = $"{NewArticle.ArticleId}_{NewArticle.PhotoUrl}.jpeg";
+// Upload the image to BunnyCDN
+    var response = await bunny.UploadFile(img, newImageName, Global.ArticleFolderName);
+if (!response.IsSuccessful || response.Url == null)
+ {logger.LogWarning(@"Could not upload Article {ad} error msg :{mg}", request.Title,response.Message ??"");
+   continue;}
+                    if (string.IsNullOrEmpty(NewArticle.PhotoUrl)) 
+                    { NewArticle.PhotoUrl = response.Url; }
 
-            foreach (var img in request.Image_Article)
-            {
-
-                var newImageName = $"{new_Article.ArticleId}_{new_Article.PhotoUrl}.jpeg";
-
-
-
-                // Upload the image to BunnyCDN
-                var response = await bunny.UploadFile(img, newImageName, Global.ArticleFolderName);
-
-                if (!response.IsSuccessful || response.Url == null)
-                {
-                    logger.LogWarning(@"Could not upload Article {ad} error msg :{mg}", request.Title,
-                        response.Message ?? ""
-                    );
-                    continue;
-                    new_Article.PhotoUrl = response.Url;
                 }
-
-            }
-            return new_Article.ArticleId;
-
-
+            await Ar_Repository.UpdateArticleAsync(NewArticle);
+            return NewArticle.ArticleId;
+                }
+            catch (Exception ex) 
+{ logger.LogError(ex, "An error occurred while creating the article"); throw; }
 
     }
 

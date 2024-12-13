@@ -14,8 +14,8 @@ namespace MentalHealthcare.Domain.Entities;
 public class Article : MaterialBe
 {
     public int ArticleId { get; set; }
-    
-    public int AuthorId { get; set; } // Foreign Key property
+
+    public int AuthorId { get; set; }    // Foreign Key
     public Author Author { get; set; } = default!;
     
     public string Content { get; set; } = default!;
