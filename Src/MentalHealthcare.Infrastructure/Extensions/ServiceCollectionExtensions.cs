@@ -33,7 +33,7 @@ public static class ServiceCollectionExtensions
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection");
         services.AddDbContext<MentalHealthDbContext>(options =>
-            options.UseNpgsql(connectionString)
+            options.UseSqlServer(connectionString)
                 .EnableSensitiveDataLogging()
         );
         services.AddScoped<IUserValidator<User>, RegisterUserUserValidator<User>>();

@@ -1,72 +1,72 @@
-// using MediatR;
-// using MentalHealthcare.API.Docs;
-// using MentalHealthcare.Application.HelpCenterItem.Commands.Create;
-// using MentalHealthcare.Application.HelpCenterItem.Commands.Delete;
-// using MentalHealthcare.Application.HelpCenterItem.Commands.Update;
-// using MentalHealthcare.Application.HelpCenterItem.Queries;
-// using Microsoft.AspNetCore.Authorization;
-// using Microsoft.AspNetCore.Mvc;
-// using Swashbuckle.AspNetCore.Annotations;
-//
-// namespace MentalHealthcare.API.Controllers;
-//
-//
-// [ApiController]
-// [Route("HelpCenter")]
-// [Authorize(AuthenticationSchemes = "Bearer")]
-//
-// public class HelpCenterController(
-//     IMediator mediator
-// ) : ControllerBase
-// {
-//
-//     [HttpPost]
-//     [ProducesResponseType(StatusCodes.Status204NoContent)]
-//     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-//     [SwaggerOperation(Description = HelpCenterControllerDocs.HelpCenterPostDescription)]
-//     public async Task<IActionResult> Post(CreateHelpCenterItemCommand command)
-//     {
-//         await mediator.Send(command);
-//         //todo 
-//         // createdataction
-//         return NoContent();
-//     }
-//     
-//     [HttpDelete]
-//     [ProducesResponseType(StatusCodes.Status204NoContent)]
-//     [ProducesResponseType(StatusCodes.Status404NotFound)]
-//     public async Task<IActionResult> Delete(DeleteHelpCenterItemCommand command)
-//     {
-//         await mediator.Send(command);
-//         return NoContent();
-//     }
-//
-//
-//     
-//     [Produces("application/json")]
-//     [HttpGet]
-//     [ProducesResponseType(StatusCodes.Status200OK)]
-//     [SwaggerOperation(
-//         Description = HelpCenterControllerDocs.HelpCenterGetDescription
-//     )]
-//     [AllowAnonymous]
-//     public async Task<IActionResult> GetTerm([FromQuery]GetHelpCenterItemQuery query)
-//     {
-//         var terms = await mediator.Send(query);
-//         return Ok(terms);
-//     }
-//
-//
-//     [SwaggerOperation(
-//         Summary = HelpCenterControllerDocs.PatchSummery,
-//         Description = HelpCenterControllerDocs.HelpCenterUpdateDescription)]
-//     [HttpPut]
-//     [Produces("application/json")]
-//     [ProducesResponseType(StatusCodes.Status204NoContent)]
-//     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-//     public async Task<IActionResult> Update(UpdateHelpCenterCommand command)
-//     {
-//         await mediator.Send(command);
-//         return NoContent();
-//     }
-// }
+using MediatR;
+using MentalHealthcare.API.Docs;
+using MentalHealthcare.Application.HelpCenterItem.Commands.Create;
+using MentalHealthcare.Application.HelpCenterItem.Commands.Delete;
+using MentalHealthcare.Application.HelpCenterItem.Commands.Update;
+using MentalHealthcare.Application.HelpCenterItem.Queries;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
+
+namespace MentalHealthcare.API.Controllers;
+
+
+[ApiController]
+[Route("HelpCenter")]
+[Authorize(AuthenticationSchemes = "Bearer")]
+
+public class HelpCenterController(
+    IMediator mediator
+) : ControllerBase
+{
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [SwaggerOperation(Description = HelpCenterControllerDocs.HelpCenterPostDescription)]
+    public async Task<IActionResult> Post(CreateHelpCenterItemCommand command)
+    {
+        await mediator.Send(command);
+        //todo 
+        // createdataction
+        return NoContent();
+    }
+    
+    [HttpDelete]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(DeleteHelpCenterItemCommand command)
+    {
+        await mediator.Send(command);
+        return NoContent();
+    }
+
+
+    
+    [Produces("application/json")]
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [SwaggerOperation(
+        Description = HelpCenterControllerDocs.HelpCenterGetDescription
+    )]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetTerm([FromQuery]GetHelpCenterItemQuery query)
+    {
+        var terms = await mediator.Send(query);
+        return Ok(terms);
+    }
+
+
+    [SwaggerOperation(
+        Summary = HelpCenterControllerDocs.PatchSummery,
+        Description = HelpCenterControllerDocs.HelpCenterUpdateDescription)]
+    [HttpPut]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Update(UpdateHelpCenterCommand command)
+    {
+        await mediator.Send(command);
+        return NoContent();
+    }
+}

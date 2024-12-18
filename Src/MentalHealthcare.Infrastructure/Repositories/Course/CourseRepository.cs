@@ -56,7 +56,6 @@ public class CourseRepository(
             .ThenInclude(cs => cs.Lessons) // Include lessons within sections
             .ThenInclude(cl => cl.CourseLessonResources) // Include materials within lessons
             .Include(c => c.Categories) // Include categories
-            .Include(c => c.UsersFavCourse) // Include users who favorited the course
             .FirstOrDefaultAsync(c => c.CourseId == id);
 
         if (course == null)
