@@ -10,6 +10,7 @@ public class Global
     public const int UrlMaxLength = 250;
     public const int TitleMaxLength = 100;
     public const int MaxNameLength = 50;
+
     public const string AdminIdClaimType = "AdminId";
     public const string UserIdClaimType = "AdminId";
     public static string CourseThumbnailDirectory = "CoursesThumbnails";
@@ -79,5 +80,12 @@ public class Global
     #endregion
 
 
+    #region Courses
 
+    public const int CourseSectionNameMaxLength = 50;
+
+    public const int CourseRecourseSize = 10;//Mb
+    public const string CourseRecoursesPath = "CourseResourses";
+    public const int CourseLessonPdfSize = 10;//Mb
+    #endregion
 }

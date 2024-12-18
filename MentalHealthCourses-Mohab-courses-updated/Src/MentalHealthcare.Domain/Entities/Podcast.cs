@@ -14,7 +14,7 @@ public class Podcast : MaterialBe
     public int PodcastId { get; set; }
 
     public int PodcastLength { get; set; }
-
+    public string Url { get; set; }
     [MaxLength(1000)] public string PodcastDescription { get; set; } = default!;
 
     public int PodCasterId { get; set; } // Foreign Key property

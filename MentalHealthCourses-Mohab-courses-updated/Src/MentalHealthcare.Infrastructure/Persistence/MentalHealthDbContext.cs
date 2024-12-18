@@ -154,33 +154,54 @@ public class MentalHealthDbContext : IdentityDbContext<User>
     {
         modelBuilder.Entity<Podcast>(entity =>
         {
+            // Define the primary key
             entity.HasKey(p => p.PodcastId);
-            entity.Property(p => p.PodcastId).UseIdentityColumn(100, 20);
 
+            // Configure PodcastId to use an identity column with a seed and increment
+            entity.Property(p => p.PodcastId)
+                .UseIdentityColumn(100, 20);
+
+            // Configure the Title property
             entity.Property(p => p.Title)
                 .IsRequired()
                 .HasAnnotation("DataType", DataType.Text);
 
-            entity.Property(p => p.UploadedById) // Ensure you reference UploadedById
+            // Configure the UploadedById property
+            entity.Property(p => p.UploadedById)
                 .IsRequired();
 
+            // Configure the CreatedDate property with a default value
             entity.Property(p => p.CreatedDate)
                 .IsRequired()
                 .HasAnnotation("DataType", DataType.DateTime)
-                .HasDefaultValueSql("NOW()"); // Set the default value in the table instead of generating it.
+                .HasDefaultValueSql("NOW()");
 
+            // Configure the PodcastLength property
             entity.Property(p => p.PodcastLength)
-                .IsRequired(); // Make sure to require PodcastLength if needed
+                .IsRequired();
+
+            // Configure the Url property
+            entity.Property(p => p.Url)
+                .IsRequired()
+                .HasMaxLength(2048)
+                .HasAnnotation("DataType", DataType.Url);
+
+            // Configure the PodcastDescription property
+            entity.Property(p => p.PodcastDescription)
+                .HasMaxLength(1000);
 
             // Configure relationships
+
+            // Relationship with Admin (UploadedBy)
             entity.HasOne(p => p.UploadedBy)
-                .WithMany(a => a.Podcasts) // Assuming Admin has a collection of Podcasts
-                .HasForeignKey(p => p.UploadedById) // Use the foreign key property
+                .WithMany(a => a.Podcasts)
+                .HasForeignKey(p => p.UploadedById)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // Relationship with PodCaster
             entity.HasOne(p => p.PodCaster)
                 .WithMany(pc => pc.Podcasts)
-                .HasForeignKey(p => p.PodCasterId) // Use the foreign key property
+                .HasForeignKey(p => p.PodCasterId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

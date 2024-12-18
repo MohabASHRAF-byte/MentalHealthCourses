@@ -3,6 +3,7 @@ using MentalHealthcare.API.MiddleWares;
 using MentalHealthcare.Application.Extensions;
 using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Infrastructure.Extensions;
+using MentalHealthcare.Infrastructure.Repositories;
 using MentalHealthcare.Infrastructure.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,10 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddScoped<GlobalErrorHandling>();
 builder.Services.AddScoped<RequestTimeLogging>();
 builder.Services.AddControllers();
+builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
+//builder.Services.AddScoped<IMeditationRepository, MeditationRepository>();
+builder.Services.AddScoped<IPodCastRepository, PodCasterRepository>();
+
 // builder.Services.AddControllers()
 //     .AddJsonOptions(options =>
 //     {
