@@ -7,33 +7,32 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace MentalHealthcare.Infrastructure.Migrations
 {
     [DbContext(typeof(MentalHealthDbContext))]
-    [Migration("20241204102449_V3")]
-    partial class V3
+    [Migration("20241218141230_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("CategoryCourse", b =>
                 {
                     b.Property<int>("CategoriesCategoryId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("CoursesCourseId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.HasKey("CategoriesCategoryId", "CoursesCourseId");
 
@@ -42,60 +41,27 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.ToTable("CategoryCourse");
                 });
 
-            modelBuilder.Entity("CourseSystemUser", b =>
-                {
-                    b.Property<int>("CourseRatesCourseId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UsersRatesSystemUserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("CourseRatesCourseId", "UsersRatesSystemUserId");
-
-                    b.HasIndex("UsersRatesSystemUserId");
-
-                    b.ToTable("CourseSystemUser");
-                });
-
-            modelBuilder.Entity("CourseSystemUser1", b =>
-                {
-                    b.Property<int>("FavCoursesCourseId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UsersFavCourseSystemUserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("FavCoursesCourseId", "UsersFavCourseSystemUserId");
-
-                    b.HasIndex("UsersFavCourseSystemUserId");
-
-                    b.ToTable("CourseSystemUser1");
-                });
-
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.Admin", b =>
                 {
                     b.Property<int>("AdminId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AdminId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AdminId"));
 
                     b.Property<string>("FName")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("LName")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("AdminId");
 
@@ -108,25 +74,25 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.Property<int>("AdvertisementId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AdvertisementId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AdvertisementId"));
 
                     b.Property<string>("AdvertisementDescription")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("AdvertisementName")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<int>("LastUploadImgCnt")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.HasKey("AdvertisementId");
 
@@ -137,17 +103,17 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.Property<int>("AdvertisementImageUrlId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AdvertisementImageUrlId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AdvertisementImageUrlId"));
 
                     b.Property<int>("AdvertisementId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasColumnType("nvarchar(250)");
 
                     b.HasKey("AdvertisementImageUrlId");
 
@@ -159,38 +125,40 @@ namespace MentalHealthcare.Infrastructure.Migrations
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.Article", b =>
                 {
                     b.Property<int>("ArticleId")
-                        .HasColumnType("integer")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 10)
-                        .HasAnnotation("SqlServer:IdentitySeed", 10L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ArticleId"), 10L, 10);
 
                     b.Property<int>("AuthorId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()")
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()")
                         .HasAnnotation("DataType", DataType.DateTime);
 
                     b.Property<string>("PhotoUrl")
                         .IsRequired()
                         .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasAnnotation("DataType", DataType.Text);
 
-                    b.Property<int>("UploadedById")
-                        .HasColumnType("integer");
+                    b.Property<int?>("UploadedById")
+                        .HasColumnType("int");
 
                     b.HasKey("ArticleId");
+
+                    b.HasIndex("AuthorId");
 
                     b.HasIndex("UploadedById");
 
@@ -201,27 +169,24 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.Property<int>("AuthorId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 2)
-                        .HasAnnotation("SqlServer:IdentitySeed", 10L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AuthorId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AuthorId"), 10L, 2);
 
                     b.Property<string>("About")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("AddedByAdminId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("AuthorId");
 
@@ -234,17 +199,17 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.Property<int>("CategoryId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CategoryId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("CategoryId");
 
@@ -255,33 +220,33 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.Property<int>("ContactUsFormId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ContactUsFormId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ContactUsFormId"));
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("IsRead")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("ContactUsFormId");
 
@@ -292,51 +257,57 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.Property<int>("CourseId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CourseId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseId"));
 
                     b.Property<string>("CollectionId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("EnrollmentsCount")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("InstructorId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsFree")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsPublic")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("Rating")
-                        .HasColumnType("numeric");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("ReviewsCount")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("ThumbnailName")
                         .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("ThumbnailUrl")
                         .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasColumnType("nvarchar(250)");
 
                     b.HasKey("CourseId");
 
@@ -349,102 +320,112 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.Property<int>("CourseLessonId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CourseLessonId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseLessonId"));
 
-                    b.Property<int>("CourseId")
-                        .HasColumnType("integer");
+                    b.Property<int>("AdminId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ContentType")
+                        .HasColumnType("int");
 
                     b.Property<int>("CourseSectionId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
+
+                    b.Property<string>("LessonBunnyName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LessonName")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("MaterielBunneyId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Order")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("CourseLessonId");
 
-                    b.HasIndex("CourseId");
+                    b.HasIndex("AdminId");
 
                     b.HasIndex("CourseSectionId");
 
                     b.ToTable("CourseLessons");
                 });
 
-            modelBuilder.Entity("MentalHealthcare.Domain.Entities.CourseMateriel", b =>
+            modelBuilder.Entity("MentalHealthcare.Domain.Entities.CourseLessonResource", b =>
                 {
-                    b.Property<int>("CourseMaterielId")
+                    b.Property<int>("CourseLessonResourceId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CourseMaterielId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseLessonResourceId"));
 
-                    b.Property<int>("AdminId")
-                        .HasColumnType("integer");
+                    b.Property<int?>("AdminId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("CourseId")
-                        .HasColumnType("integer");
+                    b.Property<string>("BunnyId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CourseLessonId")
-                        .HasColumnType("integer");
+                    b.Property<string>("BunnyPath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CourseSectionId")
-                        .HasColumnType("integer");
+                    b.Property<int>("ContentType")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsVideo")
-                        .HasColumnType("boolean");
+                    b.Property<int>("CourseLessonId")
+                        .HasColumnType("int");
 
                     b.Property<int>("ItemOrder")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasColumnType("nvarchar(250)");
 
-                    b.HasKey("CourseMaterielId");
+                    b.HasKey("CourseLessonResourceId");
 
                     b.HasIndex("AdminId");
 
-                    b.HasIndex("CourseId");
-
                     b.HasIndex("CourseLessonId");
 
-                    b.HasIndex("CourseSectionId");
-
-                    b.ToTable("CourseMateriels");
+                    b.ToTable("CourseLessonResources");
                 });
 
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.CourseSection", b =>
                 {
                     b.Property<int>("CourseSectionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CourseSectionId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseSectionId"));
 
                     b.Property<int>("CourseId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("Order")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.HasKey("CourseSectionId");
 
@@ -457,26 +438,23 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.Property<int>("EnrollmentId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EnrollmentId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EnrollmentId"));
 
                     b.Property<int>("CourseId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Progress")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("SystemUserId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.HasKey("EnrollmentId");
 
@@ -491,22 +469,22 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.Property<int>("HelpCenterItemId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("HelpCenterItemId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HelpCenterItemId"));
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("Type")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.HasKey("HelpCenterItemId");
 
@@ -517,27 +495,24 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.Property<int>("InstructorId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("InstructorId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InstructorId"));
 
                     b.Property<string>("About")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("AddedByAdminId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("InstructorId");
 
@@ -550,31 +525,28 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("SystemUserId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
+
+                    b.Property<string>("User")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("userId")
-                        .HasColumnType("text");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("SystemUserId");
 
-                    b.HasIndex("userId");
+                    b.HasIndex("User");
 
                     b.ToTable("Logs");
                 });
@@ -583,30 +555,27 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.Property<int>("MeditationId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 10)
-                        .HasAnnotation("SqlServer:IdentitySeed", 110L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("MeditationId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MeditationId"), 110L, 10);
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()")
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()")
                         .HasAnnotation("DataType", DataType.DateTime);
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasAnnotation("DataType", DataType.Text);
 
-                    b.Property<int>("UploadedById")
-                        .HasColumnType("integer");
+                    b.Property<int?>("UploadedById")
+                        .HasColumnType("int");
 
                     b.HasKey("MeditationId");
 
@@ -619,35 +588,32 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.Property<int>("PaymentId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PaymentId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentId"));
 
                     b.Property<long>("Card_Number")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("SystemUserId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateOnly>("Year")
                         .HasColumnType("date");
 
                     b.Property<DateTime>("month")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("usersId")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("PaymentId");
 
@@ -662,17 +628,17 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.Property<int>("PendingAdminsId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PendingAdminsId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PendingAdminsId"));
 
                     b.Property<int>("AdminId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("PendingAdminsId");
 
@@ -684,38 +650,30 @@ namespace MentalHealthcare.Infrastructure.Migrations
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.PendingVideoUpload", b =>
                 {
                     b.Property<string>("PendingVideoUploadId")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AdminId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("CourseLessonId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("CourseSectionId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Url")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("PendingVideoUploadId");
-
-                    b.HasIndex("CourseLessonId");
 
                     b.HasIndex("CourseSectionId");
 
@@ -726,27 +684,24 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.Property<int>("PodCasterId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 100L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PodCasterId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PodCasterId"), 100L);
 
                     b.Property<string>("About")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("AddedByAdminId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("PodCasterId");
 
@@ -758,37 +713,40 @@ namespace MentalHealthcare.Infrastructure.Migrations
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.Podcast", b =>
                 {
                     b.Property<int>("PodcastId")
-                        .HasColumnType("integer")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 20)
-                        .HasAnnotation("SqlServer:IdentitySeed", 100L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PodcastId"), 100L, 20);
 
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()")
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()")
                         .HasAnnotation("DataType", DataType.DateTime);
 
                     b.Property<int>("PodCasterId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("PodcastDescription")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<int>("PodcastLength")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasAnnotation("DataType", DataType.Text);
 
-                    b.Property<int>("UploadedById")
-                        .HasColumnType("integer");
+                    b.Property<int?>("UploadedById")
+                        .IsRequired()
+                        .HasColumnType("int");
 
                     b.HasKey("PodcastId");
+
+                    b.HasIndex("PodCasterId");
 
                     b.HasIndex("UploadedById");
 
@@ -799,29 +757,26 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.Property<int>("SystemUserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1L)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SystemUserId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SystemUserId"));
 
                     b.Property<DateTime>("Dof")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("FName")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("LName")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("SystemUserId");
 
@@ -834,10 +789,10 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -849,66 +804,66 @@ namespace MentalHealthcare.Infrastructure.Migrations
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.User", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("NormalizedEmail")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("NormalizedUserName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<long>("Roles")
                         .HasColumnType("bigint");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Tenant")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -942,25 +897,26 @@ namespace MentalHealthcare.Infrastructure.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasDatabaseName("RoleNameIndex");
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
                 });
@@ -969,19 +925,19 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -994,19 +950,19 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -1018,17 +974,17 @@ namespace MentalHealthcare.Infrastructure.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -1040,10 +996,10 @@ namespace MentalHealthcare.Infrastructure.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -1055,16 +1011,16 @@ namespace MentalHealthcare.Infrastructure.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
@@ -1082,36 +1038,6 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.HasOne("MentalHealthcare.Domain.Entities.Course", null)
                         .WithMany()
                         .HasForeignKey("CoursesCourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CourseSystemUser", b =>
-                {
-                    b.HasOne("MentalHealthcare.Domain.Entities.Course", null)
-                        .WithMany()
-                        .HasForeignKey("CourseRatesCourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MentalHealthcare.Domain.Entities.SystemUser", null)
-                        .WithMany()
-                        .HasForeignKey("UsersRatesSystemUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CourseSystemUser1", b =>
-                {
-                    b.HasOne("MentalHealthcare.Domain.Entities.Course", null)
-                        .WithMany()
-                        .HasForeignKey("FavCoursesCourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MentalHealthcare.Domain.Entities.SystemUser", null)
-                        .WithMany()
-                        .HasForeignKey("UsersFavCourseSystemUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -1142,15 +1068,13 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.HasOne("MentalHealthcare.Domain.Entities.Author", "Author")
                         .WithMany("Articles")
-                        .HasForeignKey("ArticleId")
+                        .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MentalHealthcare.Domain.Entities.Admin", "UploadedBy")
                         .WithMany("Articles")
-                        .HasForeignKey("UploadedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UploadedById");
 
                     b.Navigation("Author");
 
@@ -1181,52 +1105,36 @@ namespace MentalHealthcare.Infrastructure.Migrations
 
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.CourseLesson", b =>
                 {
-                    b.HasOne("MentalHealthcare.Domain.Entities.Course", "Course")
+                    b.HasOne("MentalHealthcare.Domain.Entities.Admin", "Admin")
                         .WithMany()
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("AdminId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("MentalHealthcare.Domain.Entities.CourseSection", "CourseSection")
                         .WithMany("Lessons")
                         .HasForeignKey("CourseSectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-
-                    b.Navigation("CourseSection");
-                });
-
-            modelBuilder.Entity("MentalHealthcare.Domain.Entities.CourseMateriel", b =>
-                {
-                    b.HasOne("MentalHealthcare.Domain.Entities.Admin", "Admin")
-                        .WithMany("CourseMateriels")
-                        .HasForeignKey("AdminId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MentalHealthcare.Domain.Entities.Course", "Course")
-                        .WithMany("CourseMateriels")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MentalHealthcare.Domain.Entities.CourseLesson", null)
-                        .WithMany("CourseMateriels")
-                        .HasForeignKey("CourseLessonId");
-
-                    b.HasOne("MentalHealthcare.Domain.Entities.CourseSection", "CourseSection")
-                        .WithMany()
-                        .HasForeignKey("CourseSectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Admin");
 
-                    b.Navigation("Course");
-
                     b.Navigation("CourseSection");
+                });
+
+            modelBuilder.Entity("MentalHealthcare.Domain.Entities.CourseLessonResource", b =>
+                {
+                    b.HasOne("MentalHealthcare.Domain.Entities.Admin", null)
+                        .WithMany("CourseLessonResources")
+                        .HasForeignKey("AdminId");
+
+                    b.HasOne("MentalHealthcare.Domain.Entities.CourseLesson", "CourseLesson")
+                        .WithMany("CourseLessonResources")
+                        .HasForeignKey("CourseLessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CourseLesson");
                 });
 
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.CourseSection", b =>
@@ -1245,13 +1153,13 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.HasOne("MentalHealthcare.Domain.Entities.Course", "Course")
                         .WithMany()
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("MentalHealthcare.Domain.Entities.SystemUser", "SystemUser")
-                        .WithMany()
+                        .WithMany("EnrollmentDetails")
                         .HasForeignKey("SystemUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Course");
@@ -1278,7 +1186,7 @@ namespace MentalHealthcare.Infrastructure.Migrations
 
                     b.HasOne("MentalHealthcare.Domain.Entities.User", "user")
                         .WithMany()
-                        .HasForeignKey("userId");
+                        .HasForeignKey("User");
 
                     b.Navigation("user");
                 });
@@ -1288,8 +1196,7 @@ namespace MentalHealthcare.Infrastructure.Migrations
                     b.HasOne("MentalHealthcare.Domain.Entities.Admin", "UploadedBy")
                         .WithMany("Meditations")
                         .HasForeignKey("UploadedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("UploadedBy");
                 });
@@ -1320,19 +1227,11 @@ namespace MentalHealthcare.Infrastructure.Migrations
 
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.PendingVideoUpload", b =>
                 {
-                    b.HasOne("MentalHealthcare.Domain.Entities.CourseLesson", "Lesson")
-                        .WithMany()
-                        .HasForeignKey("CourseLessonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("MentalHealthcare.Domain.Entities.CourseSection", "Section")
                         .WithMany()
                         .HasForeignKey("CourseSectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Lesson");
 
                     b.Navigation("Section");
                 });
@@ -1352,14 +1251,14 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.HasOne("MentalHealthcare.Domain.Entities.PodCaster", "PodCaster")
                         .WithMany("Podcasts")
-                        .HasForeignKey("PodcastId")
+                        .HasForeignKey("PodCasterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MentalHealthcare.Domain.Entities.Admin", "UploadedBy")
                         .WithMany("Podcasts")
                         .HasForeignKey("UploadedById")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("PodCaster");
@@ -1442,7 +1341,7 @@ namespace MentalHealthcare.Infrastructure.Migrations
                 {
                     b.Navigation("Articles");
 
-                    b.Navigation("CourseMateriels");
+                    b.Navigation("CourseLessonResources");
 
                     b.Navigation("Meditations");
 
@@ -1461,14 +1360,12 @@ namespace MentalHealthcare.Infrastructure.Migrations
 
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.Course", b =>
                 {
-                    b.Navigation("CourseMateriels");
-
                     b.Navigation("CourseSections");
                 });
 
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.CourseLesson", b =>
                 {
-                    b.Navigation("CourseMateriels");
+                    b.Navigation("CourseLessonResources");
                 });
 
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.CourseSection", b =>
@@ -1488,6 +1385,8 @@ namespace MentalHealthcare.Infrastructure.Migrations
 
             modelBuilder.Entity("MentalHealthcare.Domain.Entities.SystemUser", b =>
                 {
+                    b.Navigation("EnrollmentDetails");
+
                     b.Navigation("Logs");
 
                     b.Navigation("Payments");

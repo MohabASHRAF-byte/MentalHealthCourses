@@ -12,13 +12,18 @@ public class AdminSeeder(
 {
     public async Task seed()
     {
-        
+        if ((await dbContext.Database.GetPendingMigrationsAsync()).Any())
+        {
+            await dbContext.Database.MigrateAsync();
+        }
+        return;
         if (await dbContext.Advertisements.AnyAsync())
             return;
         await dbContext.Database.MigrateAsync();
 
         #region Seed Admins
-        
+
+        await dbContext.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Admins ON");
         // Create a PasswordHasher instance
         var adminIdentity = new User
         {
@@ -40,7 +45,6 @@ public class AdminSeeder(
 
         var admin = new Admin
         {
-            AdminId = 1,
             User = adminIdentity,
             FName = "admin",
             LName = "admin"
@@ -69,12 +73,16 @@ public class AdminSeeder(
         };
         var admin1 = new Admin
         {
-            AdminId = 2,
             User = adminIdentity1,
             FName = "admin1",
             LName = "admin1"
         };
-        
+
+        await dbContext.AddAsync(adminIdentity);
+        await dbContext.AddAsync(adminIdentity1);
+        await dbContext.AddAsync(admin);
+        await dbContext.AddAsync(admin1);
+        await dbContext.SaveChangesAsync();
 
         #endregion
 
@@ -90,10 +98,14 @@ public class AdminSeeder(
             Name = "Think",
             Description = "Thinking",
         };
+        await dbContext.AddAsync(cat1);
+        await dbContext.AddAsync(cat2);
+        await dbContext.SaveChangesAsync();
 
         #endregion
 
         #region Seed instructor
+
         var instructor1 = new Instructor
         {
             Name = "John Doe",
@@ -106,11 +118,11 @@ public class AdminSeeder(
             About = "sadf",
             AddedBy = admin
         };
-        
 
         #endregion
-        
+
         #region Seed Courses
+
         var course = new Course()
         {
             Name = "DSP",
@@ -151,9 +163,11 @@ public class AdminSeeder(
         //     }
         // };
         //
+
         #endregion
-        
+
         #region Add Advertisement
+
         var ad1 = new Advertisement()
         {
             AdvertisementName = "Advertisement 1",
@@ -162,12 +176,12 @@ public class AdminSeeder(
         };
         var uploadedImages = new List<AdvertisementImageUrl>
         {
-            new() { ImageUrl = "www.example1.com" ,Advertisement = ad1},
-            new() { ImageUrl = "www.example2.com" ,Advertisement = ad1},
-            new() { ImageUrl = "www.example3.com" ,Advertisement = ad1},
+            new() { ImageUrl = "www.example1.com", Advertisement = ad1 },
+            new() { ImageUrl = "www.example2.com", Advertisement = ad1 },
+            new() { ImageUrl = "www.example3.com", Advertisement = ad1 },
         };
         ad1.AdvertisementImageUrls = uploadedImages;
-        
+
         var ad2 = new Advertisement()
         {
             AdvertisementName = "Advertisement 2",
@@ -176,22 +190,15 @@ public class AdminSeeder(
         };
         var uploadedImages2 = new List<AdvertisementImageUrl>
         {
-            new() { ImageUrl = "www.example1.com" ,Advertisement = ad2},
-            new() { ImageUrl = "www.example2.com" ,Advertisement = ad2},
-            new() { ImageUrl = "www.example3.com" ,Advertisement = ad2},
+            new() { ImageUrl = "www.example1.com", Advertisement = ad2 },
+            new() { ImageUrl = "www.example2.com", Advertisement = ad2 },
+            new() { ImageUrl = "www.example3.com", Advertisement = ad2 },
         };
         ad2.AdvertisementImageUrls = uploadedImages2;
 
-        
-
         #endregion
-        
-        await dbContext.AddAsync(adminIdentity);
-        await dbContext.AddAsync(adminIdentity1);
-        await dbContext.AddAsync(admin);
-        await dbContext.AddAsync(admin1);
-        await dbContext.AddAsync(cat1);
-        await dbContext.AddAsync(cat2);
+
+
         await dbContext.AddAsync(instructor1);
         await dbContext.AddAsync(instructor2);
         // await dbContext.AddRangeAsync(Matrials);

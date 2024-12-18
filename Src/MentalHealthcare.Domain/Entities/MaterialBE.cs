@@ -14,8 +14,8 @@ public class MaterialBe
 {
     public string Title { get; set; } = default!;
     
-    public int UploadedById { get; set; } // Foreign Key property
-    public Admin UploadedBy { get; set; } = default!;
+    public int? UploadedById { get; set; } // Foreign Key property
+    public Admin? UploadedBy { get; set; } = default!;
     
-    public DateTime CreatedDate { get; set; }
+    public DateTime CreatedDate { get; set; } = DateTime.Now;
 }

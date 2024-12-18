@@ -38,6 +38,5 @@ namespace MentalHealthcare.Domain.Entities;
     public Instructor Instructor { get; set; } = default!; // Navigation property
     public List<CourseSection> CourseSections { set; get; } = new List<CourseSection>();
     public ICollection<Category>? Categories { get; set; } = new HashSet<Category>();
-    public IEnumerable<SystemUser> UsersFavCourse { get; set; } = new HashSet<SystemUser>();
-    public IEnumerable<SystemUser> UsersRates { get; set; } = new HashSet<SystemUser>();
+    
 }
