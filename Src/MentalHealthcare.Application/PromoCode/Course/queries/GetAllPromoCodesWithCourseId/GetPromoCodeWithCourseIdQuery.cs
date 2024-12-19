@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using MediatR;
 using MentalHealthcare.Application.Common;
+using MentalHealthcare.Domain.Dtos.PromoCode;
 using MentalHealthcare.Domain.Entities;
 
 namespace MentalHealthcare.Application.PromoCode.Course.queries.GetAllPromoCodesWithCourseId;

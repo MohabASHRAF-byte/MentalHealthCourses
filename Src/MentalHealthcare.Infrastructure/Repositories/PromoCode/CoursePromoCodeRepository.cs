@@ -1,4 +1,5 @@
 using MentalHealthcare.Application.PromoCode.Course;
+using MentalHealthcare.Domain.Dtos.PromoCode;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.PromoCode;
@@ -91,7 +92,7 @@ public class CoursePromoCodeRepository(
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task saveChangesAsync()
+    public async Task SaveChangesAsync()
     {
         await dbContext.SaveChangesAsync();
     }

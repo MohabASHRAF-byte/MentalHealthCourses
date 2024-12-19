@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using MentalHealthcare.Application.PromoCode.Course.Commands.AddCoursePromoCode;
+using MentalHealthcare.Domain.Dtos.PromoCode;
 using MentalHealthcare.Domain.Repositories.PromoCode;
 using Microsoft.Extensions.Logging;
 

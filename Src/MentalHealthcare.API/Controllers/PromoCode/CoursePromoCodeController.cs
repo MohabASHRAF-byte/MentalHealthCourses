@@ -7,6 +7,7 @@ using MentalHealthcare.Application.PromoCode.Course.Commands.DeleteCoursePromoCo
 using MentalHealthcare.Application.PromoCode.Course.Commands.UpdateCoursePromoCode;
 using MentalHealthcare.Application.PromoCode.Course.queries.GetAllPromoCodesWithCourseId;
 using MentalHealthcare.Application.PromoCode.Course.queries.GetCoursePromoCode;
+using MentalHealthcare.Domain.Dtos.PromoCode;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 

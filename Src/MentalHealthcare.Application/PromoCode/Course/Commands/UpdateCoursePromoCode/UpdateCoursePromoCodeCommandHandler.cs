@@ -45,7 +45,7 @@ public class UpdateCoursePromoCodeCommandHandler(
         }
 
         logger.LogInformation($"Saving changes for CoursePromoCode ID: {request.CoursePromoCodeId}");
-        await promoCodeRepository.saveChangesAsync();
+        await promoCodeRepository.SaveChangesAsync();
 
         logger.LogInformation($"CoursePromoCode with ID: {request.CoursePromoCodeId} updated successfully.");
         return coursePromoCode.CoursePromoCodeId;

@@ -1,4 +1,4 @@
-using MentalHealthcare.Application.PromoCode.Course;
+using MentalHealthcare.Domain.Dtos.PromoCode;
 using MentalHealthcare.Domain.Entities;
 
 namespace MentalHealthcare.Domain.Repositories.PromoCode;
@@ -15,5 +15,5 @@ public interface ICoursePromoCodeRepository
     
     public Task DeleteCoursePromoCodeByIdAsync(int coursePromoCodeId);
     
-    public Task saveChangesAsync();
+    public Task SaveChangesAsync();
 }
