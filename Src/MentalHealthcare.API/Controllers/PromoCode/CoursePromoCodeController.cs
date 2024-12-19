@@ -3,6 +3,7 @@ using MentalHealthcare.API.Docs;
 using MentalHealthcare.Application.Common;
 using MentalHealthcare.Application.PromoCode.Course;
 using MentalHealthcare.Application.PromoCode.Course.Commands.AddCoursePromoCode;
+using MentalHealthcare.Application.PromoCode.Course.Commands.DeleteCoursePromoCode;
 using MentalHealthcare.Application.PromoCode.Course.queries.GetAllPromoCodesWithCourseId;
 using MentalHealthcare.Application.PromoCode.Course.queries.GetCoursePromoCode;
 using Microsoft.AspNetCore.Mvc;
@@ -42,8 +43,16 @@ public class CoursePromoCodeController(
         var queryResult = await mediator.Send(query);
         return Ok(queryResult);
     }
-    
-    // [HttpDelete("course/{courseId}/promocode/{promoCodeId}")]
-    // public async 
+
+    [HttpDelete("course/{courseId}/promocode/{promoCodeId}")]
+    public async Task<IActionResult> Delete([FromRoute] int courseId, [FromRoute] int promoCodeId)
+    {
+        var command = new DeleteCoursePromoCodeCommand()
+        {
+            CoursePromoCodeId = promoCodeId
+        };
+        await mediator.Send(command);
+        return NoContent();
+    }
 
 }

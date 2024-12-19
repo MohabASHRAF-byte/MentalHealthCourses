@@ -11,7 +11,7 @@ public class CoursePromoCodeRepository(
     MentalHealthDbContext dbContext
 ) : ICoursePromoCodeRepository
 {
-    public async Task<int> AddCoursePromoCode(CoursePromoCode coursePromoCode)
+    public async Task<int> AddCoursePromoCodeAsync(CoursePromoCode coursePromoCode)
     {
         var promoCodeExists = await dbContext.CoursePromoCodes
             .AnyAsync(cp => cp.Code == coursePromoCode.Code && cp.CourseId == coursePromoCode.CourseId);
@@ -48,7 +48,7 @@ public class CoursePromoCodeRepository(
         var baseQuery = dbContext.CoursePromoCodes.AsQueryable();
 
         baseQuery = baseQuery.Where(cp => cp.CourseId == courseId);
-        
+
         if (!string.IsNullOrWhiteSpace(searchText))
             baseQuery = baseQuery.Where(cpc => cpc.Code.ToLower().Contains(searchText.ToLower()));
 
@@ -62,8 +62,8 @@ public class CoursePromoCodeRepository(
         var totalCount = await baseQuery.CountAsync();
 
         var promoCodes = await baseQuery
-            .OrderBy(cpc => cpc.CoursePromoCodeId) 
-            .Skip(pageSize * (pageNumber - 1)) 
+            .OrderBy(cpc => cpc.CoursePromoCodeId)
+            .Skip(pageSize * (pageNumber - 1))
             .Take(pageSize)
             .Select(cf => new CoursePromoCodeDto()
             {
@@ -73,13 +73,26 @@ public class CoursePromoCodeRepository(
                 CourseId = cf.CourseId,
                 expiredate = cf.expiredate,
                 percentage = cf.percentage,
-                expiresInDays = (cf.expiredate - DateTime.Now).TotalDays <= 0 
-                    ? 0 
+                expiresInDays = (cf.expiredate - DateTime.Now).TotalDays <= 0
+                    ? 0
                     : (int)Math.Floor((cf.expiredate - DateTime.Now).TotalDays)
             })
             .ToListAsync();
 
         return (totalCount, promoCodes);
     }
-}
 
+    public async Task DeleteCoursePromoCodeByIdAsync(int coursePromoCodeId)
+    {
+        var coursePromoCode = await dbContext.CoursePromoCodes.FindAsync(coursePromoCodeId);
+        if (coursePromoCode == null)
+            throw new ResourceNotFound(nameof(CoursePromoCode), coursePromoCodeId.ToString());
+        dbContext.CoursePromoCodes.Remove(coursePromoCode);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task saveChangesAsync()
+    {
+        await dbContext.SaveChangesAsync();
+    }
+}

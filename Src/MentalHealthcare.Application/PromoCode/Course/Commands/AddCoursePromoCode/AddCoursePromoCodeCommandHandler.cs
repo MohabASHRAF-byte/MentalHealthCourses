@@ -37,7 +37,7 @@ public class AddCoursePromoCodeCommandHandler(
             coursePromoCode.expiredate = parsedExpireDate;
 
             // Add to repository
-            await promoCodeRepository.AddCoursePromoCode(coursePromoCode);
+            await promoCodeRepository.AddCoursePromoCodeAsync(coursePromoCode);
 
             logger.LogInformation("Successfully added CoursePromoCode with Code: {Code} for CourseId: {CourseId}",
                 request.Code, request.CourseId);
