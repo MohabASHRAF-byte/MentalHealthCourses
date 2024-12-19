@@ -3,7 +3,7 @@ using MediatR;
 using MentalHealthcare.Application.Common;
 using MentalHealthcare.Domain.Dtos;
 
-namespace MentalHealthcare.Application.Courses.Queries.GetAll;
+namespace MentalHealthcare.Application.Courses.Course.Queries.GetAll;
 
 public class GetAllCoursesQuery:IRequest<PageResult<CourseViewDto>>
 {

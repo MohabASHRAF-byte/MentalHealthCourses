@@ -17,8 +17,7 @@ public class AdminSeeder(
             await dbContext.Database.MigrateAsync();
         }
         return;
-        if (await dbContext.Advertisements.AnyAsync())
-            return;
+
         await dbContext.Database.MigrateAsync();
 
         #region Seed Admins

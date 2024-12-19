@@ -42,6 +42,10 @@ public class MentalHealthDbContext : IdentityDbContext<User>
     
     public DbSet<CourseSection> CourseSections { get; set; }
     public DbSet<CourseLesson> CourseLessons { get; set; }
+    
+    public DbSet<CoursePromoCode> CoursePromoCodes { get; set; }
+    
+    public DbSet<GeneralPromoCode> GeneralPromoCodes { get; set; }
     #endregion
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -63,7 +67,7 @@ public class MentalHealthDbContext : IdentityDbContext<User>
         modelBuilder.ConfigureLogs();
         modelBuilder.ConfigurePayments();
         modelBuilder.ConfigureEnrollmentDetails();
-        
-        
+        modelBuilder.CoursePromoCodeConfiguration();
+
     }
 }

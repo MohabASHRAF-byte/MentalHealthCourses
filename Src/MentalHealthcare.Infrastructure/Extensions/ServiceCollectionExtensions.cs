@@ -1,9 +1,11 @@
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Domain.Repositories.Course;
+using MentalHealthcare.Domain.Repositories.PromoCode;
 using MentalHealthcare.Infrastructure.Persistence;
 using MentalHealthcare.Infrastructure.Repositories;
 using MentalHealthcare.Infrastructure.Repositories.Course;
+using MentalHealthcare.Infrastructure.Repositories.PromoCode;
 using MentalHealthcare.Infrastructure.Seeders;
 using MentalHealthcare.Infrastructure.Validators;
 using Microsoft.AspNetCore.Identity;
@@ -20,7 +22,6 @@ public static class ServiceCollectionExtensions
         services.AddDataBase(configuration);
         services.AddRepositories();
         services.AddIdentity();
-        
     }
 
     public static async void Seed(this IServiceProvider services)
@@ -29,6 +30,7 @@ public static class ServiceCollectionExtensions
         var seeder = scope.ServiceProvider.GetRequiredService<IAdminSeeder>();
         await seeder.seed();
     }
+
     private static void AddDataBase(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection");
@@ -37,7 +39,6 @@ public static class ServiceCollectionExtensions
                 .EnableSensitiveDataLogging()
         );
         services.AddScoped<IUserValidator<User>, RegisterUserUserValidator<User>>();
-
     }
 
     private static void AddRepositories(this IServiceCollection services)
@@ -52,6 +53,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICourseSectionRepository, CourseSectionRepository>();
         services.AddScoped<ICourseLessonRepository, CourseLessonRepository>();
         services.AddScoped<ICourseResourcesRepository, CourseResourcesRepository>();
+        services.AddScoped<ICoursePromoCodeRepository, CoursePromoCodeRepository>();
+        services.AddScoped<IGeneralPromoCodeRepository, GeneralPromoCodeRepository>();
     }
 
     private static void AddIdentity(this IServiceCollection services)

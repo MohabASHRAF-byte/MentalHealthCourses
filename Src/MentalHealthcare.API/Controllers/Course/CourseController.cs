@@ -3,6 +3,7 @@ using MentalHealthcare.Application.Common;
 using MentalHealthcare.Application.Courses.Commands.AddThumbnail;
 using MentalHealthcare.Application.Courses.Commands.Create;
 using MentalHealthcare.Application.Courses.Commands.DeleteThumbnail;
+using MentalHealthcare.Application.Courses.Course.Queries.GetAll;
 using MentalHealthcare.Application.Courses.Queries.GetAll;
 using MentalHealthcare.Application.Courses.Queries.GetById;
 using MentalHealthcare.Domain.Dtos;

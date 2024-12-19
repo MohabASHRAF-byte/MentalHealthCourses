@@ -2,6 +2,7 @@ using AutoMapper;
 using MediatR;
 using MentalHealthcare.Application.Common;
 using MentalHealthcare.Application.Courses.Commands.Create;
+using MentalHealthcare.Application.Courses.Course.Queries.GetAll;
 using MentalHealthcare.Domain.Dtos;
 using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Domain.Repositories.Course;
