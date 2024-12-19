@@ -42,7 +42,7 @@ public class GlobalErrorHandling(
         {
             logger.LogError(ex, "Argument: {Message}", ex.Message);
             context.Response.StatusCode = 400;
-            var ret = OperationResult<string>.Failure(ex.Message, statusCode: StateCode.Forbidden);
+            var ret = OperationResult<string>.Failure(ex.Message, statusCode: StateCode.BadRequest);
             ret.Errors.Add(ex.Message);
             context.Response.ContentType = "application/json";
             
