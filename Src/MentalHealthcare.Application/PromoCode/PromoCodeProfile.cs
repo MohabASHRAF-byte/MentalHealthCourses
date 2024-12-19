@@ -14,5 +14,6 @@ public class PromoCodeProfile : Profile
         CreateMap<AddCoursePromoCodeCommand, CoursePromoCode>().ReverseMap();
         CreateMap<CoursePromoCode, CoursePromoCodeDto>().ReverseMap();
         CreateMap<AddGeneralPromoCodeCommand, GeneralPromoCode>().ReverseMap();
+        CreateMap<GeneralPromoCode, GeneralPromoCodeDto>().ReverseMap();
     }
 }

@@ -20,7 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="PromoCode\General\Queries\" />
     <Folder Include="SystemUsers\Queries\" />
     <Folder Include="Repositories\" />
   </ItemGroup>
