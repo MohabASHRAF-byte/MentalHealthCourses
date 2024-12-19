@@ -1,11 +1,14 @@
 using MediatR;
+using MentalHealthcare.API.Docs;
 using MentalHealthcare.Application.Common;
 using MentalHealthcare.Application.PromoCode.General.Commands.AddGeneralPromoCode;
 using MentalHealthcare.Application.PromoCode.General.Commands.DeleteGeneralPromoCode;
 using MentalHealthcare.Application.PromoCode.General.Commands.UpdateGeneralPromoCode;
+using MentalHealthcare.Application.PromoCode.General.Queries.GetAllGeneralPromoCode;
 using MentalHealthcare.Application.PromoCode.General.Queries.GetGeneralPromoCodeQuery;
 using MentalHealthcare.Domain.Dtos.PromoCode;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace MentalHealthcare.API.Controllers.PromoCode;
 
@@ -16,6 +19,7 @@ public class GeneralPromoCodeController(
 ) : ControllerBase
 {
     [HttpPost]
+    [SwaggerOperation(Description = PromoCodesDocs.CreateDescription)]
     public async Task<ActionResult> Create(AddGeneralPromoCodeCommand command)
     {
         var id = await mediator.Send(command);
@@ -34,8 +38,9 @@ public class GeneralPromoCodeController(
 
     [HttpGet]
     [ProducesResponseType(typeof(PageResult<GeneralPromoCodeDto>), 200)]
+    [SwaggerOperation(Description = PromoCodesDocs.GetGeneralPromoCodesDescription)]
     public async Task<ActionResult> Get(
-        [FromQuery] GetGeneralPromoCodeQuery query)
+        [FromQuery] GetAllGeneralPromoCodeQuery query)
     {
         var queryResult = await mediator.Send(query);
         return Ok(queryResult);

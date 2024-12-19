@@ -46,13 +46,14 @@ public class GeneralPromoCodeRepository(
         var totalCount = await baseQuery.CountAsync();
 
         var promoCodes = await baseQuery
-            .OrderBy(gpc => gpc.GeneralPromoCodeId)
+            .OrderByDescending(gpc => gpc.expiredate)
             .Skip(pageSize * (pageNumber - 1))
             .Take(pageSize)
             .Select(gpc => new GeneralPromoCodeDto()
             {
                 GeneralPromoCodeId = gpc.GeneralPromoCodeId,
                 Code = gpc.Code,
+                isActive = gpc.isActive,
                 expiredate = gpc.expiredate,
                 percentage = gpc.percentage,
                 expiresInDays = (gpc.expiredate - DateTime.Now).TotalDays <= 0

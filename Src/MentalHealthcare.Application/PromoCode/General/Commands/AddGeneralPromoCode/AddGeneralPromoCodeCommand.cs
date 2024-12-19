@@ -9,5 +9,8 @@ public class AddGeneralPromoCodeCommand:IRequest<int>
     public string ExpireDate { get; set; } 
 
     public float Percentage { get; set; }
+    
+    public bool IsActive { get; set; }
+
 
 }

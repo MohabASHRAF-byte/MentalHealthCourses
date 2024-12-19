@@ -8,7 +8,7 @@ namespace MentalHealthcare.Application.PromoCode.General.Commands.UpdateGeneralP
 public class UpdateGeneralPromoCodeCommandHandler(
     ILogger<UpdateGeneralPromoCodeCommandHandler> logger,
     IGeneralPromoCodeRepository generalPromoCodeRepository
-    ):IRequestHandler<UpdateGeneralPromoCodeCommand>
+) : IRequestHandler<UpdateGeneralPromoCodeCommand>
 {
     public async Task Handle(UpdateGeneralPromoCodeCommand request, CancellationToken cancellationToken)
     {
@@ -17,19 +17,22 @@ public class UpdateGeneralPromoCodeCommandHandler(
         // Log for fetching the promo code
         logger.LogInformation($"Fetching generalPromoCode with ID: {request.GeneralPromoCodeId}");
         //TODO:  ADD AUTH AND VAL 
-        var generalPromoCode = await generalPromoCodeRepository.GetGeneralPromoCodeByIdAsync(request.GeneralPromoCodeId);
+        var generalPromoCode =
+            await generalPromoCodeRepository.GetGeneralPromoCodeByIdAsync(request.GeneralPromoCodeId);
 
         // Log for percentage update
         if (request.Percentage.HasValue)
         {
-            logger.LogInformation($"Updating Percentage for generalPromoCode ID: {request.GeneralPromoCodeId} to {request.Percentage.Value}");
+            logger.LogInformation(
+                $"Updating Percentage for generalPromoCode ID: {request.GeneralPromoCodeId} to {request.Percentage.Value}");
             generalPromoCode.percentage = (float)Math.Round(request.Percentage.Value, 2);
         }
 
         // Log for expire date update
         if (request.ExpireDate != null)
         {
-            logger.LogInformation($"Attempting to parse ExpireDate: {request.ExpireDate} for generalPromoCode ID: {request.GeneralPromoCodeId}");
+            logger.LogInformation(
+                $"Attempting to parse ExpireDate: {request.ExpireDate} for generalPromoCode ID: {request.GeneralPromoCodeId}");
             var tryParse = DateTime.TryParse(request.ExpireDate, out var parsedExpireDate);
             if (tryParse)
             {
@@ -38,9 +41,12 @@ public class UpdateGeneralPromoCodeCommandHandler(
             }
             else
             {
-                logger.LogWarning($"Failed to parse ExpireDate: {request.ExpireDate} for generalPromoCode ID: {request.GeneralPromoCodeId}");
+                logger.LogWarning(
+                    $"Failed to parse ExpireDate: {request.ExpireDate} for generalPromoCode ID: {request.GeneralPromoCodeId}");
             }
         }
+
+        generalPromoCode.isActive = request.IsActive ?? generalPromoCode.isActive;
 
         logger.LogInformation($"Saving changes for generalPromoCode ID: {request.GeneralPromoCodeId}");
         await generalPromoCodeRepository.SaveChangesAsync();

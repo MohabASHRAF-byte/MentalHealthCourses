@@ -35,7 +35,7 @@ public class AddGeneralPromoCodeCommandHandler(
             }
 
             generalPromoCode.expiredate = parsedExpireDate;
-
+    
             // Add to repository
             await generalPromoCodeRepository.AddGeneralPromoCodeAsync(generalPromoCode);
 

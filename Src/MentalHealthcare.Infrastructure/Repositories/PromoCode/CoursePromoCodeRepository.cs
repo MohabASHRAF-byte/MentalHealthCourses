@@ -63,7 +63,7 @@ public class CoursePromoCodeRepository(
         var totalCount = await baseQuery.CountAsync();
 
         var promoCodes = await baseQuery
-            .OrderBy(cpc => cpc.CoursePromoCodeId)
+            .OrderByDescending(cpc => cpc.expiredate)
             .Skip(pageSize * (pageNumber - 1))
             .Take(pageSize)
             .Select(cf => new CoursePromoCodeDto()

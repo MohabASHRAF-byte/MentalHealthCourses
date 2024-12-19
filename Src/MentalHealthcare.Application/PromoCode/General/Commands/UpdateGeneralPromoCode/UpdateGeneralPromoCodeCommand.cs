@@ -11,4 +11,6 @@ public class UpdateGeneralPromoCodeCommand:IRequest
     public string? ExpireDate { get; set; }
 
     public double? Percentage { get; set; }
+    
+    public bool? IsActive { get; set; }
 }
