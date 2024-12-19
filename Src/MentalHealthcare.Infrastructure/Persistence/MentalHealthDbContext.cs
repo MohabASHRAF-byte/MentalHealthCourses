@@ -44,6 +44,8 @@ public class MentalHealthDbContext : IdentityDbContext<User>
     public DbSet<CourseLesson> CourseLessons { get; set; }
     
     public DbSet<CoursePromoCode> CoursePromoCodes { get; set; }
+    
+    public DbSet<GeneralPromoCode> GeneralPromoCodes { get; set; }
     #endregion
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
