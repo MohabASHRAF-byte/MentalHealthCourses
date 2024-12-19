@@ -4,6 +4,7 @@ using MentalHealthcare.Application.Common;
 using MentalHealthcare.Application.PromoCode.Course;
 using MentalHealthcare.Application.PromoCode.Course.Commands.AddCoursePromoCode;
 using MentalHealthcare.Application.PromoCode.Course.Commands.DeleteCoursePromoCode;
+using MentalHealthcare.Application.PromoCode.Course.Commands.UpdateCoursePromoCode;
 using MentalHealthcare.Application.PromoCode.Course.queries.GetAllPromoCodesWithCourseId;
 using MentalHealthcare.Application.PromoCode.Course.queries.GetCoursePromoCode;
 using Microsoft.AspNetCore.Mvc;
@@ -36,8 +37,8 @@ public class CoursePromoCodeController(
 
     [HttpGet("course/{courseId}/")]
     [SwaggerOperation(Description = CoursePromoCodeDocs.GetPromoCodesWithCourseIdDescription)]
-    [ProducesResponseType(typeof(PageResult<CoursePromoCodeDto>), 200)]  
-    public async Task<ActionResult> Get([FromRoute] int courseId,[FromQuery] GetPromoCodeWithCourseIdQuery query)
+    [ProducesResponseType(typeof(PageResult<CoursePromoCodeDto>), 200)]
+    public async Task<ActionResult> Get([FromRoute] int courseId, [FromQuery] GetPromoCodeWithCourseIdQuery query)
     {
         query.CourseId = courseId;
         var queryResult = await mediator.Send(query);
@@ -55,4 +56,12 @@ public class CoursePromoCodeController(
         return NoContent();
     }
 
+    [HttpPut("course/{courseId}/promocode/{promoCodeId}")]
+    public async Task<IActionResult> update([FromRoute] int courseId, [FromRoute] int promoCodeId,
+        [FromBody] UpdateCoursePromoCodeCommand updateCoursePromoCodeCommand)
+    {
+        updateCoursePromoCodeCommand.CoursePromoCodeId = promoCodeId;
+        var updateResult = await mediator.Send(updateCoursePromoCodeCommand);
+        return NoContent();
+    }
 }
