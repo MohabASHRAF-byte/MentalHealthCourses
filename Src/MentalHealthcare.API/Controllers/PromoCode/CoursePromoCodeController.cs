@@ -1,7 +1,12 @@
 using MediatR;
+using MentalHealthcare.API.Docs;
+using MentalHealthcare.Application.Common;
+using MentalHealthcare.Application.PromoCode.Course;
 using MentalHealthcare.Application.PromoCode.Course.Commands.AddCoursePromoCode;
+using MentalHealthcare.Application.PromoCode.Course.queries.GetAllPromoCodesWithCourseId;
 using MentalHealthcare.Application.PromoCode.Course.queries.GetCoursePromoCode;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace MentalHealthcare.API.Controllers.PromoCode;
 
@@ -18,7 +23,7 @@ public class CoursePromoCodeController(
         return CreatedAtAction(nameof(Get), new { coursePromoCodeId = id }, null);
     }
 
-    [HttpGet("{coursePromoCodeId}")]
+    [HttpGet("course/{courseId}/promocode{coursePromoCodeId}")]
     public async Task<ActionResult> Get([FromRoute] int coursePromoCodeId)
     {
         var query = await mediator.Send(new GetCoursePromoCodeQuery()
@@ -27,4 +32,18 @@ public class CoursePromoCodeController(
         });
         return Ok(query);
     }
+
+    [HttpGet("course/{courseId}/")]
+    [SwaggerOperation(Description = CoursePromoCodeDocs.GetPromoCodesWithCourseIdDescription)]
+    [ProducesResponseType(typeof(PageResult<CoursePromoCodeDto>), 200)]  
+    public async Task<ActionResult> Get([FromRoute] int courseId,[FromQuery] GetPromoCodeWithCourseIdQuery query)
+    {
+        query.CourseId = courseId;
+        var queryResult = await mediator.Send(query);
+        return Ok(queryResult);
+    }
+    
+    // [HttpDelete("course/{courseId}/promocode/{promoCodeId}")]
+    // public async 
+
 }
