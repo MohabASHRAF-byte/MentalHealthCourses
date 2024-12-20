@@ -1,9 +1,15 @@
-namespace MentalHealthcare.Domain.Dtos;
+using MentalHealthcare.Domain.Dtos.course;
+using System.Collections.Generic;
 
-public class InstructorDto
+namespace MentalHealthcare.Domain.Dtos
 {
-    public int InstructorId { get; set; }
-    public string Name { get; set; } = default!;
-    public string? About { get; set; }
-    public string? ImageUrl { get; set; }
+    public class InstructorDto
+    {
+        public string Name { get; set; } 
+        public string? ImageUrl { get; set; }
+        public string? About { get; set; } 
+        public int InstructorId { get; set; } 
+
+        public List<CourseViewDto>? Courses { get; set; } // Nullable in case no courses are assigned yet
+    }
 }

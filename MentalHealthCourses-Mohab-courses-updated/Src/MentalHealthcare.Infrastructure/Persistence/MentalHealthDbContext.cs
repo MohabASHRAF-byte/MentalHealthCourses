@@ -184,8 +184,7 @@ public class MentalHealthDbContext : IdentityDbContext<User>
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }
-
-    private void ConfigureMeditation(ModelBuilder modelBuilder)
+ private void ConfigureMeditation(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Meditation>(entity =>
         {
@@ -204,9 +203,7 @@ public class MentalHealthDbContext : IdentityDbContext<User>
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }
-
-
-    private void ConfigureCourse(ModelBuilder modelBuilder)
+   private void ConfigureCourse(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Course>(entity =>
         {
