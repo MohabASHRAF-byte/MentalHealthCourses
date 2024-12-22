@@ -180,4 +180,9 @@ public class CourseRepository(
 
         return videoName;
     }
+
+    public async Task<bool> DoesCourseExist(int courseId)
+    {
+        return await dbContext.Courses.AnyAsync(c => c.CourseId == courseId);
+    }
 }

@@ -9,7 +9,7 @@ public class CourseLesson
 
     [MaxLength(500)]
     public string LessonName { get; set; } = string.Empty;
-
+    
     public int Order { get; set; }
     public string MaterielBunneyId { get; set; } = string.Empty;
     public ContentType ContentType { set; get; }

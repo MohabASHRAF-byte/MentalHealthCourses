@@ -55,4 +55,10 @@ public class Global
     public const string CourseRecoursesPath = "CourseResourses";
     public const int CourseLessonPdfSize = 10;//Mb
     #endregion
+
+    #region Cart
+    public const int MaxCartItems = 20;
+    
+
+    #endregion
 }

@@ -17,5 +17,6 @@ public interface ICourseRepository
     public Task<string> GetCourseCollectionId(int courseId);
     
     public Task<string> GetCourseName(int courseId);
+    public Task<bool> DoesCourseExist(int courseId);
     
 }

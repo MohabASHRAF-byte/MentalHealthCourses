@@ -28,8 +28,9 @@ namespace MentalHealthcare.Domain.Entities;
     public string CollectionId { set; get; }=default!;
     public string Description { get; set; } = default!;
     public bool IsFree { get; set; } = false;
-    public bool IsPublic { get; set; } = false;
+    public bool IsPublic { get; set; } = true;
     public bool IsFeatured { get; set; } = false;
+    //TODO: remove is archived
     public bool IsArchived { get; set; } = false;
     
     [Required] 
