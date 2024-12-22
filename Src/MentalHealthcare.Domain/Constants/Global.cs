@@ -55,4 +55,54 @@ public class Global
     public const string CourseRecoursesPath = "CourseResourses";
     public const int CourseLessonPdfSize = 10;//Mb
     #endregion
+
+
+
+
+
+    #region Article
+    public const string ArticleFolderName = "Articles";
+    public const int ArticleNameMaxLength = 50;
+    public const int ArticleDescriptionMaxLength = 500;
+    public const int ArticleImgSize = 10;
+    #endregion
+    #region Meditation
+    public const string MeditationFolderName = "Meditation";
+    public const int MeditationNameMaxLength = 50;
+    public const int MeditationDescriptionMaxLength = 500;
+    public const int MeditationImgSize = 10;
+    #endregion
+    #region Podcast
+    public const string PodcastFolderName = "Podcast";
+    public const int PodcastNameMaxLength = 50;
+    public const int PodcastDescriptionMaxLength = 500; //Audio File
+    public const int PodcastImgSize = 10;
+    #endregion
+    #region PodCaster
+    public const string PodCasterFolderName = "PodCaster";
+    public const int PodCasterNameMaxLength = 50;
+    public const int PodCasterDescriptionMaxLength = 500;
+    public const int PodCasterImgSize = 10;
+    #endregion
+    #region Instructor
+    public const string InstructorFolderName = "Instructor";
+    public const int InstructorNameMaxLength = 50;
+    public const int InstructorDescriptionMaxLength = 500;
+    public const int InstructorImgSize = 10;
+    #endregion
+    #region Author
+    public const string AuthorFolderName = "Author";
+    public const int AuthorNameMaxLength = 50;
+    public const int AuthorDescriptionMaxLength = 500;
+    public const int AuthorImgSize = 10;
+    #endregion
+
+
+
+
+
+
+
+
+
 }
