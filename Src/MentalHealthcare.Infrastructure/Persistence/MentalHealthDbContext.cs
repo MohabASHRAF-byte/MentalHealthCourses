@@ -1,7 +1,7 @@
 using MentalHealthcare.Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+using MentalHealthcare.Domain.Entities.Courses;
 using MentalHealthcare.Domain.Entities.OrderProcessing;
 using MentalHealthcare.Infrastructure.Configurations;
 
@@ -53,6 +53,8 @@ public class MentalHealthDbContext : IdentityDbContext<User>
 
     public DbSet<Invoice> Invoices { get; set; }
 
+    public DbSet<CourseProgress> CourseProgresses { get; set; }
+
     #endregion
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -77,5 +79,6 @@ public class MentalHealthDbContext : IdentityDbContext<User>
         modelBuilder.CoursePromoCodeConfiguration();
         modelBuilder.ConfigureCart();
         modelBuilder.ConfigureInvoice();
+        modelBuilder.ConfigureCourseProgress();
     }
 }

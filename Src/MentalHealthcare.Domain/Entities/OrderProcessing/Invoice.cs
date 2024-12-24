@@ -30,4 +30,6 @@ public class Invoice
     public DateTime OrderDate { set; get; } = DateTime.UtcNow;
     public List<CourseOrderView> Courses { set; get; } = [];
     public OrderStatus OrderStatus { set; get; }
+    
+    public DateTime ProcessedDate { set; get; } = DateTime.UtcNow;
 }

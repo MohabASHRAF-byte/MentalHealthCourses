@@ -1,5 +1,8 @@
+using MentalHealthcare.Application.OrderProcessing;
 using MentalHealthcare.Domain.Constants;
+using MentalHealthcare.Domain.Dtos.course;
 using MentalHealthcare.Domain.Dtos.OrderProcessing;
+using MentalHealthcare.Domain.Entities.Courses;
 using MentalHealthcare.Domain.Entities.OrderProcessing;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.OrderProcessing;
@@ -89,7 +92,7 @@ public class InvoiceRepository(
 
         if (!string.IsNullOrEmpty(invoiceId))
         {
-            var normalizedInvoiceId = invoiceId.ToString().ToLower();
+            var normalizedInvoiceId = invoiceId.ToLower();
             invoices = invoices.Where(i => i.InvoiceId.ToString() == normalizedInvoiceId);
         }
 
@@ -121,8 +124,6 @@ public class InvoiceRepository(
         {
             invoices = invoices.Where(i => i.OrderDate <= toDate.Value);
         }
-
-        // Filter by user ID
 
 
         // Filter by order status
@@ -168,7 +169,107 @@ public class InvoiceRepository(
 
         return (totalCount, paginatedInvoices);
     }
-    
-    
-    
+
+    public async Task AcceptInvoice(
+        int invoiceId,
+        List<MiniCourse> courses,
+        decimal discount,
+        string adminId
+    )
+    {
+        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        try
+        {
+            // Fetch the invoice
+            var invoice = await dbContext.Invoices
+                .Include(i => i.Courses)
+                .FirstOrDefaultAsync(i => i.InvoiceId == invoiceId);
+
+            if (invoice == null)
+            {
+                throw new ArgumentException("Invoice not found.", nameof(invoiceId));
+            }
+
+            if (invoice.OrderStatus != OrderStatus.Pending)
+            {
+                throw new ArgumentException($"Invoice is not in Pending State", nameof(invoiceId));
+            }
+
+            // Check and update courses
+            var courseIdsInInvoice = invoice.Courses.Select(c => c.CourseId).ToList();
+            var passedCourseIds = courses.Select(c => c.CourseId).ToList();
+
+            // Validate that all passed course IDs exist in the invoice
+            var invalidCourseIds = passedCourseIds.Except(courseIdsInInvoice).ToList();
+            if (invalidCourseIds.Any())
+            {
+                throw new ArgumentException($"Invalid course IDs provided: {string.Join(", ", invalidCourseIds)}");
+            }
+
+            // Remove courses not in the passed list
+            var coursesToRemove = invoice.Courses
+                .Where(c => !passedCourseIds.Contains(c.CourseId)).ToList();
+            dbContext.RemoveRange(coursesToRemove);
+
+            // Update invoice discount and promo code if necessary
+            if (invoice.DiscountPercentage != discount)
+            {
+                invoice.PromoCode = "Provided By Admin";
+                invoice.DiscountPercentage = discount;
+
+                // Recalculate prices using the PriceCalculator
+                var courseCartDtos = invoice.Courses.Select(c => new CourseCartDto
+                    { CourseId = c.CourseId, Price = c.Price });
+                var recalculatedCart = PriceCalculator.Calculate(courseCartDtos, discount, invoice.TaxesPercentage);
+
+                invoice.SubTotalPrice = recalculatedCart.SubTotalPrice;
+                invoice.DiscountValue = recalculatedCart.DiscountValue;
+                invoice.TaxesValue = recalculatedCart.TaxesValue;
+                invoice.TotalPrice = recalculatedCart.TotalPrice;
+            }
+
+            // Assign admin and update status
+            invoice.Admin = await dbContext.Admins
+                .Where(a => a.UserId == adminId)
+                .FirstOrDefaultAsync();
+            invoice.OrderStatus = OrderStatus.Done;
+            invoice.ProcessedDate = DateTime.UtcNow;
+
+            // Add course progress records
+            foreach (var course in courses)
+            {
+                // Check if user already has the course
+                var existingCourseProgress = await dbContext
+                    .CourseProgresses
+                    .FirstOrDefaultAsync(
+                        cp => cp.CourseId == course.CourseId &&
+                              cp.UserId == invoice.UserId
+                    );
+                if (existingCourseProgress != null)
+                {
+                    throw new ArgumentException($"User already has course with ID: {course.CourseId}");
+                }
+
+                var courseProgress = new CourseProgress
+                {
+                    CourseId = course.CourseId,
+                    UserId = invoice.UserId,
+                    LastLessonIdx = 0,
+                    LastChange = DateTime.UtcNow
+                };
+                dbContext.CourseProgresses.Add(courseProgress);
+            }
+
+            // Save changes
+            await dbContext.SaveChangesAsync();
+
+            // Commit transaction
+            await transaction.CommitAsync();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
 }

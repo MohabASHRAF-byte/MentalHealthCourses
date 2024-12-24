@@ -1,6 +1,7 @@
 using MediatR;
 using MentalHealthcare.API.Docs;
 using MentalHealthcare.Application.Common;
+using MentalHealthcare.Application.OrderProcessing.Order.Commands.Accept_Invoice;
 using MentalHealthcare.Application.OrderProcessing.Order.Commands.Calculate_value;
 using MentalHealthcare.Application.OrderProcessing.Order.Commands.Place;
 using MentalHealthcare.Application.OrderProcessing.Order.Queries.Get_All_Invoices;
@@ -55,10 +56,21 @@ public class OrderController(
     [HttpPost("CalculateInvoiceValue")]
     [SwaggerOperation(Description = OrderProcessingDocs.CalculateInvoiceDescription)]
     [ProducesResponseType(typeof(CalculateInvoiceResponse), 200)]
-
     public async Task<IActionResult> CalculateInvoice([FromBody] CalculateInvoice command)
     {
         var res = await mediator.Send(command);
         return Ok(res);
+    }
+
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [HttpPost("{invoiceId}/accept")]
+    // [SwaggerOperation(Description = OrderProcessingDocs.CalculateInvoiceDescription)]
+    public async Task<IActionResult> AcceptInvoice([FromRoute] int invoiceId,
+        [FromBody] AcceptInvoiceCommand command
+    )
+    {
+        command.InvoiceId = invoiceId;
+        await mediator.Send(command);
+        return NoContent();
     }
 }

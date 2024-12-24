@@ -1,4 +1,5 @@
 using MentalHealthcare.Domain.Constants;
+using MentalHealthcare.Domain.Dtos.course;
 using MentalHealthcare.Domain.Dtos.OrderProcessing;
 using MentalHealthcare.Domain.Entities.OrderProcessing;
 
@@ -9,7 +10,7 @@ public interface IInvoiceRepository
     public Task AddAsync(Invoice invoice);
     public Task<InvoiceDto> GetInvoiceByIdAsync(int id, string? userId = null);
 
-    public Task<(int,List<InvoiceViewDto>)> GetInvoicesAsync(
+    public Task<(int, List<InvoiceViewDto>)> GetInvoicesAsync(
         int pageNumber,
         int pageSize,
         string? invoiceId,
@@ -21,4 +22,11 @@ public interface IInvoiceRepository
         string? promoCode,
         string? userId = null
     );
+
+    public Task AcceptInvoice(
+        int invoiceId,
+        List<MiniCourse> courses,
+        decimal discount,
+        string adminId
+        );
 }

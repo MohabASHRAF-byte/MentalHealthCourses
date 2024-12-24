@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using MentalHealthcare.Domain.Constants;
 
 namespace MentalHealthcare.Domain.Dtos.OrderProcessing;
@@ -7,6 +8,7 @@ public class InvoiceDto
     public int InvoiceId { get; set; }
 
     //
+    [JsonIgnore]
     public string UserId { get; set; }
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
