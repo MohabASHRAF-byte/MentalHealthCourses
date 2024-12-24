@@ -22,12 +22,12 @@ public class CoursePromoCodeController(
     [HttpPost]
     public async Task<ActionResult> Create(AddCoursePromoCodeCommand command)
     {
-        var id = await mediator.Send(command);
-        return CreatedAtAction(nameof(Get), new { coursePromoCodeId = id }, null);
+        await mediator.Send(command);
+        return Created();
     }
 
     [HttpGet("course/{courseId}/promocode{coursePromoCodeId}")]
-    public async Task<ActionResult> Get([FromRoute] int coursePromoCodeId)
+    public async Task<ActionResult> GetCoursePromoCode([FromRoute] int coursePromoCodeId)
     {
         var query = await mediator.Send(new GetCoursePromoCodeQuery()
         {

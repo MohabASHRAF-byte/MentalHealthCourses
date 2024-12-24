@@ -1,25 +1,23 @@
-using AutoMapper;
 using MediatR;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos.OrderProcessing;
-using MentalHealthcare.Domain.Entities.OrderProcessing;
 using MentalHealthcare.Domain.Exceptions;
-using MentalHealthcare.Domain.Repositories.Course;
 using MentalHealthcare.Domain.Repositories.OrderProcessing;
+using MentalHealthcare.Domain.Repositories.PromoCode;
 using Microsoft.Extensions.Logging;
 
 namespace MentalHealthcare.Application.OrderProcessing.Cart.Queries.GetCartItems;
 
 public class GetCartItemsQueryHandler(
     ILogger<GetCartItemsQueryHandler> logger,
-    IMapper mapper,
     ICartRepository cartRepository,
-    ICourseRepository courseRepository,
+    IGeneralPromoCodeRepository generalPromoCodeRepository,
+    ICoursePromoCodeRepository coursePromoCodeRepository,
     IUserContext userContext
-) : IRequestHandler<GetCartItemsQuery, IEnumerable<CourseCartDto>>
+) : IRequestHandler<GetCartItemsQuery, CartDto>
 {
-    public async Task<IEnumerable<CourseCartDto>> Handle(GetCartItemsQuery request, CancellationToken cancellationToken)
+    public async Task<CartDto> Handle(GetCartItemsQuery request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Starting Add to Cart Command handling for user.");
 
@@ -38,10 +36,28 @@ public class GetCartItemsQueryHandler(
         if (cart == null)
         {
             logger.LogInformation("Cart not found for user: {UserId}", currentUser.Id);
-            return new List<CourseCartDto>();
+            return new CartDto();
         }
 
+        //TODO: make the taxes dynamic 
         var cartItems = await cartRepository.GetCartItemsByUserIdAsync(currentUser.Id);
-        return cartItems;
+        var taxesPercentage = 14.5m;
+
+        cartItems = cartItems.ToList();
+        // Handle promo code logic
+        var (discountPercent, messages) = await PromoCodeValidator.ValidatePromoCodeAsync(
+            request.PromoCode,
+            cartItems,
+            generalPromoCodeRepository,
+            coursePromoCodeRepository,
+            logger);
+
+        var cartDto = PriceCalculator
+            .Calculate(cartItems,
+                discountPercent,
+                taxesPercentage
+            );
+        cartDto.Messages = messages;
+        return cartDto;
     }
 }

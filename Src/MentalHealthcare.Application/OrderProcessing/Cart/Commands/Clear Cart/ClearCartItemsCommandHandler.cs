@@ -15,7 +15,7 @@ public class ClearCartItemsCommandHandler(
     ICartRepository cartRepository,
     ICourseRepository courseRepository,
     IUserContext userContext
-    ):IRequestHandler<ClearCartItemsCommand>
+) : IRequestHandler<ClearCartItemsCommand>
 {
     public async Task Handle(ClearCartItemsCommand request, CancellationToken cancellationToken)
     {
@@ -27,6 +27,6 @@ public class ClearCartItemsCommandHandler(
             throw new ForBidenException("You do not have permission to delete items from the cart.");
         }
 
-        cartRepository.RemoveCartAsync(currentUser.Id);
+        await cartRepository.RemoveCartAsync(currentUser.Id);
     }
 }

@@ -7,6 +7,7 @@ namespace MentalHealthcare.Domain.Dtos.OrderProcessing;
 
 public class CourseCartDto
 {
+    public int CourseId { get; set; }
     [MaxLength(Global.TitleMaxLength)] 
     public string Name { set; get; } = default!;
     [MaxLength(Global.UrlMaxLength)]

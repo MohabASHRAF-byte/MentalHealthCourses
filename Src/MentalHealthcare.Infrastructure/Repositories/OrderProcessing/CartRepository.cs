@@ -73,6 +73,7 @@ public class CartRepository(
             .SelectMany(c => c.Items)
             .Select(item => new CourseCartDto
             {
+                CourseId = item.CourseId,
                 Name = item.Course.Name,
                 ThumbnailUrl = item.Course.ThumbnailUrl,
                 Price = item.Course.Price,

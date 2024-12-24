@@ -35,21 +35,24 @@ public class MentalHealthDbContext : IdentityDbContext<User>
     public DbSet<PendingAdmins> PendingAdmins { get; set; }
     public DbSet<PendingVideoUpload> VideoUploads { get; set; }
     public DbSet<HelpCenterItem> HelpCenterItems { get; set; }
-    
+
     public DbSet<Advertisement> Advertisements { get; set; }
-    
+
     public DbSet<AdvertisementImageUrl> AdvertisementImageUrls { get; set; }
     public DbSet<ContactUsForm> ContactUses { get; set; }
-    
+
     public DbSet<CourseSection> CourseSections { get; set; }
     public DbSet<CourseLesson> CourseLessons { get; set; }
-    
+
     public DbSet<CoursePromoCode> CoursePromoCodes { get; set; }
-    
+
     public DbSet<GeneralPromoCode> GeneralPromoCodes { get; set; }
-    
+
     public DbSet<CoursesCart> Carts { get; set; }
     public DbSet<CartItem> CartItems { get; set; }
+
+    public DbSet<Invoice> Orders { get; set; }
+
     #endregion
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -65,7 +68,7 @@ public class MentalHealthDbContext : IdentityDbContext<User>
         modelBuilder.ConfigureCourse();
         modelBuilder.ConfigureCourseLesson();
         modelBuilder.ConfigureAdvertisement();
-        modelBuilder.ConfigureAdmin(); 
+        modelBuilder.ConfigureAdmin();
         modelBuilder.ConfigureCategory();
         modelBuilder.ConfigureInstructor();
         modelBuilder.ConfigureLogs();
@@ -73,6 +76,5 @@ public class MentalHealthDbContext : IdentityDbContext<User>
         modelBuilder.ConfigureEnrollmentDetails();
         modelBuilder.CoursePromoCodeConfiguration();
         modelBuilder.ConfigureCart();
-
     }
 }

@@ -16,6 +16,7 @@ public class CourseRepository(
     {
         try
         {
+
             await dbContext.Courses.AddAsync(course);
             await dbContext.SaveChangesAsync();
         }

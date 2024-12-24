@@ -25,15 +25,18 @@ public class DeleteFromCartCommandHandler(
         var currentUser = userContext.GetCurrentUser();
         if (currentUser == null || !currentUser.HasRole(UserRoles.User))
         {
-            logger.LogWarning("Unauthorized attempt to delete from cart by user: {UserId}", currentUser?.Id);
+            logger.LogWarning("Unauthorized attempt to delete course from cart by user: {UserId}", currentUser?.Id);
             throw new ForBidenException("You do not have permission to delete items from the cart.");
         }
 
-        logger.LogInformation("Attempting to remove the cart for user: {UserId}", currentUser.Id);
+        logger.LogInformation("Attempting to remove course with ID {CourseId} from the cart for user: {UserId}", request.CourseId, currentUser.Id);
 
-        // Use repository method to remove the cart
-        await cartRepository.RemoveCartAsync(currentUser.Id);
+        // Use repository method to remove the course from the cart
+        await cartRepository.RemoveItemFromCartAsync(
+            currentUser.Id
+            ,request.CourseId
+        );
 
-        logger.LogInformation("Successfully removed the cart for user: {UserId}", currentUser.Id);
+        logger.LogInformation("Successfully removed course with ID {CourseId} from the cart for user: {UserId}", request.CourseId, currentUser.Id);
     }
 }
