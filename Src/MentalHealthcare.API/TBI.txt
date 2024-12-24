@@ -1,1 +1,3 @@
 //background service to delete expired promocodes
+// remove unconfirmed mails
+// check the active promocodes before return 

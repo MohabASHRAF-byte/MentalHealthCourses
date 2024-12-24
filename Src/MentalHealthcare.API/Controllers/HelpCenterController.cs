@@ -4,6 +4,7 @@ using MentalHealthcare.Application.HelpCenterItem.Commands.Create;
 using MentalHealthcare.Application.HelpCenterItem.Commands.Delete;
 using MentalHealthcare.Application.HelpCenterItem.Commands.Update;
 using MentalHealthcare.Application.HelpCenterItem.Queries;
+using MentalHealthcare.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -24,6 +25,8 @@ public class HelpCenterController(
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [SwaggerOperation(Description = HelpCenterControllerDocs.HelpCenterPostDescription)]
+    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
+
     public async Task<IActionResult> Post(CreateHelpCenterItemCommand command)
     {
         await mediator.Send(command);
@@ -35,6 +38,8 @@ public class HelpCenterController(
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
+
     public async Task<IActionResult> Delete(DeleteHelpCenterItemCommand command)
     {
         await mediator.Send(command);
@@ -50,6 +55,8 @@ public class HelpCenterController(
         Description = HelpCenterControllerDocs.HelpCenterGetDescription
     )]
     [AllowAnonymous]
+    [ApiExplorerSettings(GroupName = Global.SharedVersion)]
+
     public async Task<IActionResult> GetTerm([FromQuery]GetHelpCenterItemQuery query)
     {
         var terms = await mediator.Send(query);
@@ -64,6 +71,8 @@ public class HelpCenterController(
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
+
     public async Task<IActionResult> Update(UpdateHelpCenterCommand command)
     {
         await mediator.Send(command);

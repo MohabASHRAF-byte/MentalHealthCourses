@@ -2,6 +2,10 @@ namespace MentalHealthcare.Domain.Constants;
 
 public class Global
 {
+    public const string MobileVersion = "MobileApp";
+    public const string DashboardVersion = "Dashboard";
+    public const string SharedVersion = "Shared";
+    public const string DevelopmentVersion = "Development";
     public const string Roles = "Roles";
     public const string PassCode = "TokenPassCode";
     public const string ProgramName = "MentalHealthcare";

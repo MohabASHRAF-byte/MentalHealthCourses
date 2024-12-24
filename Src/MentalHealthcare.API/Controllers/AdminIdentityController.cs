@@ -27,6 +27,7 @@ namespace MentalHealthcare.API.Controllers;
 [ApiController]
 [SwaggerTag("\"Tenant\": just ignore sending tenant in any request",
     externalDocsUrl:"https://docs.google.com/document/d/1ZaLmmSHN9umbdhm02yTflUtidZUqavGue2xxfO4HNcw/edit?tab=t.0")]
+[ApiExplorerSettings(GroupName = Global.DashboardVersion)]
 
 [Route("admin/")]
 public class AdminIdentityController(

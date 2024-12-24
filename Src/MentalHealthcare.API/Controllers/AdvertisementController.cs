@@ -6,6 +6,7 @@ using MentalHealthcare.Application.Advertisement.Commands.Update;
 using MentalHealthcare.Application.Advertisement.Queries.GetAll;
 using MentalHealthcare.Application.Advertisement.Queries.GetById;
 using MentalHealthcare.Application.Common;
+using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,8 @@ namespace MentalHealthcare.API.Controllers;
 [ApiController]
 [Route("[controller]")]
 [Authorize(AuthenticationSchemes = "Bearer")]
+[ApiExplorerSettings(GroupName = Global.DashboardVersion)]
+
 
 public class AdvertisementController(
     IMediator mediator

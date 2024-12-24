@@ -7,6 +7,7 @@ using MentalHealthcare.Application.PromoCode.Course.Commands.DeleteCoursePromoCo
 using MentalHealthcare.Application.PromoCode.Course.Commands.UpdateCoursePromoCode;
 using MentalHealthcare.Application.PromoCode.Course.queries.GetAllPromoCodesWithCourseId;
 using MentalHealthcare.Application.PromoCode.Course.queries.GetCoursePromoCode;
+using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos.PromoCode;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -15,6 +16,8 @@ namespace MentalHealthcare.API.Controllers.PromoCode;
 
 [ApiController]
 [Route("api/CoursePromoCode")]
+[ApiExplorerSettings(GroupName = Global.DashboardVersion)]
+
 public class CoursePromoCodeController(
     IMediator mediator
 ) : ControllerBase

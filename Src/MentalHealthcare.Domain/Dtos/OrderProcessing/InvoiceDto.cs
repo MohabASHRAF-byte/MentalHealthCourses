@@ -1,22 +1,17 @@
 using MentalHealthcare.Domain.Constants;
-using MentalHealthcare.Domain.Dtos.OrderProcessing;
 
-namespace MentalHealthcare.Domain.Entities.OrderProcessing;
+namespace MentalHealthcare.Domain.Dtos.OrderProcessing;
 
-public class Invoice
+public class InvoiceDto
 {
-
     public int InvoiceId { get; set; }
 
     //
     public string UserId { get; set; }
-    public User User { get; set; }
-
-    //
-    public int? AdminId { get; set; }
-
-    public Admin? Admin { get; set; }
-
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
+    public string? Email { get; set; }
+    public string? PhoneNumber { get; set; }
     //
     public string Notes { get; set; } = string.Empty;
     public int NumberOfItems { set; get; } = 0;

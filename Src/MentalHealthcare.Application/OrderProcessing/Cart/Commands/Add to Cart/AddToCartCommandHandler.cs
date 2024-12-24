@@ -1,8 +1,6 @@
-using AutoMapper;
 using MediatR;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
-using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Entities.OrderProcessing;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
@@ -13,7 +11,6 @@ namespace MentalHealthcare.Application.OrderProcessing.Cart.Commands.Add_to_Cart
 
 public class AddToCartCommandHandler(
     ILogger<AddToCartCommandHandler> logger,
-    IMapper mapper,
     ICartRepository cartRepository,
     ICourseRepository courseRepository,
     IUserContext userContext

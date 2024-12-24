@@ -58,6 +58,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICoursePromoCodeRepository, CoursePromoCodeRepository>();
         services.AddScoped<IGeneralPromoCodeRepository, GeneralPromoCodeRepository>();
         services.AddScoped<ICartRepository, CartRepository>();
+        services.AddScoped<IInvoiceRepository, InvoiceRepository>();
     }
 
     private static void AddIdentity(this IServiceCollection services)

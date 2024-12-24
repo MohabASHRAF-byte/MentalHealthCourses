@@ -4,7 +4,6 @@ using MentalHealthcare.Application.BunnyServices;
 using MentalHealthcare.Application.BunnyServices.VideoContent.Collection.Add;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
-using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Domain.Repositories.Course;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -62,7 +61,6 @@ public class CreateCourseCommandHandler(
     ILogger<CreateCourseCommandHandler> logger,
     IMapper mapper,
     ICourseRepository courseRepository,
-    IMediator mediator,
     IConfiguration configuration
     ): IRequestHandler<CreateCourseCommand, CreateCourseCommandResponse>
 {

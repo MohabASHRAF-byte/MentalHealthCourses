@@ -51,7 +51,7 @@ public class MentalHealthDbContext : IdentityDbContext<User>
     public DbSet<CoursesCart> Carts { get; set; }
     public DbSet<CartItem> CartItems { get; set; }
 
-    public DbSet<Invoice> Orders { get; set; }
+    public DbSet<Invoice> Invoices { get; set; }
 
     #endregion
 
@@ -76,5 +76,6 @@ public class MentalHealthDbContext : IdentityDbContext<User>
         modelBuilder.ConfigureEnrollmentDetails();
         modelBuilder.CoursePromoCodeConfiguration();
         modelBuilder.ConfigureCart();
+        modelBuilder.ConfigureInvoice();
     }
 }

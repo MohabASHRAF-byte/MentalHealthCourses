@@ -1,4 +1,3 @@
-using AutoMapper;
 using MediatR;
 using MentalHealthcare.Application.Common;
 using MentalHealthcare.Domain.Dtos.course;
@@ -12,7 +11,6 @@ namespace MentalHealthcare.Application.Courses.Sections.Queries.Get_All;
 /// </summary>
 public class GetAllCourseSectionsQueryHandler(
     ILogger<GetAllCourseSectionsQueryHandler> logger,
-    IMapper mapper,
     ICourseSectionRepository sectionRepository
 ) : IRequestHandler<GetAllCourseSectionsQuery, PageResult<CourseSectionViewDto>>
 {

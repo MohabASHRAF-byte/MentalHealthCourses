@@ -1,4 +1,5 @@
 using AutoMapper;
+using MentalHealthcare.Application.OrderProcessing.Order.Commands.Calculate_value;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos.OrderProcessing;
 using MentalHealthcare.Domain.Entities.OrderProcessing;
@@ -18,5 +19,7 @@ public class OrderProcessingProfile : Profile
             .ForMember(dest => dest.InvoiceId, opt => opt.Ignore()) // Ignore OrderId (it's generated separately)
             .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(_ => DateTime.UtcNow)) // Set current date
             .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(_ => OrderStatus.Pending)); // Default status
+        CreateMap<InvoiceCourse, CourseCartDto>().ReverseMap();
+        CreateMap<CartDto, CalculateInvoiceResponse>().ReverseMap();
     }
 }

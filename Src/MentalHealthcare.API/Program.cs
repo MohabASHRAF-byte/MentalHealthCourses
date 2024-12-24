@@ -58,7 +58,13 @@ try
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
-        app.UseSwaggerUI();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/Dashboard/swagger.json", "Dashboard API v1");
+            c.SwaggerEndpoint("/swagger/MobileApp/swagger.json", "Mobile App API v1");
+            c.SwaggerEndpoint("/swagger/Development/swagger.json", "Development API v1"); // Ensure this is included
+
+        });
     }
 
     app.Run();
