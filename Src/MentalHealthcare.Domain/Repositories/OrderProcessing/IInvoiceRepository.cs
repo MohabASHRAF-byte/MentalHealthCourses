@@ -28,5 +28,10 @@ public interface IInvoiceRepository
         List<MiniCourse> courses,
         decimal discount,
         string adminId
-        );
+    );
+
+    public Task ChangeInvoiceState(
+        int invoiceId,
+        OrderStatus status
+    );
 }

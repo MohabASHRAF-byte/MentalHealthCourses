@@ -272,4 +272,68 @@ public class InvoiceRepository(
             throw;
         }
     }
+
+    public async Task ChangeInvoiceState(int invoiceId, OrderStatus status)
+    {
+        var invoice = await dbContext.Invoices.FirstOrDefaultAsync(i => i.InvoiceId == invoiceId);
+
+        if (invoice == null)
+        {
+            throw new ArgumentException("Invoice not found.", nameof(invoiceId));
+        }
+
+        // Check if the provided status is a valid enum value
+        if (!Enum.IsDefined(typeof(OrderStatus), status))
+        {
+            throw new ArgumentException("Invalid order status provided.", nameof(status));
+        }
+
+        // Handle state transitions
+        switch (status)
+        {
+            case OrderStatus.Expired:
+                if (invoice.OrderStatus == OrderStatus.Pending)
+                {
+                    invoice.OrderStatus = OrderStatus.Expired;
+                }
+                else
+                {
+                    throw new InvalidOperationException(
+                        "Can only change to 'Expired' if the current status is 'Pending'.");
+                }
+
+                break;
+
+            case OrderStatus.Pending:
+                if (invoice.OrderStatus == OrderStatus.Expired || invoice.OrderStatus == OrderStatus.Cancelled)
+                {
+                    invoice.OrderStatus = OrderStatus.Pending;
+                }
+                else
+                {
+                    throw new InvalidOperationException(
+                        "Can only change to 'Pending' if the current status is 'Expired' or 'Cancelled'.");
+                }
+
+                break;
+
+            case OrderStatus.Cancelled:
+                if (invoice.OrderStatus == OrderStatus.Pending)
+                {
+                    invoice.OrderStatus = OrderStatus.Cancelled;
+                }
+                else
+                {
+                    throw new InvalidOperationException(
+                        "Can only change to 'Cancelled' if the current status is 'Pending'.");
+                }
+
+                break;
+
+            default:
+                throw new InvalidOperationException($"Changing to status '{status}' is not allowed.");
+        }
+
+        await dbContext.SaveChangesAsync();
+    }
 }

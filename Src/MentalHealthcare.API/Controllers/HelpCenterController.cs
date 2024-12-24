@@ -15,6 +15,8 @@ namespace MentalHealthcare.API.Controllers;
 [ApiController]
 [Route("HelpCenter")]
 [Authorize(AuthenticationSchemes = "Bearer")]
+[ApiExplorerSettings(GroupName = Global.DashboardVersion)]
+
 
 public class HelpCenterController(
     IMediator mediator
@@ -25,13 +27,10 @@ public class HelpCenterController(
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [SwaggerOperation(Description = HelpCenterControllerDocs.HelpCenterPostDescription)]
-    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
 
     public async Task<IActionResult> Post(CreateHelpCenterItemCommand command)
     {
         await mediator.Send(command);
-        //todo 
-        // createdataction
         return NoContent();
     }
     

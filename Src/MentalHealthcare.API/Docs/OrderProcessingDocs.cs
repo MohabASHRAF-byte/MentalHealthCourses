@@ -146,7 +146,7 @@ public static class OrderProcessingDocs
                                                 """;
 
     public const string GetAllInvoicesDescription = """
-                                                    
+
                                                     ### Get All Invoices
                                                     Retrieves a paginated list of invoices based on query parameters. The endpoint is authorized and requires the caller to provide a valid Bearer token.
 
@@ -186,6 +186,7 @@ public static class OrderProcessingDocs
                                                     Authorization: Bearer <token>
                                                     ```
                                                     """;
+
     public const string CalculateInvoiceDescription = """
                                                       Calculates the value of an invoice based on the provided courses, discount percentage, and tax percentage.
 
@@ -221,4 +222,90 @@ public static class OrderProcessingDocs
                                                       - Returns a recalculated invoice with updated prices, discounts, taxes, and total values.
                                                       """;
 
+    public const string AcceptInvoiceDescription = """
+                                                   ### Accept Invoice
+                                                   This API allows an admin to accept an invoice, potentially modify the discount, and update the courses in the invoice. The caller must be authenticated with a valid Bearer token.
+
+                                                   #### Request Parameters:
+                                                   - **Path Parameter**:
+                                                     - `invoiceId` (int, required): The ID of the invoice to accept.
+                                                   - **Request Body**:
+                                                     - `AcceptInvoiceCommand` (required):
+                                                       - **Courses**: A list of courses in the invoice, each with its ID and price. You can pass fewer courses than originally in the invoice (indicating removal), but you cannot pass courses that were not part of the original invoice.
+                                                       - **Discount**: The new discount value to apply to the invoice.
+
+                                                   #### Constraints:
+                                                   - Courses passed must already exist in the original invoice.
+                                                   - Courses not included in the request will be removed from the invoice.
+                                                   - The admin can override the discount value by passing a new one.
+
+                                                   #### Response:
+                                                   - **204 No Content**: If the operation is successful.
+                                                   - **400 Bad Request**: If any invalid course IDs are passed or the invoice is not in a pending state.
+                                                   - **401 Unauthorized**: If the caller is not authenticated.
+                                                   #### Example Usage:
+                                                   ```http
+                                                   POST /api/invoices/123/accept
+                                                   Authorization: Bearer <token>
+                                                   Content-Type: application/json
+
+                                                   {
+                                                     "Courses": [
+                                                       { "CourseId": 1, "Price": 100.0 },
+                                                       { "CourseId": 2, "Price": 200.0 }
+                                                     ],
+                                                     "Discount": 10.0
+                                                   }
+                                                   ```
+
+                                                   #### Notes:
+                                                   - If the discount passed differs from the original invoice, it will be updated with the new value.
+                                                   - Any course not passed in the request will be removed from the invoice.
+                                                   - The API ensures that all passed course IDs are valid and belong to the original invoice.
+                                                   """;
+
+    public const string ChangeInvoiceStateDescription = """
+                                                        Changes the state of an invoice to a specified order status.
+
+                                                        #### Allowed Transitions:
+                                                        - **To Expired**: Can only change if the current status is `Pending`.
+                                                        - **To Pending**: Can only change if the current status is `Expired` or `Cancelled`.
+                                                        - **To Cancelled**: Can only change if the current status is `Pending`.
+
+                                                        #### Request Parameters:
+                                                        - **Path Parameter**:
+                                                          - `invoiceId` (int, required): The ID of the invoice to update.
+                                                        - **Request Body**:
+                                                          - `status` (OrderStatus, required): The target status to which the invoice should be updated.
+
+                                                        #### OrderStatus Enum Values:
+                                                        - `0` - Pending
+                                                        - `1` - Done (not allowed through this API)
+                                                        - `2` - Cancelled
+                                                        - `3` - Expired
+
+                                                        #### Constraints:
+                                                        - If the provided `status` is invalid or does not exist in the `OrderStatus` enum, an exception will be thrown.
+                                                        - Transitioning to `Done` is not allowed through this API.
+
+                                                        #### Response:
+                                                        - **204 No Content**: If the state transition is successful.
+                                                        - **400 Bad Request**: If the provided status is invalid or the transition is not allowed.
+                                                        - **404 Not Found**: If the invoice does not exist.
+                                                        - **500 Internal Server Error**: For unexpected errors.
+
+                                                        #### Example Usage:
+                                                        ```http
+                                                        PATCH /api/invoices/123/state
+                                                        Content-Type: application/json
+
+                                                        {
+                                                          "status": 2
+                                                        }
+                                                        ```
+
+                                                        #### Notes:
+                                                        - The API validates the state transitions based on the current invoice status.
+                                                        - Ensure the correct `OrderStatus` value is passed as part of the request.
+                                                        """;
 }
