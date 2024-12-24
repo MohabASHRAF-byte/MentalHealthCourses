@@ -66,7 +66,7 @@ public static class WebApplicationExtensions
                     return true;
 
                 if (docName == Global.DevelopmentVersion && 
-                    (apiDesc.GroupName == Global.DevelopmentVersion || apiDesc.GroupName == Global.SharedVersion))
+                    apiDesc.GroupName == Global.DevelopmentVersion )
                     return true;
 
                 return false;

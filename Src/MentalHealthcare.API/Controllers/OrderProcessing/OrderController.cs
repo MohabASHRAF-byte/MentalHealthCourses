@@ -16,7 +16,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace MentalHealthcare.API.Controllers.OrderProcessing;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/orders")]
 [ApiExplorerSettings(GroupName = Global.DevelopmentVersion)]
 public class OrderController(
     IMediator mediator
@@ -25,8 +25,8 @@ public class OrderController(
     [Authorize(AuthenticationSchemes = "Bearer")]
     [HttpPost]
     [ApiExplorerSettings(GroupName = Global.MobileVersion)]
-
-    public async Task<IActionResult> post([FromBody] PlaceOrderCommand command)
+    [SwaggerOperation(Summary = "Place a new order.", Description = "Creates a new order for the authenticated user.")]
+    public async Task<IActionResult> PlaceOrder([FromBody] PlaceOrderCommand command)
     {
         var res = await mediator.Send(command);
         return Ok(res);
@@ -35,9 +35,8 @@ public class OrderController(
     [Authorize(AuthenticationSchemes = "Bearer")]
     [HttpGet]
     [ProducesResponseType(typeof(PageResult<InvoiceDto>), 200)]
-    [SwaggerOperation(Description = OrderProcessingDocs.GetAllInvoicesDescription)]
+    [SwaggerOperation(Summary = "Retrieve all orders.", Description = OrderProcessingDocs.GetAllInvoicesDescription)]
     [ApiExplorerSettings(GroupName = Global.SharedVersion)]
-
     public async Task<IActionResult> GetAllOrders([FromQuery] GetAllInvoicesQuery query)
     {
         var res = await mediator.Send(query);
@@ -46,9 +45,8 @@ public class OrderController(
 
     [Authorize(AuthenticationSchemes = "Bearer")]
     [HttpGet("{invoiceId}")]
-    [SwaggerOperation(Description = OrderProcessingDocs.GetInvoiceDescription)]
+    [SwaggerOperation(Summary = "Retrieve a specific invoice.", Description = OrderProcessingDocs.GetInvoiceDescription)]
     [ApiExplorerSettings(GroupName = Global.SharedVersion)]
-
     public async Task<IActionResult> GetInvoice([FromRoute] int invoiceId)
     {
         var query = new GetInvoiceQuery()
@@ -60,11 +58,10 @@ public class OrderController(
     }
 
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [HttpPost("CalculateInvoiceValue")]
-    [SwaggerOperation(Description = OrderProcessingDocs.CalculateInvoiceDescription)]
+    [HttpPost("calculate-value")]
+    [SwaggerOperation(Summary = "Calculate invoice value.", Description = OrderProcessingDocs.CalculateInvoiceDescription)]
     [ProducesResponseType(typeof(CalculateInvoiceResponse), 200)]
     [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
-
     public async Task<IActionResult> CalculateInvoice([FromBody] CalculateInvoice command)
     {
         var res = await mediator.Send(command);
@@ -73,9 +70,8 @@ public class OrderController(
 
     [Authorize(AuthenticationSchemes = "Bearer")]
     [HttpPost("{invoiceId}/accept")]
-    [SwaggerOperation(Description = OrderProcessingDocs.AcceptInvoiceDescription)]
+    [SwaggerOperation(Summary = "Accept an invoice.", Description = OrderProcessingDocs.AcceptInvoiceDescription)]
     [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
-
     public async Task<IActionResult> AcceptInvoice([FromRoute] int invoiceId,
         [FromBody] AcceptInvoiceCommand command
     )
@@ -86,16 +82,12 @@ public class OrderController(
     }
 
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [HttpPost("{invoiceId}/status")]
-    [SwaggerOperation(Description = OrderProcessingDocs.ChangeInvoiceStateDescription)]
+    [HttpPatch("{invoiceId}/state")]
+    [SwaggerOperation(Summary = "Change invoice state.", Description = OrderProcessingDocs.ChangeInvoiceStateDescription)]
     [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
-
-    public async Task<IActionResult> ChangeInvoiceStatus([FromRoute] int invoiceId)
+    public async Task<IActionResult> ChangeInvoiceStatus([FromRoute] int invoiceId, [FromBody] ChangeInvoiceStateCommand command)
     {
-        var command = new ChangeInvoiceStateCommand()
-        {
-            InvoiceId = invoiceId
-        };
+        command.InvoiceId = invoiceId;
         await mediator.Send(command);
         return NoContent();
     }
