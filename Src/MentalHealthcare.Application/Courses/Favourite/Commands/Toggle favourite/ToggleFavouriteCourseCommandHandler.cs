@@ -11,8 +11,7 @@ public class ToggleFavouriteCourseCommandHandler(
     ILogger<ToggleFavouriteCourseCommandHandler> logger,
     IUserContext userContext,
     ICourseFavouriteRepository favouriteRepository
-    
-    ): IRequestHandler<ToggleFavouriteCourseCommand>
+) : IRequestHandler<ToggleFavouriteCourseCommand>
 {
     public async Task Handle(ToggleFavouriteCourseCommand request, CancellationToken cancellationToken)
     {
@@ -24,8 +23,9 @@ public class ToggleFavouriteCourseCommandHandler(
         }
 
 
-
-       await favouriteRepository.ToggleFavouriteCourseAsync(request.CourseId, currentUser.Id);
-
+        await favouriteRepository.ToggleFavouriteCourseAsync(
+            request.CourseId,
+            currentUser.SysUserId!.Value
+        );
     }
 }

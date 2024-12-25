@@ -17,10 +17,10 @@ public class UserRepository(
         var errors = new List<string>();
         var existingUser = await dbContext.Users
             .Where(u =>
-                u.NormalizedUserName== user.UserName ||
-                u.Email ==user.Email
+                u.NormalizedUserName == user.UserName ||
+                u.Email == user.Email
             ).ToListAsync();
-        var validUserName =! existingUser.Any(u =>
+        var validUserName = !existingUser.Any(u =>
             u.NormalizedUserName!.Equals(user.UserName));
         var validEmail = !existingUser.Any(u => u.Email!.Equals(user.Email));
         if (!validUserName)
@@ -141,5 +141,17 @@ public class UserRepository(
             .Where(u => u.PhoneNumber == phoneNumber && u.Tenant == tenant)
             .FirstOrDefaultAsync();
         return user;
+    }
+
+    public async Task<(int? systemUserId, int? adminId)> GetSystemUserOrAdminIdByIdentityIdAsync(string userId)
+    {
+        var systemUser = await dbContext.SystemUsers
+            .Where(su => su.UserId == userId)
+            .FirstOrDefaultAsync();
+
+        var adminUser = await dbContext.Admins
+            .Where(au => au.UserId == userId)
+            .FirstOrDefaultAsync();
+        return (systemUser?.SystemUserId, adminUser?.AdminId);
     }
 }

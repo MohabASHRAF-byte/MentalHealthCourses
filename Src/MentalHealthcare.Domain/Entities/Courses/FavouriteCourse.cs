@@ -7,6 +7,6 @@ public class FavouriteCourse
     public int CourseId { get; set; }
     public Course Course { get; set; }
 
-    public string UserId { get; set; }
-    public User User { get; set; }
+    public int SystemUserId { get; set; }
+    public SystemUser SystemUser { get; set; }
 }

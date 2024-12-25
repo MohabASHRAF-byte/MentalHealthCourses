@@ -246,13 +246,8 @@ public class InvoiceRepository(
                     courseEntity.EnrollmentsCount += 1;
                 }
 
-                // Check if user already has the course
-                var existingCourseProgress = await dbContext
-                    .CourseProgresses
-                    .FirstOrDefaultAsync(
-                        cp => cp.CourseId == course.CourseId &&
-                              cp.UserId == invoice.UserId
-                    );
+                //todo: Check if user already has the course
+                var existingCourseProgress = new CourseProgress();
                 if (existingCourseProgress != null)
                 {
                     throw new ArgumentException($"User already has course with ID: {course.CourseId}");
@@ -261,7 +256,8 @@ public class InvoiceRepository(
                 var courseProgress = new CourseProgress
                 {
                     CourseId = course.CourseId,
-                    UserId = invoice.UserId,
+                    //todo:update dynamic
+                    SystemUserId =1,
                     LastLessonIdx = 0,
                     LastChange = DateTime.UtcNow
                 };

@@ -5,7 +5,6 @@ using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
 namespace MentalHealthcare.Application.Courses.Favourite.Queries.GetFavouriteCourse;
@@ -19,25 +18,43 @@ public class GetFavouriteCoursesQueryHandler(
     public async Task<PageResult<CourseViewDto>> Handle(GetFavouriteCoursesQuery request,
         CancellationToken cancellationToken)
     {
+        // Log start of the process
+        logger.LogInformation(
+            "Handling GetFavouriteCoursesQuery for PageNumber: {PageNumber}, PageSize: {PageSize}, Search: {SearchTerm}",
+            request.PageNumber, request.PageSize, request.Search);
+
         var currentUser = userContext.GetCurrentUser();
         if (currentUser == null || !currentUser.HasRole(UserRoles.User))
         {
-            logger.LogWarning("Unauthorized attempt to delete from cart by user: {UserId}", currentUser?.Id);
-            throw new ForBidenException("You do not have permission to delete items from the cart.");
+            logger.LogWarning("Unauthorized attempt to access favourite courses by user: {UserId}", currentUser?.Id);
+            throw new ForBidenException("You do not have permission to access favourite courses.");
         }
 
-        var (count, courses) = await favouriteRepository.GetUserFavourites(
-            currentUser.Id,
-            request.PageNumber,
-            request.PageSize,
-            request.Search ?? ""
-        );
+        try
+        {
+            // Fetch user favourites
+            var (count, courses) = await favouriteRepository.GetUserFavourites(
+                currentUser.SysUserId!.Value,
+                request.PageNumber,
+                request.PageSize,
+                request.Search ?? ""
+            );
 
-        return new PageResult<CourseViewDto>(
-            courses,
-            count,
-            pageNumber: request.PageNumber,
-            pageSize: request.PageSize
-        );
+            // Log successful fetch
+            logger.LogInformation("Fetched {CourseCount} courses out of {TotalCount} for user {UserId}",
+                courses.Count, count, currentUser.Id);
+
+            return new PageResult<CourseViewDto>(
+                courses,
+                count,
+                pageNumber: request.PageNumber,
+                pageSize: request.PageSize
+            );
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occurred while fetching favourite courses for user {UserId}", currentUser.Id);
+            throw;
+        }
     }
 }

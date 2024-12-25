@@ -1,4 +1,5 @@
 using MentalHealthcare.Domain.Dtos;
+using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Entities.Courses;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
@@ -11,16 +12,11 @@ public class CourseFavouriteRepository(
     MentalHealthDbContext dbContext
 ) : ICourseFavouriteRepository
 {
-    public async Task ToggleFavouriteCourseAsync(int courseId, string userId)
+    public async Task ToggleFavouriteCourseAsync(int courseId, int userId)
     {
-        if (string.IsNullOrEmpty(userId))
-        {
-            throw new ArgumentNullException(nameof(userId), "User ID cannot be null or empty.");
-        }
-
         // Check if a favourite course already exists for the given courseId and userId
         var existingFavourite = await dbContext.FavouriteCourses
-            .FirstOrDefaultAsync(fc => fc.CourseId == courseId && fc.UserId == userId);
+            .FirstOrDefaultAsync(fc => fc.CourseId == courseId && fc.SystemUserId == userId);
 
         if (existingFavourite != null)
         {
@@ -33,7 +29,7 @@ public class CourseFavouriteRepository(
             var newFavourite = new FavouriteCourse
             {
                 CourseId = courseId,
-                UserId = userId
+                SystemUserId = userId
             };
             await dbContext.FavouriteCourses.AddAsync(newFavourite);
         }
@@ -43,14 +39,14 @@ public class CourseFavouriteRepository(
     }
 
     public async Task<(int count, List<CourseViewDto> courses)> GetUserFavourites(
-        string userId, int pageNumber,
+        int userId, int pageNumber,
         int pageSize, string searchTerm
     )
     {
         // Start with all favourite courses for the user
         var query = dbContext.FavouriteCourses
             .AsNoTracking()
-            .Where(fc => fc.UserId == userId)
+            .Where(fc => fc.SystemUserId == userId)
             .Include(fc => fc.Course)
             .AsQueryable();
 
@@ -81,11 +77,16 @@ public class CourseFavouriteRepository(
                     (fc.Course.ReviewsCount > 0 ? fc.Course.Rating / fc.Course.ReviewsCount : 0),
                 ReviewsCount = fc.Course.ReviewsCount,
                 EnrollmentsCount = fc.Course.EnrollmentsCount,
-                IsOwned = dbContext.CourseProgresses.Any(cp =>
-                    cp.UserId == userId && cp.CourseId == fc.Course.CourseId) 
+                IsOwned = false
             })
+            //todo: update progress
             .ToListAsync();
 
         return (totalCount, courses);
     }
+
+    // public async Task<(int count, List<SystemUser> courses)> GetUsersWhoFavouriteCourse(int courseId, int pageNumber, int pageSize, string? searchTerm)
+    // {
+    //     var query = dbContext.FavouriteCourses.AsNoTracking().AsQueryable();
+    // }
 }

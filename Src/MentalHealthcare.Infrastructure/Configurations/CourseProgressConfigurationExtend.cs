@@ -14,9 +14,9 @@ public static class CourseProgressConfigurationExtend{
             #endregion
 
             #region Relationships
-            entity.HasOne(cp => cp.User)
+            entity.HasOne(cp => cp.SystemUser)
                 .WithMany()
-                .HasForeignKey(cp => cp.UserId)
+                .HasForeignKey(cp => cp.SystemUserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             entity.HasOne(cp => cp.Course)

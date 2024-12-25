@@ -16,17 +16,49 @@ internal class UserContext(
     public CurrentUser? GetCurrentUser()
     {
         var user = httpContextAccessor.HttpContext?.User;
+
         if (user == null)
+        {
             throw new InvalidOperationException("User Context is not present");
+        }
+
         if (user.Identity == null || !user.Identity.IsAuthenticated)
+        {
             return null;
-        var id = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-        var userName = user.FindFirst(c => c.Type == ClaimTypes.Name)?.Value;
-        var Roles = user.FindFirst(c => c.Type == Global.Roles)?.Value;
-        var Tenant = user.FindFirst(c => c.Type == Global.TenantClaimType)?.Value;
-        //todo handle nulls to avoid conflicts
-        int.TryParse(Roles, out var roles);
-        var currentUser = new CurrentUser(id!, userName!, roles, Tenant);
-        return currentUser;
+        }
+
+        var id = user.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userName = user.FindFirstValue(ClaimTypes.Name);
+        var rolesClaim = user.FindFirstValue(Global.Roles);
+        var tenant = user.FindFirstValue(Global.TenantClaimType);
+        var systemUserClaim = user.FindFirstValue(Global.UserIdClaimType);
+        var adminClaim = user.FindFirstValue(Global.AdminIdClaimType);
+
+        int? systemUserId = null;
+        int? adminId = null;
+
+        if (int.TryParse(systemUserClaim, out var parsedSystemUserId))
+        {
+            systemUserId = parsedSystemUserId;
+        }
+
+        if (int.TryParse(adminClaim, out var parsedAdminId))
+        {
+            adminId = parsedAdminId;
+        }
+
+        if (!int.TryParse(rolesClaim, out var roles))
+        {
+            roles = 0; 
+        }
+
+        return new CurrentUser(
+            id!,
+            userName!,
+            roles,
+            tenant ?? "",
+            systemUserId,
+            adminId
+        );
     }
 }

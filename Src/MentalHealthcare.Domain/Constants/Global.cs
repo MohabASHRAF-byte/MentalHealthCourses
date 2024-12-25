@@ -15,7 +15,7 @@ public class Global
     public const int TitleMaxLength = 100;
     public const int MaxNameLength = 50;
     public const string AdminIdClaimType = "AdminId";
-    public const string UserIdClaimType = "AdminId";
+    public const string UserIdClaimType = "UserId";
     public static string CourseThumbnailDirectory = "CoursesThumbnails";
     public static string ThumbnailFileExtension = ".jpeg";
 
