@@ -39,14 +39,19 @@ public class PlaceOrderCommandHandler(
             PromoCode = request.PromoCode
         };
         var cart = await mediator.Send(getCartQuery, cancellationToken);
-
+        if (cart.NumberOfItems < 1)
+        {
+            logger.LogInformation("the Cart items count is less than 1.");
+            throw new ArgumentException("The cart is empty.");
+        }
         logger.LogInformation("Mapping cart to invoice for user: {UserId}", currentUser.Id);
 
         // Map cart to invoice
         var invoice = mapper.Map<Invoice>(cart);
         invoice.OrderStatus = OrderStatus.Pending;
         invoice.OrderDate = DateTime.UtcNow;
-        invoice.UserId = currentUser.Id!;
+        invoice.UserID = currentUser.Id!;
+        invoice.SystemUserId = currentUser.SysUserId!.Value;
         invoice.Notes = request.Notes??"";
         invoice.PromoCode = request.PromoCode??"";
         logger.LogInformation("Saving invoice to database for user: {UserId}", currentUser.Id);

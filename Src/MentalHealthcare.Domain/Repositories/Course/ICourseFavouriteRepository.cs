@@ -16,8 +16,8 @@ public interface ICourseFavouriteRepository
         string searchTerm
     );
 
-    // public Task<(int count, List<SystemUser> courses)> GetUsersWhoFavouriteCourse(
-    //     int courseId, int pageNumber,
-    //     int pageSize, string? searchTerm
-    // );
+    public Task<(int count, List<SystemUser> users)> GetUsersWhoFavouriteCourseAsync(
+        int courseId, int pageNumber,
+        int pageSize, string? searchTerm
+    );
 }

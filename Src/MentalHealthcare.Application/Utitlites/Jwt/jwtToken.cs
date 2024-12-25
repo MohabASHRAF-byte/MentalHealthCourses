@@ -98,7 +98,8 @@ public class JwtToken(
         };
         // adding the roles 
         claims.Add(new Claim(Global.Roles, user.Roles.ToString()));
-        GenerateToken(out var token, claims, DateTime.Now.AddMinutes(30));
+        //todo: decrease time for production
+        GenerateToken(out var token, claims, DateTime.Now.AddDays(30));
         return token;
     }
 
@@ -116,6 +117,7 @@ public class JwtToken(
             new(Global.AdminIdClaimType, adminId?.ToString() ?? ""),
             new(Global.UserIdClaimType, sysUserId?.ToString() ?? ""),
         };
+        //todo: decrease time for production 
         GenerateToken(out var token, claims, DateTime.Now.AddDays(20));
         return token;
     }

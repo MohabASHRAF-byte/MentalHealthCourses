@@ -26,7 +26,7 @@ public class AcceptInvoiceCommandHandler(
             request.InvoiceId,
             request.Courses,
             request.Discount,
-            currentUser.Id
+            currentUser.AdminId!.Value
         );
     }
 }

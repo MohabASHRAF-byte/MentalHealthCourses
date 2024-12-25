@@ -5,11 +5,13 @@ namespace MentalHealthcare.Domain.Entities.OrderProcessing;
 
 public class Invoice
 {
-
     public int InvoiceId { get; set; }
 
     //
-    public string UserId { get; set; }
+    public int SystemUserId { get; set; }
+    public SystemUser SystemUser { get; set; }
+
+    public string UserID { get; set; }
     public User User { get; set; }
 
     //
@@ -30,6 +32,6 @@ public class Invoice
     public DateTime OrderDate { set; get; } = DateTime.UtcNow;
     public List<CourseOrderView> Courses { set; get; } = [];
     public OrderStatus OrderStatus { set; get; }
-    
+
     public DateTime ProcessedDate { set; get; } = DateTime.UtcNow;
 }

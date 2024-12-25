@@ -1,7 +1,6 @@
 using MentalHealthcare.Domain.Dtos;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Entities.Courses;
-using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
 using MentalHealthcare.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -85,8 +84,36 @@ public class CourseFavouriteRepository(
         return (totalCount, courses);
     }
 
-    // public async Task<(int count, List<SystemUser> courses)> GetUsersWhoFavouriteCourse(int courseId, int pageNumber, int pageSize, string? searchTerm)
-    // {
-    //     var query = dbContext.FavouriteCourses.AsNoTracking().AsQueryable();
-    // }
+    public async Task<(int count, List<SystemUser> users)> GetUsersWhoFavouriteCourseAsync(int courseId, int pageNumber,
+        int pageSize, string? searchTerm)
+    {
+        // Start by querying favourite courses for the given course ID
+        var query = dbContext.FavouriteCourses
+            .AsNoTracking()
+            .Where(fc => fc.CourseId == courseId)
+            .Include(fc => fc.SystemUser)
+            .AsQueryable();
+
+        // Apply search filter on user's name if a search term is provided
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            query = query.Where(fc =>
+                (fc.SystemUser.FName + " " + fc.SystemUser.LName)
+                .ToLower().Contains(searchTerm.ToLower())
+            );
+        }
+
+        // Get the total count of users before applying pagination
+        var totalCount = await query.CountAsync();
+
+        // Apply pagination and select the users
+        var users = await query
+            .OrderBy(fc => fc.SystemUser.FName) // Sort by user's first name
+            .Skip(pageSize * (pageNumber - 1))
+            .Take(pageSize)
+            .Select(fc => fc.SystemUser) // Select the user entity
+            .ToListAsync();
+
+        return (totalCount, users);
+    }
 }
