@@ -16,6 +16,7 @@ public class CourseRepository(
     {
         try
         {
+
             await dbContext.Courses.AddAsync(course);
             await dbContext.SaveChangesAsync();
         }
@@ -179,5 +180,10 @@ public class CourseRepository(
         }
 
         return videoName;
+    }
+
+    public async Task<bool> DoesCourseExist(int courseId)
+    {
+        return await dbContext.Courses.AnyAsync(c => c.CourseId == courseId);
     }
 }

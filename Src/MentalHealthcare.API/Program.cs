@@ -17,11 +17,12 @@ try
     builder.Services.AddScoped<GlobalErrorHandling>();
     builder.Services.AddScoped<RequestTimeLogging>();
     builder.Services.AddControllers();
-// builder.Services.AddControllers()
-//     .AddJsonOptions(options =>
-//     {
-//         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
-//     });
+    // builder.Services.AddControllers()
+    //     .AddJsonOptions(options =>
+    //     {
+    //         options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never;
+    //         options.JsonSerializerOptions.PropertyNamingPolicy = null; // Use PascalCase if required
+    //     });
 
 // Add CORS services
     builder.Services.AddCors(options =>
@@ -57,7 +58,13 @@ try
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
-        app.UseSwaggerUI();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/Dashboard/swagger.json", "Dashboard API v1");
+            c.SwaggerEndpoint("/swagger/MobileApp/swagger.json", "Mobile App API v1");
+            c.SwaggerEndpoint("/swagger/Development/swagger.json", "Development API v1"); // Ensure this is included
+
+        });
     }
 
     app.Run();

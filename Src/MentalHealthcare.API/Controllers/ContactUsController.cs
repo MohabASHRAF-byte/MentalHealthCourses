@@ -6,6 +6,7 @@ using MentalHealthcare.Application.ContactUs.Commands.Create;
 using MentalHealthcare.Application.ContactUs.Commands.Delete;
 using MentalHealthcare.Application.ContactUs.Queries.GetAll;
 using MentalHealthcare.Application.ContactUs.Queries.GetById;
+using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +25,8 @@ public class ContactUsController(
     [SwaggerOperation(Summary = "Create new contact us form",
         Description = ContactUsDocs.SubmitContactUsDescription)
     ]
+    [ApiExplorerSettings(GroupName = Global.MobileVersion)]
+
     public async Task<IActionResult> Post(SubmitContactUsCommand command)
     {
         var result = await mediator.Send(command);
@@ -33,6 +36,8 @@ public class ContactUsController(
     [HttpDelete]
     [SwaggerOperation(Summary = "Delete contact Msgs ",
         Description = "Delete all contact msgs with the passed ids")]
+    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
+
     public async Task<IActionResult> Delete(DeleteContactUsCommand command)
     {
         await mediator.Send(command);
@@ -43,6 +48,8 @@ public class ContactUsController(
     [Authorize(AuthenticationSchemes = "Bearer")]
 
     [ProducesResponseType(typeof(ContactUsForm), 200)]
+    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
+
     public async Task<IActionResult> GetFormId([FromRoute] int formId)
     {
         var query = new GetContactFormByIdQuery()
@@ -58,6 +65,8 @@ public class ContactUsController(
 
     [ProducesResponseType(typeof(PageResult<ContactUsForm>), 200)]
     [SwaggerOperation(Description = ContactUsDocs.GetAllFormsDescription)]
+    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
+
     public async Task<IActionResult> GetForms([FromQuery] GetAllContactFormsQuery query)
     {
         var result = await mediator.Send(query);
@@ -67,6 +76,8 @@ public class ContactUsController(
     [Authorize(AuthenticationSchemes = "Bearer")]
 
     [SwaggerOperation(Description = "Change the state with the passed id to the sent state")]
+    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
+
 
     public async Task<IActionResult> ReadState(ChangeReadStateCommand command)
     {

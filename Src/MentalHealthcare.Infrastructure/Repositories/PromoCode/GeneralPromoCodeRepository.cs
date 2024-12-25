@@ -73,6 +73,20 @@ public class GeneralPromoCodeRepository(
         await dbContext.SaveChangesAsync();
     }
 
+    public async Task<GeneralPromoCode?> GetGeneralPromoCodeByPromoCodeNameAsync(string promoCodeName)
+    {
+        if (string.IsNullOrWhiteSpace(promoCodeName))
+        {
+
+            throw new ArgumentException("Promo code name cannot be null or empty.", nameof(promoCodeName));
+        }
+
+        var promoCode = await dbContext.GeneralPromoCodes
+            .FirstOrDefaultAsync(p => p.Code == promoCodeName);
+
+        return promoCode;
+    }
+
     public async Task SaveChangesAsync()
     {
         await dbContext.SaveChangesAsync();

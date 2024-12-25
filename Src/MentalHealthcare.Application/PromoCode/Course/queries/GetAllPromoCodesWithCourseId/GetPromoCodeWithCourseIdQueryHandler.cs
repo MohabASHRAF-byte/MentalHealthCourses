@@ -9,7 +9,6 @@ namespace MentalHealthcare.Application.PromoCode.Course.queries.GetAllPromoCodes
 
 public class GetPromoCodeWithCourseIdQueryHandler(
     ILogger<GetPromoCodeWithCourseIdQueryHandler> logger,
-    IMapper mapper,
     ICoursePromoCodeRepository promoCodeRepository
 ) : IRequestHandler<GetPromoCodeWithCourseIdQuery, PageResult<CoursePromoCodeDto>>
 

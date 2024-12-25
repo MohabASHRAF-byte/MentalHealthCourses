@@ -1,4 +1,3 @@
-using AutoMapper;
 using MediatR;
 using MentalHealthcare.Application.Common;
 using MentalHealthcare.Domain.Dtos.PromoCode;
@@ -9,7 +8,6 @@ namespace MentalHealthcare.Application.PromoCode.General.Queries.GetAllGeneralPr
 
 public class GetAllGeneralPromoCodeQueryHandler(
     ILogger<GetAllGeneralPromoCodeQueryHandler> logger,
-    IMapper mapper,
     IGeneralPromoCodeRepository generalPromoCodeRepository
 ) : IRequestHandler<GetAllGeneralPromoCodeQuery, PageResult<GeneralPromoCodeDto>>
 {

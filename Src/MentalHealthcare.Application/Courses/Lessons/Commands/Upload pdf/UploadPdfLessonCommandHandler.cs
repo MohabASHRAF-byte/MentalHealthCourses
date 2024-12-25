@@ -1,10 +1,8 @@
 using MediatR;
 using MentalHealthcare.Application.BunnyServices;
 using MentalHealthcare.Application.Courses.Lessons.Commands.CreateVideo;
-using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
-using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Domain.Repositories.Course;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -18,10 +16,8 @@ public class UploadPdfLessonCommandHandler(
     ILogger<CreateVideoCommandHandler> logger,
     ICourseRepository courseRepository,
     ICourseLessonRepository courseLessonRepository,
-    IConfiguration configuration,
-    IMediator mediator,
-    IUserContext userContext,
-    IAdminRepository adminRepository) : IRequestHandler<UploadPdfLessonCommand, int>
+    IConfiguration configuration
+    ) : IRequestHandler<UploadPdfLessonCommand, int>
 {
     public async Task<int> Handle(UploadPdfLessonCommand request, CancellationToken cancellationToken)
     {
@@ -37,10 +33,10 @@ public class UploadPdfLessonCommandHandler(
         //     throw new UnauthorizedAccessException();
         // }
 
-        var fileSizeInMB = request.File.Length / (1 << 20); // Convert bytes to MB
-        if (fileSizeInMB > Global.CourseLessonPdfSize)
+        var fileSizeInMb = request.File.Length / (1 << 20); // Convert bytes to MB
+        if (fileSizeInMb > Global.CourseLessonPdfSize)
         {
-            logger.LogError("File size ({FileSize}MB) exceeds the limit of {Limit}MB.", fileSizeInMB,
+            logger.LogError("File size ({FileSize}MB) exceeds the limit of {Limit}MB.", fileSizeInMb,
                 Global.CourseRecourseSize);
             throw new ArgumentException($"The file {request.PdfName} is too large.");
         }

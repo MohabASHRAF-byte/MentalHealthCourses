@@ -6,6 +6,7 @@ using MentalHealthcare.Application.PromoCode.General.Commands.DeleteGeneralPromo
 using MentalHealthcare.Application.PromoCode.General.Commands.UpdateGeneralPromoCode;
 using MentalHealthcare.Application.PromoCode.General.Queries.GetAllGeneralPromoCode;
 using MentalHealthcare.Application.PromoCode.General.Queries.GetGeneralPromoCodeQuery;
+using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos.PromoCode;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -14,6 +15,8 @@ namespace MentalHealthcare.API.Controllers.PromoCode;
 
 [ApiController]
 [Route("api/PromoCode")]
+[ApiExplorerSettings(GroupName = Global.DashboardVersion)]
+
 public class GeneralPromoCodeController(
     IMediator mediator
 ) : ControllerBase

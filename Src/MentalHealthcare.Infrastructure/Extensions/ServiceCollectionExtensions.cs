@@ -1,10 +1,12 @@
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Domain.Repositories.Course;
+using MentalHealthcare.Domain.Repositories.OrderProcessing;
 using MentalHealthcare.Domain.Repositories.PromoCode;
 using MentalHealthcare.Infrastructure.Persistence;
 using MentalHealthcare.Infrastructure.Repositories;
 using MentalHealthcare.Infrastructure.Repositories.Course;
+using MentalHealthcare.Infrastructure.Repositories.OrderProcessing;
 using MentalHealthcare.Infrastructure.Repositories.PromoCode;
 using MentalHealthcare.Infrastructure.Seeders;
 using MentalHealthcare.Infrastructure.Validators;
@@ -55,6 +57,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICourseResourcesRepository, CourseResourcesRepository>();
         services.AddScoped<ICoursePromoCodeRepository, CoursePromoCodeRepository>();
         services.AddScoped<IGeneralPromoCodeRepository, GeneralPromoCodeRepository>();
+        services.AddScoped<ICartRepository, CartRepository>();
+        services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+        services.AddScoped<ICourseFavouriteRepository, CourseFavouriteRepository>();
     }
 
     private static void AddIdentity(this IServiceCollection services)

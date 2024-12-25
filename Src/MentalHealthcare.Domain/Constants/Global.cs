@@ -2,6 +2,10 @@ namespace MentalHealthcare.Domain.Constants;
 
 public class Global
 {
+    public const string MobileVersion = "MobileApp";
+    public const string DashboardVersion = "Dashboard";
+    public const string SharedVersion = "Shared";
+    public const string DevelopmentVersion = "Development";
     public const string Roles = "Roles";
     public const string PassCode = "TokenPassCode";
     public const string ProgramName = "MentalHealthcare";
@@ -54,5 +58,11 @@ public class Global
     public const int CourseRecourseSize = 10;//Mb
     public const string CourseRecoursesPath = "CourseResourses";
     public const int CourseLessonPdfSize = 10;//Mb
+    #endregion
+
+    #region Cart
+    public const int MaxCartItems = 20;
+    
+
     #endregion
 }

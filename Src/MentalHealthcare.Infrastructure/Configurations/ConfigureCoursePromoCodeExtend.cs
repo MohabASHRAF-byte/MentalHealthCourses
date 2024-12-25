@@ -9,10 +9,9 @@ public static class ConfigureCoursePromoCodeExtend
     {
         modelBuilder.Entity<CoursePromoCode>(entity =>
         {
-            // Add a unique constraint on Code and CourseId
-            entity.HasIndex(e => new { e.Code, e.CourseId })
+            // Add a unique constraint on Code 
+            entity.HasIndex(e => e.Code)
                 .IsUnique();
-
         });
     }
 }

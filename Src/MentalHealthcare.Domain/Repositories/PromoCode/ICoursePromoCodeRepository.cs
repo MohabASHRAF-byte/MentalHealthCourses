@@ -12,8 +12,12 @@ public interface ICoursePromoCodeRepository
     public Task<(int TotalCount, IEnumerable<CoursePromoCodeDto>)> GetCoursePromoCodeByCourseIdAsync(
         int courseId, int pageNumber,
         int pageSize, string searchText, int isActive);
-    
+
     public Task DeleteCoursePromoCodeByIdAsync(int coursePromoCodeId);
-    
+
+    public Task<CoursePromoCode?> CheckIfPromoCodeAppliedForCourseAsync(
+        string promoCode, int courseId
+    );
+
     public Task SaveChangesAsync();
 }

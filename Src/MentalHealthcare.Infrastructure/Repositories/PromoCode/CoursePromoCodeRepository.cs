@@ -92,6 +92,14 @@ public class CoursePromoCodeRepository(
         await dbContext.SaveChangesAsync();
     }
 
+    public async Task<CoursePromoCode?> CheckIfPromoCodeAppliedForCourseAsync(string promoCode, int courseId)
+    {
+       var promocode = dbContext.CoursePromoCodes
+           .FirstOrDefault(cp => cp.Code == promoCode && cp.CourseId == courseId);
+       
+       return promocode;
+    }
+
     public async Task SaveChangesAsync()
     {
         await dbContext.SaveChangesAsync();

@@ -14,6 +14,7 @@ public interface IGeneralPromoCodeRepository
         int pageSize, string searchText, int isActive);
     
     public Task DeleteGeneralPromoCodeByIdAsync(int generalPromoCodeId);
+    public Task<GeneralPromoCode?> GetGeneralPromoCodeByPromoCodeNameAsync(string promoCodeName);
     
     public Task SaveChangesAsync();
 }
