@@ -1,3 +1,4 @@
+using MentalHealthcare.Domain.Dtos;
 using MentalHealthcare.Domain.Entities.Courses;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
@@ -39,5 +40,52 @@ public class CourseFavouriteRepository(
 
         // Save changes
         await dbContext.SaveChangesAsync();
+    }
+
+    public async Task<(int count, List<CourseViewDto> courses)> GetUserFavourites(
+        string userId, int pageNumber,
+        int pageSize, string searchTerm
+    )
+    {
+        // Start with all favourite courses for the user
+        var query = dbContext.FavouriteCourses
+            .AsNoTracking()
+            .Where(fc => fc.UserId == userId)
+            .Include(fc => fc.Course)
+            .AsQueryable();
+
+        // Apply search filter
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            query = query
+                .Where(fc => fc.Course.Name
+                    .ToLower()
+                    .Contains(searchTerm.ToLower())
+                );
+        }
+
+        // Get the total count before applying pagination
+        var totalCount = await query.CountAsync();
+
+        // Apply pagination
+        var courses = await query
+            .OrderBy(fc => fc.Course.Name) // Sort by course name
+            .Skip(pageSize * (pageNumber - 1))
+            .Take(pageSize)
+            .Select(fc => new CourseViewDto
+            {
+                Name = fc.Course.Name,
+                ThumbnailUrl = fc.Course.ThumbnailUrl,
+                Price = fc.Course.Price,
+                Rating =
+                    (fc.Course.ReviewsCount > 0 ? fc.Course.Rating / fc.Course.ReviewsCount : 0),
+                ReviewsCount = fc.Course.ReviewsCount,
+                EnrollmentsCount = fc.Course.EnrollmentsCount,
+                IsOwned = dbContext.CourseProgresses.Any(cp =>
+                    cp.UserId == userId && cp.CourseId == fc.Course.CourseId) 
+            })
+            .ToListAsync();
+
+        return (totalCount, courses);
     }
 }

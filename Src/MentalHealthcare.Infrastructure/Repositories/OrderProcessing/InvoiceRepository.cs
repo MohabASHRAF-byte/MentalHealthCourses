@@ -238,6 +238,14 @@ public class InvoiceRepository(
             // Add course progress records
             foreach (var course in courses)
             {
+                // check if the course is exist and increase the enrollment count 
+                var courseEntity = await dbContext.Courses
+                    .FirstOrDefaultAsync(c => c.CourseId == course.CourseId);
+                if (courseEntity != null)
+                {
+                    courseEntity.EnrollmentsCount += 1;
+                }
+
                 // Check if user already has the course
                 var existingCourseProgress = await dbContext
                     .CourseProgresses
@@ -257,6 +265,7 @@ public class InvoiceRepository(
                     LastLessonIdx = 0,
                     LastChange = DateTime.UtcNow
                 };
+
                 dbContext.CourseProgresses.Add(courseProgress);
             }
 

@@ -1,12 +1,11 @@
 using MediatR;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
-using MentalHealthcare.Domain.Entities.Courses;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
 using Microsoft.Extensions.Logging;
 
-namespace MentalHealthcare.Application.Courses.Favourite.Commands.Add_favourite.Add_Course_Favourite;
+namespace MentalHealthcare.Application.Courses.Favourite.Commands.Toggle_favourite;
 
 public class ToggleFavouriteCourseCommandHandler(
     ILogger<ToggleFavouriteCourseCommandHandler> logger,

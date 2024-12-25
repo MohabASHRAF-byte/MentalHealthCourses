@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace MentalHealthcare.Application.Courses.Favourite.Commands.Add_favourite.Add_Course_Favourite;
+namespace MentalHealthcare.Application.Courses.Favourite.Commands.Toggle_favourite;
 
 public class ToggleFavouriteCourseCommand:IRequest
 {
