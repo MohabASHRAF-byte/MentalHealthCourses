@@ -6,6 +6,7 @@ using MentalHealthcare.Application.Courses.Commands.DeleteThumbnail;
 using MentalHealthcare.Application.Courses.Course.Queries.GetAll;
 using MentalHealthcare.Application.Courses.Queries.GetAll;
 using MentalHealthcare.Application.Courses.Queries.GetById;
+using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,6 +14,8 @@ namespace MentalHealthcare.API.Controllers.Course;
 
 [ApiController]
 [Route("Api/[controller]")]
+[ApiExplorerSettings(GroupName = Global.DashboardVersion)]
+
 public class CourseController(
     IMediator mediator
 ) : ControllerBase

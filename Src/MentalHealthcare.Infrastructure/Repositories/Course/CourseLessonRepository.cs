@@ -3,6 +3,7 @@ using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
 using MentalHealthcare.Infrastructure.Persistence;
+using MentalHealthcare.Infrastructure.scripts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -15,16 +16,30 @@ public class CourseLessonRepository(
 {
     public async Task<int> AddCourseLesson(CourseLesson courseLesson)
     {
-        var maxOrder = await dbContext.CourseLessons
-            .Where(c => c.CourseSectionId == courseLesson.CourseSectionId
-            )
-            .MaxAsync(c => (int?)c.Order) ?? 0;
+        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        try
+        {
+            var maxOrder = await dbContext.CourseLessons
+                .Where(c => c.CourseSectionId == courseLesson.CourseSectionId)
+                .MaxAsync(c => (int?)c.Order) ?? 0;
 
-        courseLesson.Order = maxOrder + 1;
-        dbContext.CourseLessons.Add(courseLesson);
-        await dbContext.SaveChangesAsync();
-        return courseLesson.CourseLessonId;
-    }
+            courseLesson.Order = maxOrder + 1;
+            dbContext.CourseLessons.Add(courseLesson);
+
+            await dbContext.SaveChangesAsync();
+            await dbContext.UpdateCourseLessonsOrder(lessonId: courseLesson.CourseLessonId);
+            await dbContext.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+            return courseLesson.CourseLessonId;
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }   
+
 
     public async Task<List<CourseLesson>> GetCourseLessons(int courseId, int sectionId)
     {

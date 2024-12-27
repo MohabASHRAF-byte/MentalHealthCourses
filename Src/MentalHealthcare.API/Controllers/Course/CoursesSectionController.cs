@@ -6,6 +6,7 @@ using MentalHealthcare.Application.Courses.Sections.Commands.Update_order;
 using MentalHealthcare.Application.Courses.Sections.Commands.Update_Section;
 using MentalHealthcare.Application.Courses.Sections.Queries.Get_All;
 using MentalHealthcare.Application.Courses.Sections.Queries.Get_By_Id;
+using MentalHealthcare.Domain.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -13,6 +14,7 @@ namespace MentalHealthcare.API.Controllers.Course;
 
 [ApiController]
 [Route("api/courses/{courseId}/sections")]
+[ApiExplorerSettings(GroupName = Global.DashboardVersion)]
 public class CoursesSectionController(
     IMediator mediator
 ) : ControllerBase
@@ -23,7 +25,7 @@ public class CoursesSectionController(
         Description = "Adds a new section to the specified course."
     )]
     public async Task<IActionResult> AddNewSection(
-        [FromRoute] int courseId, 
+        [FromRoute] int courseId,
         AddCourseSectionCommand command)
     {
         command.CourseId = courseId;

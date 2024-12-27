@@ -8,13 +8,17 @@ using MentalHealthcare.Application.Courses.Lessons.Commands.Upload_pdf;
 using MentalHealthcare.Application.Courses.Lessons.Queries.GetById;
 using MentalHealthcare.Application.Courses.Lessons.Queries.GetLessonsBySectionId;
 using MentalHealthcare.Application.Videos.Commands.CreateVideo;
+using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos.course;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MentalHealthcare.API.Controllers.Course;
 
 [ApiController]
 [Route("api/courses/{courseId}/sections/{sectionId}/lessons")]
+[ApiExplorerSettings(GroupName = Global.DashboardVersion)]
+
 public class LessonsController(IMediator mediator) : ControllerBase
 {
     [HttpPost("video")]
@@ -47,6 +51,8 @@ public class LessonsController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost("pdf")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
+
     public async Task<IActionResult> AddPdfLesson(
         [FromRoute] int courseId,
         [FromRoute] int sectionId,
