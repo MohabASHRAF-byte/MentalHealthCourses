@@ -13,31 +13,47 @@ public class CourseInteractionsRepository(
 {
     public async Task Enroll(int courseId, int userId)
     {
-        var isCourseFree = await dbContext.Courses
-            .AnyAsync(c => c.CourseId == courseId && c.IsFree == true);
+        await using var transaction = await dbContext.Database.BeginTransactionAsync();
 
-        if (!isCourseFree)
+        try
         {
-            throw new ArgumentException("Course is not free");
+            var course = await dbContext.Courses
+                .Where(c => c.CourseId == courseId && c.IsFree == true)
+                .FirstOrDefaultAsync();
+
+            if (course == null)
+            {
+                throw new ArgumentException("Course is not free");
+            }
+
+            course.EnrollmentsCount++;
+            dbContext.Courses.Update(course);
+
+            var isOwned = await dbContext.CourseProgresses
+                .AnyAsync(c => c.CourseId == courseId && c.SystemUserId == userId);
+
+            if (isOwned)
+            {
+                throw new ArgumentException("Course is already owned");
+            }
+
+            var courseProgress = new CourseProgress()
+            {
+                CourseId = courseId,
+                SystemUserId = userId,
+                LastChange = DateTime.Now,
+                LastLessonIdx = 0
+            };
+            await dbContext.AddAsync(courseProgress);
+            await dbContext.SaveChangesAsync();
+
+            await transaction.CommitAsync();
         }
-
-        var isOwned = await dbContext.CourseProgresses
-            .AnyAsync(c => c.CourseId == courseId && c.SystemUserId == userId);
-
-        if (isOwned)
+        catch (Exception)
         {
-            throw new ArgumentException("Course is already owned");
+            await transaction.RollbackAsync();
+            throw;
         }
-
-        var courseProgress = new CourseProgress()
-        {
-            CourseId = courseId,
-            SystemUserId = userId,
-            LastChange = DateTime.Now,
-            LastLessonIdx = 0
-        };
-        await dbContext.AddAsync(courseProgress);
-        await dbContext.SaveChangesAsync();
     }
 
 

@@ -22,7 +22,7 @@ namespace MentalHealthcare.Domain.Entities;
     [MaxLength(Global.UrlMaxLength)] public string? ThumbnailUrl { get; set; }
     [MaxLength(Global.UrlMaxLength)] public string? ThumbnailName { get; set; }
     public decimal Price { get; set; }
-    public decimal? Rating { get; set; }
+    public decimal Rating { get; set; } = 0;
     public int ReviewsCount { get; set; } = 0;
     public int EnrollmentsCount { get; set; } = 0;
     public string CollectionId { set; get; }=default!;

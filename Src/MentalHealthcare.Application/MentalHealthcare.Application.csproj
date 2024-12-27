@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Courses\Reviews\Queries\" />
     <Folder Include="SystemUsers\Queries\" />
     <Folder Include="Repositories\" />
   </ItemGroup>

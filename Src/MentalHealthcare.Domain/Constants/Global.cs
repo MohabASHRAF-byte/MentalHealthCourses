@@ -54,15 +54,21 @@ public class Global
     #region Courses
 
     public const int CourseSectionNameMaxLength = 50;
-    
-    public const int CourseRecourseSize = 10;//Mb
+
+    public const int CourseRecourseSize = 10; //Mb
     public const string CourseRecoursesPath = "CourseResourses";
-    public const int CourseLessonPdfSize = 10;//Mb
+
+    public const int CourseLessonPdfSize = 10; //Mb
+
+    //todo: up to 95 %
+    public const float CourseCompleteToReview = .0f;
+    public const int UserReviewsLimit = 5;
+
     #endregion
 
     #region Cart
+
     public const int MaxCartItems = 20;
-    
 
     #endregion
 }
