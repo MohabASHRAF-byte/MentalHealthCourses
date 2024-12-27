@@ -1,5 +1,6 @@
-//background service to delete expired promocodes
+// background service to delete expired promocodes
 // remove unconfirmed mails
 // check the active promocodes before return 
 // check if the course free
 // add number of lessons to the course
+// add progress 

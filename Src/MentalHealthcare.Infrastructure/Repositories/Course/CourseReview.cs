@@ -1,4 +1,6 @@
 using MentalHealthcare.Domain.Constants;
+using MentalHealthcare.Domain.Dtos.course;
+using MentalHealthcare.Domain.Dtos.User;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Repositories.Course;
 using MentalHealthcare.Infrastructure.Persistence;
@@ -64,5 +66,43 @@ public class CourseReview(
             await transaction.RollbackAsync();
             throw;
         }
+    }
+
+    public async Task<(int count, IEnumerable<UserReviewDto> reviews)> GetCoursesReviewsAsync(
+        int courseId,
+        int pageNumber,
+        int pageSize,
+        int contentLimit // the max number of char in the review
+        )
+    {
+        var reviewsQuery = dbContext.UserReviews
+            .Where(r => r.courseId == courseId)
+            .Include(r => r.User)
+            .AsQueryable();
+
+        var totalCount = await reviewsQuery.CountAsync();
+
+        var reviews = await reviewsQuery
+            .OrderByDescending(r => r.ReviewDate)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(r => new UserReviewDto
+            {
+                UserReviewId = r.UserReviewId,
+                Content = r.Content.Length > contentLimit
+                    ? r.Content.Substring(0, contentLimit) + "..."
+                    : r.Content, // Trim content if it exceeds limit
+                Rating = r.Rating,
+                Seconds = (long)(DateTime.UtcNow - r.ReviewDate).TotalSeconds,
+                SystemUserId = r.SystemUserId,
+                user = new SystemUserDto
+                {
+                    Username = r.User.User.UserName!,
+                    Name = r.User.FName + " " + r.User.LName,
+                }
+            })
+            .ToListAsync();
+
+        return (totalCount, reviews);
     }
 }
