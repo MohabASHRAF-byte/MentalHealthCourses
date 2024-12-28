@@ -15,15 +15,15 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace MentalHealthcare.API.Controllers.Course;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/Course")]
 [ApiExplorerSettings(GroupName = Global.DevelopmentVersion)]
 public class CourseReviewController(
     IMediator mediator
 ) : ControllerBase
 {
-    [HttpPost]
+    [HttpPost("{courseId}/reviews")]
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [Route("courses/{courseId}/reviews")]
+    [SwaggerOperation(Description = CourseReviewDocs.PostCourseReviewDescription)]
     public async Task<IActionResult> PostReview([FromRoute] int courseId, AddCourseReviewCommand command)
     {
         command.CourseId = courseId;
@@ -31,9 +31,10 @@ public class CourseReviewController(
         return Ok(res);
     }
 
-    [HttpGet("courses/{courseId}/reviews")]
+    [HttpGet("{courseId}/reviews")]
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ProducesResponseType(typeof(PageResult<UserReviewDto>), 200)]
+    [SwaggerOperation(Description = CourseReviewDocs.GetCourseReviewsDescription)]
     public async Task<IActionResult> GetReviews(
         [FromRoute] int courseId,
         [FromQuery] GetAllCourseReviewsQuery query
@@ -44,9 +45,10 @@ public class CourseReviewController(
         return Ok(res);
     }
 
-    [HttpGet("courses/{courseId}/reviews/{reviewId}")]
+    [HttpGet("{courseId}/reviews/{reviewId}")]
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ProducesResponseType(typeof(UserReviewDto), 200)]
+    [SwaggerOperation(Description = CourseReviewDocs.GetCourseReviewDescription)]
     public async Task<IActionResult> GetReview(
         [FromRoute] int courseId,
         [FromRoute] int reviewId
@@ -61,10 +63,10 @@ public class CourseReviewController(
         return Ok(res);
     }
 
-    [HttpPut("courses/{courseId}/review/{reviewId}")]
+    [HttpPut("{courseId}/reviews/{reviewId}")]
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ProducesResponseType(204)]
-    [SwaggerOperation(Description = CourseReviewDocs.GetCourseReviewDescription)]
+    [SwaggerOperation(Description = CourseReviewDocs.UpdateCourseReviewDescription)]
     public async Task<IActionResult> UpdateReview(
         [FromRoute] int courseId,
         [FromRoute] int reviewId,
@@ -77,7 +79,7 @@ public class CourseReviewController(
         return NoContent();
     }
 
-    [HttpDelete("courses/{courseId}/review/{reviewId}")]
+    [HttpDelete("{courseId}/reviews/{reviewId}")]
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ProducesResponseType(204)]
     [SwaggerOperation(Description = CourseReviewDocs.DeleteCourseReviewDescription)]

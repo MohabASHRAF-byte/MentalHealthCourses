@@ -3,6 +3,7 @@ using MentalHealthcare.API.Docs;
 using MentalHealthcare.Application.Courses.Course_Interactions.Commands.Complete_Lesson;
 using MentalHealthcare.Application.Courses.Course_Interactions.Commands.Enroll_Course;
 using MentalHealthcare.Application.Courses.Course_Interactions.Queries.GetLesson;
+using MentalHealthcare.Application.Courses.Course_Interactions.Queries.GetMyCourses;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos.course;
 using Microsoft.AspNetCore.Authorization;
@@ -56,6 +57,15 @@ public class CourseInteractionsController(
             CourseId = courseId,
             LessonId = lessonId
         };
+        var result = await mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpGet("courses/active")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
+
+    public async Task<IActionResult> GetActiveCourses([FromQuery]GetMyCoursesQuery query)
+    {
         var result = await mediator.Send(query);
         return Ok(result);
     }

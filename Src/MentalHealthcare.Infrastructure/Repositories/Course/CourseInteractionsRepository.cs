@@ -124,4 +124,53 @@ public class CourseInteractionsRepository(
                 }).ToList() ?? []
         };
     }
+
+    public async Task<(int count, IEnumerable<CourseActivityDto> courses)> GetActiveCourseProgress(
+        int userId,
+        int pageNumber,
+        int pageSize,
+        string? courseName
+    )
+    {
+        var coursesQuery = dbContext.CourseProgresses
+            .Where(cp => cp.SystemUserId == userId)
+            .OrderByDescending(cp => cp.LastChange)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(courseName))
+        {
+            coursesQuery = coursesQuery.Where(
+                cp => cp.Course.Name.ToLower().Contains(courseName.ToLower()));
+        }
+
+        var totalCourses = await coursesQuery.CountAsync();
+
+        var paginatedCourses = await coursesQuery
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Include(cp => cp.Course)
+            .ToListAsync();
+
+        var result = paginatedCourses.Select(c =>
+        {
+            var totalLessons = dbContext.CourseSections
+                .Where(cs => cs.CourseId == c.CourseId)
+                .SelectMany(cs => cs.Lessons)
+                .Count();
+
+            return new CourseActivityDto()
+            {
+                CourseId = c.CourseId,
+                Name = c.Course?.Name ?? "Unknown Course",
+                AllLessons = totalLessons,
+                WatchedLessons = c.LastLessonIdx,
+                CompletionPercentage = totalLessons > 0
+                    ? (decimal)c.LastLessonIdx / totalLessons * 100
+                    : 0,
+                ThumbnailUrl = c.Course?.ThumbnailUrl ?? string.Empty,
+            };
+        });
+
+        return (totalCourses, result);
+    }
 }
