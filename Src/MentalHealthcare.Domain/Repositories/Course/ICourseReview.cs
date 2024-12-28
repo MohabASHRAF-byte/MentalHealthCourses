@@ -13,4 +13,23 @@ public interface ICourseReview
         int pageSize,
         int contentLimit
     );
+
+    public Task UpdateCourseReviewAsync(
+        int userId,
+        int courseId,
+        int reviewId,
+        float? rating,
+        string? content
+    );
+
+    public Task DeleteCourseReviewAsync(
+        int? userId,
+        int courseId,
+        int reviewId
+    );
+
+    public Task<UserReviewDto> GetUserReviewAsync(
+        int courseId,
+        int reviewId
+    );
 }

@@ -2,6 +2,7 @@ using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos.course;
 using MentalHealthcare.Domain.Dtos.User;
 using MentalHealthcare.Domain.Entities;
+using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
 using MentalHealthcare.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -73,7 +74,7 @@ public class CourseReview(
         int pageNumber,
         int pageSize,
         int contentLimit // the max number of char in the review
-        )
+    )
     {
         var reviewsQuery = dbContext.UserReviews
             .Where(r => r.courseId == courseId)
@@ -92,9 +93,13 @@ public class CourseReview(
                 Content = r.Content.Length > contentLimit
                     ? r.Content.Substring(0, contentLimit) + "..."
                     : r.Content, // Trim content if it exceeds limit
+                IsFullContent = r.Content.Length <= contentLimit,
+                IsEdited = r.IsEdited,
                 Rating = r.Rating,
-                Seconds = (long)(DateTime.UtcNow - r.ReviewDate).TotalSeconds,
+                SecondsSinceCreated = (long)(DateTime.UtcNow - r.ReviewDate).TotalSeconds,
+                SecondsSinceLastEdited = (long)(DateTime.UtcNow - r.LastModifiedDate).TotalSeconds,
                 SystemUserId = r.SystemUserId,
+                courseId = r.courseId,
                 user = new SystemUserDto
                 {
                     Username = r.User.User.UserName!,
@@ -104,5 +109,136 @@ public class CourseReview(
             .ToListAsync();
 
         return (totalCount, reviews);
+    }
+
+    public async Task UpdateCourseReviewAsync(
+        int userId,
+        int courseId,
+        int reviewId,
+        float? rating,
+        string? content)
+    {
+        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+
+        try
+        {
+            var review = await dbContext.UserReviews
+                .Where(r =>
+                    r.SystemUserId == userId &&
+                    r.courseId == courseId &&
+                    r.UserReviewId == reviewId
+                ).FirstOrDefaultAsync();
+            if (review == null)
+            {
+                throw new ResourceNotFound(nameof(Domain.Entities.Course), nameof(courseId));
+            }
+
+            if (!string.IsNullOrWhiteSpace(content))
+                review.Content = content;
+
+            if (rating.HasValue)
+            {
+                var course = await dbContext.Courses.FindAsync(courseId);
+                if (course == null)
+                    throw new ResourceNotFound(nameof(Domain.Entities.Course), nameof(courseId));
+
+                course.Rating -= (decimal)review.Rating;
+                review.Rating = (float)rating;
+                course.Rating += (decimal)review.Rating;
+            }
+
+            review.IsEdited = true;
+            review.LastModifiedDate = DateTime.UtcNow;
+
+            await dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+
+    public async Task DeleteCourseReviewAsync(
+        int? userId,
+        int courseId,
+        int reviewId
+    )
+    {
+        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+
+        try
+        {
+            var review = await dbContext.UserReviews
+                .Where(
+                    review =>
+                        review.courseId == courseId
+                        && review.UserReviewId == reviewId
+                ).FirstOrDefaultAsync();
+            if (review == null)
+            {
+                throw new ResourceNotFound(nameof(UserReview), nameof(reviewId));
+            }
+
+            if (userId.HasValue && review.SystemUserId != userId.Value)
+            {
+                throw new ForBidenException("You are not allowed to delete this review.");
+            }
+
+            var course = await dbContext.Courses.FindAsync(courseId);
+            if (course == null)
+            {
+                throw new ResourceNotFound(nameof(Domain.Entities.Course), nameof(courseId));
+            }
+
+            course.Rating -= (decimal)review.Rating;
+            course.ReviewsCount -= 1;
+
+            dbContext.UserReviews.Remove(review);
+            await dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+
+    public async Task<UserReviewDto> GetUserReviewAsync(
+        int courseId,
+        int reviewId
+    )
+    {
+        var review = await dbContext.UserReviews
+            .Where(r =>
+                r.courseId == courseId
+                && r.UserReviewId == reviewId
+            )
+            .Select(r => new UserReviewDto
+            {
+                UserReviewId = r.UserReviewId,
+                Content = r.Content,
+                Rating = r.Rating,
+                SystemUserId = r.SystemUserId,
+                SecondsSinceCreated = (long)(DateTime.UtcNow - r.ReviewDate).TotalSeconds,
+                SecondsSinceLastEdited = (long)(DateTime.UtcNow - r.LastModifiedDate).TotalSeconds,
+                IsEdited = r.IsEdited,
+                IsFullContent = true,
+                user = new SystemUserDto
+                {
+                    Username = r.User.User.UserName!,
+                    Name = r.User.FName + " " + r.User.LName
+                }
+            })
+            .FirstOrDefaultAsync();
+
+        if (review == null)
+        {
+            throw new ResourceNotFound(nameof(UserReview), nameof(reviewId));
+        }
+
+        return review;
     }
 }

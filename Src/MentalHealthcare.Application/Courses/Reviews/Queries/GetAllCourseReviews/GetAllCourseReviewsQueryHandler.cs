@@ -17,30 +17,47 @@ public class GetAllCourseReviewsQueryHandler(
     public async Task<PageResult<UserReviewDto>> Handle(GetAllCourseReviewsQuery request,
         CancellationToken cancellationToken)
     {
+        logger.LogInformation("Handling GetAllCourseReviewsQuery for CourseId: {CourseId}, PageNumber: {PageNumber}, PageSize: {PageSize}", 
+            request.CourseId, request.PageNumber, request.PageSize);
+
         var currentUser = userContext.GetCurrentUser();
         if (currentUser == null)
         {
             logger.LogWarning(
-                "Unauthorized access attempt to add a course review. User information: {UserDetails}",
+                "Unauthorized access attempt to retrieve course reviews. User information: {UserDetails}",
                 currentUser == null
                     ? "User is null"
                     : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}"
             );
-            throw new ForBidenException("You do not have permission to add a review for this course.");
+            throw new ForBidenException("You do not have permission to retrieve reviews for this course.");
         }
 
-        var (count, reviews) = await courseReview.GetCoursesReviewsAsync(
-            request.CourseId,
-            request.PageNumber,
-            request.PageSize,
-            request.ContentLimit
-        );
+        logger.LogInformation("User with SysUserId: {SysUserId} is retrieving reviews for CourseId: {CourseId}",
+            currentUser.SysUserId, request.CourseId);
 
-        return new PageResult<UserReviewDto>(
-            reviews,
-            count,
-            request.PageSize,
-            request.PageNumber
-        );
+        try
+        {
+            var (count, reviews) = await courseReview.GetCoursesReviewsAsync(
+                request.CourseId,
+                request.PageNumber,
+                request.PageSize,
+                request.ContentLimit
+            );
+
+            logger.LogInformation("Successfully retrieved {ReviewCount} reviews for CourseId: {CourseId}",
+                count, request.CourseId);
+
+            return new PageResult<UserReviewDto>(
+                reviews,
+                count,
+                request.PageSize,
+                request.PageNumber
+            );
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to retrieve reviews for CourseId: {CourseId}", request.CourseId);
+            throw;
+        }
     }
 }
