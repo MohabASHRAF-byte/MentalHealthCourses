@@ -1,3 +1,4 @@
+using MentalHealthcare.Domain.Dtos.User;
 using MentalHealthcare.Domain.Entities;
 
 namespace MentalHealthcare.Domain.Repositories;
@@ -19,4 +20,14 @@ public interface IUserRepository
     public Task<(int? systemUserId, int? adminId)> GetSystemUserOrAdminIdByIdentityIdAsync(
         string userId
     );
+
+    public Task UpdateUserProfileAsync(
+        int userId,
+        string? firstName,
+        string? lastName,
+        string? phoneNumber,
+        DateOnly? birthDate
+    );
+
+    public Task<UserProfileDto> GetUserProfileByIdAsync(int userId);
 }
