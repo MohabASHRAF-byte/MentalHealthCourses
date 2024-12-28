@@ -16,7 +16,7 @@ namespace MentalHealthcare.API.Controllers.PromoCode;
 
 [ApiController]
 [Route("api/CoursePromoCode")]
-[ApiExplorerSettings(GroupName = Global.DashboardVersion)]
+[ApiExplorerSettings(GroupName = Global.AllVersion)]
 
 public class CoursePromoCodeController(
     IMediator mediator

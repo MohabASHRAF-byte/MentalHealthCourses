@@ -6,6 +6,7 @@ public class Global
     public const string DashboardVersion = "Dashboard";
     public const string SharedVersion = "Shared";
     public const string DevelopmentVersion = "Development";
+    public const string AllVersion = "All";
     public const string Roles = "Roles";
     public const string PassCode = "TokenPassCode";
     public const string ProgramName = "MentalHealthcare";

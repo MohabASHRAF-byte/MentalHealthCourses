@@ -19,7 +19,7 @@ namespace MentalHealthcare.API.Controllers;
 
 [ApiController]
 [Route("api/")]
-[ApiExplorerSettings(GroupName = Global.MobileVersion)]
+[ApiExplorerSettings(GroupName = Global.AllVersion)]
 
 public class ClientsUsersIdentityController(
     IMediator mediator

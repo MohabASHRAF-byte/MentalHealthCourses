@@ -15,7 +15,7 @@ namespace MentalHealthcare.API.Controllers;
 [ApiController]
 [Route("HelpCenter")]
 [Authorize(AuthenticationSchemes = "Bearer")]
-[ApiExplorerSettings(GroupName = Global.DashboardVersion)]
+[ApiExplorerSettings(GroupName = Global.AllVersion)]
 
 
 public class HelpCenterController(
@@ -37,7 +37,6 @@ public class HelpCenterController(
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
 
     public async Task<IActionResult> Delete(DeleteHelpCenterItemCommand command)
     {
@@ -54,7 +53,6 @@ public class HelpCenterController(
         Description = HelpCenterControllerDocs.HelpCenterGetDescription
     )]
     [AllowAnonymous]
-    [ApiExplorerSettings(GroupName = Global.SharedVersion)]
 
     public async Task<IActionResult> GetTerm([FromQuery]GetHelpCenterItemQuery query)
     {
@@ -70,7 +68,6 @@ public class HelpCenterController(
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
 
     public async Task<IActionResult> Update(UpdateHelpCenterCommand command)
     {

@@ -16,6 +16,8 @@ namespace MentalHealthcare.API.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[ApiExplorerSettings(GroupName = Global.AllVersion)]
+
 public class ContactUsController(
     IMediator mediator
 ) : ControllerBase
@@ -25,8 +27,6 @@ public class ContactUsController(
     [SwaggerOperation(Summary = "Create new contact us form",
         Description = ContactUsDocs.SubmitContactUsDescription)
     ]
-    [ApiExplorerSettings(GroupName = Global.MobileVersion)]
-
     public async Task<IActionResult> Post(SubmitContactUsCommand command)
     {
         var result = await mediator.Send(command);
@@ -36,7 +36,6 @@ public class ContactUsController(
     [HttpDelete]
     [SwaggerOperation(Summary = "Delete contact Msgs ",
         Description = "Delete all contact msgs with the passed ids")]
-    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
 
     public async Task<IActionResult> Delete(DeleteContactUsCommand command)
     {
@@ -48,7 +47,6 @@ public class ContactUsController(
     [Authorize(AuthenticationSchemes = "Bearer")]
 
     [ProducesResponseType(typeof(ContactUsForm), 200)]
-    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
 
     public async Task<IActionResult> GetFormId([FromRoute] int formId)
     {
@@ -65,7 +63,6 @@ public class ContactUsController(
 
     [ProducesResponseType(typeof(PageResult<ContactUsForm>), 200)]
     [SwaggerOperation(Description = ContactUsDocs.GetAllFormsDescription)]
-    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
 
     public async Task<IActionResult> GetForms([FromQuery] GetAllContactFormsQuery query)
     {
@@ -76,7 +73,6 @@ public class ContactUsController(
     [Authorize(AuthenticationSchemes = "Bearer")]
 
     [SwaggerOperation(Description = "Change the state with the passed id to the sent state")]
-    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
 
 
     public async Task<IActionResult> ReadState(ChangeReadStateCommand command)

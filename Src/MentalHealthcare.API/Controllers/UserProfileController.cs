@@ -13,7 +13,7 @@ namespace MentalHealthcare.API.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-[ApiExplorerSettings(GroupName = Global.DevelopmentVersion)]
+[ApiExplorerSettings(GroupName = Global.AllVersion)]
 public class UserProfileController(
     IMediator mediator
 ) : ControllerBase

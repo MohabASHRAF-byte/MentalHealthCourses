@@ -40,6 +40,11 @@ public static class WebApplicationExtensions
                 Title = "Dashboard API",
                 Version = "v1"
             });
+            c.SwaggerDoc(Global.AllVersion, new Microsoft.OpenApi.Models.OpenApiInfo
+            {
+                Title = "All API",
+                Version = "v1"
+            });
 
             c.SwaggerDoc(Global.MobileVersion, new Microsoft.OpenApi.Models.OpenApiInfo
             {
@@ -67,6 +72,9 @@ public static class WebApplicationExtensions
 
                 if (docName == Global.DevelopmentVersion && 
                     apiDesc.GroupName == Global.DevelopmentVersion )
+                    return true;
+                if (docName == Global.AllVersion && 
+                    apiDesc.GroupName == Global.AllVersion )
                     return true;
 
                 return false;

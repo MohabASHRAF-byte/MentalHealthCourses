@@ -15,6 +15,8 @@ namespace MentalHealthcare.API.Controllers.Course;
 
 [ApiController]
 [Route("Api/Favourite")]
+[ApiExplorerSettings(GroupName = Global.AllVersion)]
+
 public class CourseFavouriteController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -28,7 +30,6 @@ public class CourseFavouriteController : ControllerBase
     [Authorize(AuthenticationSchemes = "Bearer")]
     [SwaggerOperation(Summary = "Toggle Favourite Course",
         Description = CourseFavouriteDocs.ToggleFavouriteCourseDescription)]
-    [ApiExplorerSettings(GroupName = Global.MobileVersion)]
     public async Task<IActionResult> ToggleFavouriteCourse([FromRoute] int courseId)
     {
         var command = new ToggleFavouriteCourseCommand
@@ -44,7 +45,6 @@ public class CourseFavouriteController : ControllerBase
     [ProducesResponseType(typeof(PageResult<SystemUser>), StatusCodes.Status200OK)]
     [SwaggerOperation(Summary = "Get Users Who Favourited Course",
         Description = CourseFavouriteDocs.GetUsersWhoFavouriteCourseDescription)]
-    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
     public async Task<IActionResult> GetUsersWhoFavouriteCourse([FromRoute] int courseId)
     {
         var command = new GetUsersWhoFavouriteCourseQuery
@@ -60,7 +60,6 @@ public class CourseFavouriteController : ControllerBase
     [ProducesResponseType(typeof(PageResult<CourseViewDto>), StatusCodes.Status200OK)]
     [SwaggerOperation(Summary = "Get Favourite Courses",
         Description = CourseFavouriteDocs.GetFavouriteCoursesDescription)]
-    [ApiExplorerSettings(GroupName = Global.MobileVersion)]
     public async Task<IActionResult> GetFavouriteCourses([FromQuery] GetFavouriteCoursesQuery query)
     {
         var result = await _mediator.Send(query);

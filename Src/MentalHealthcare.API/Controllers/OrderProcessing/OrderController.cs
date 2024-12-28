@@ -17,14 +17,13 @@ namespace MentalHealthcare.API.Controllers.OrderProcessing;
 
 [ApiController]
 [Route("api/orders")]
-[ApiExplorerSettings(GroupName = Global.DevelopmentVersion)]
+[ApiExplorerSettings(GroupName = Global.AllVersion)]
 public class OrderController(
     IMediator mediator
 ) : ControllerBase
 {
     [Authorize(AuthenticationSchemes = "Bearer")]
     [HttpPost]
-    [ApiExplorerSettings(GroupName = Global.MobileVersion)]
     [SwaggerOperation(Summary = "Place a new order.", Description = "Creates a new order for the authenticated user.")]
     public async Task<IActionResult> PlaceOrder([FromBody] PlaceOrderCommand command)
     {
@@ -36,7 +35,6 @@ public class OrderController(
     [HttpGet]
     [ProducesResponseType(typeof(PageResult<InvoiceDto>), 200)]
     [SwaggerOperation(Summary = "Retrieve all orders.", Description = OrderProcessingDocs.GetAllInvoicesDescription)]
-    [ApiExplorerSettings(GroupName = Global.SharedVersion)]
     public async Task<IActionResult> GetAllOrders([FromQuery] GetAllInvoicesQuery query)
     {
         var res = await mediator.Send(query);
@@ -46,7 +44,6 @@ public class OrderController(
     [Authorize(AuthenticationSchemes = "Bearer")]
     [HttpGet("{invoiceId}")]
     [SwaggerOperation(Summary = "Retrieve a specific invoice.", Description = OrderProcessingDocs.GetInvoiceDescription)]
-    [ApiExplorerSettings(GroupName = Global.SharedVersion)]
     public async Task<IActionResult> GetInvoice([FromRoute] int invoiceId)
     {
         var query = new GetInvoiceQuery()
@@ -61,7 +58,6 @@ public class OrderController(
     [HttpPost("calculate-value")]
     [SwaggerOperation(Summary = "Calculate invoice value.", Description = OrderProcessingDocs.CalculateInvoiceDescription)]
     [ProducesResponseType(typeof(CalculateInvoiceResponse), 200)]
-    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
     public async Task<IActionResult> CalculateInvoice([FromBody] CalculateInvoice command)
     {
         var res = await mediator.Send(command);
@@ -71,7 +67,6 @@ public class OrderController(
     [Authorize(AuthenticationSchemes = "Bearer")]
     [HttpPost("{invoiceId}/accept")]
     [SwaggerOperation(Summary = "Accept an invoice.", Description = OrderProcessingDocs.AcceptInvoiceDescription)]
-    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
     public async Task<IActionResult> AcceptInvoice([FromRoute] int invoiceId,
         [FromBody] AcceptInvoiceCommand command
     )
@@ -84,7 +79,6 @@ public class OrderController(
     [Authorize(AuthenticationSchemes = "Bearer")]
     [HttpPatch("{invoiceId}/state")]
     [SwaggerOperation(Summary = "Change invoice state.", Description = OrderProcessingDocs.ChangeInvoiceStateDescription)]
-    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
     public async Task<IActionResult> ChangeInvoiceStatus([FromRoute] int invoiceId, [FromBody] ChangeInvoiceStateCommand command)
     {
         command.InvoiceId = invoiceId;

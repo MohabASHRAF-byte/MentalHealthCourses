@@ -14,7 +14,7 @@ namespace MentalHealthcare.API.Controllers.OrderProcessing;
 
 [ApiController]
 [Route("api/[controller]")]
-[ApiExplorerSettings(GroupName = Global.MobileVersion)]
+[ApiExplorerSettings(GroupName = Global.AllVersion)]
 public class CartController(
     IMediator mediator
 ) : ControllerBase
