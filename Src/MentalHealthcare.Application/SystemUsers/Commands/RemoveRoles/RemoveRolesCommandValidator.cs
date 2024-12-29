@@ -11,9 +11,5 @@ public class RemoveRolesCommandValidator : AbstractValidator<RemoveRolesCommand>
         RuleFor(x => x.UserName)
             .ValidateNoHtmlIfNotNull();
 
-        RuleFor(x => x.Roles)
-            .NotEmpty().WithMessage("Roles must not be empty.")
-            .Must(roles => roles.All(role => Enum.IsDefined(typeof(UserRoles), role)))
-            .WithMessage("Roles contain invalid values.");
     }
 }

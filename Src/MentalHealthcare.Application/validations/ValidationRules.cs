@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using FluentValidation;
+using Ganss.Xss;
 using MentalHealthcare.Domain.Constants;
 
 
@@ -33,8 +34,9 @@ public static class ValidationRules
         return ruleBuilder
             .GreaterThan(0).WithMessage("Page number must be greater than 0.");
     }
+
     /// <summary>
-    /// Validates that a search term is valid.
+    /// Validates that a search term is valid if it is not null.
     /// </summary>
     /// <typeparam name="T">The type of the object being validated.</typeparam>
     /// <param name="ruleBuilder">The rule builder.</param>
@@ -43,10 +45,15 @@ public static class ValidationRules
         this IRuleBuilder<T, string?> ruleBuilder)
     {
         return ruleBuilder
-            .NotEmpty().WithMessage("Search term must not be empty.")
-            .MaximumLength(50).WithMessage("Search term must not exceed 50 characters.")
-            .Must(term => !ContainsHtml(term)).WithMessage("Search term must not contain HTML or markup.");
+            .Must(term => term == null || !string.IsNullOrWhiteSpace(term))
+            .WithMessage("Search term must not be empty if provided.")
+            .Must(term => term == null || term.Length <= 50)
+            .WithMessage("Search term must not exceed 50 characters.")
+            .Must(term => term == null || !ContainsHtml(term))
+            .WithMessage("Search term must not contain HTML or markup.");
     }
+
+
     /// <summary>
     /// Validates that a string is a valid email address with a maximum length of 100 characters,
     /// does not contain HTML or markup language, and is not empty.
@@ -54,7 +61,6 @@ public static class ValidationRules
     /// <typeparam name="T">The type of the object being validated.</typeparam>
     /// <param name="ruleBuilder">The rule builder.</param>
     /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    
     public static IRuleBuilderOptions<T, string> CustomIsValidEmail<T>(this IRuleBuilder<T, string> ruleBuilder)
     {
         return ruleBuilder
@@ -69,23 +75,7 @@ public static class ValidationRules
             .WithMessage("Email address must not contain HTML or markup.");
     }
 
-
-    /// <summary>
-    /// Validates that the tenant is not null, empty, or invalid.
-    /// </summary>
-    /// <typeparam name="T">The type of the object being validated.</typeparam>
-    /// <param name="ruleBuilder">The rule builder.</param>
-    /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, string> IsAdminProgramTenant<T>(this IRuleBuilder<T, string> ruleBuilder)
-    {
-        return ruleBuilder
-            .NotNull()
-            .NotEmpty()
-            .WithMessage("Tenant is null or empty.")
-            .Must(tenant => tenant == Global.ProgramName)
-            .WithMessage("Unauthorized tenant access.");
-    }
-
+    
     /// <summary>
     /// Validates that a name is valid: not exceeding 30 characters, not containing HTML, and not empty or null.
     /// </summary>
@@ -105,12 +95,32 @@ public static class ValidationRules
     }
 
     /// <summary>
+    /// Validates that a name is either null or a valid value: not exceeding 30 characters, not containing HTML, and not empty if provided.
+    /// </summary>
+    /// <typeparam name="T">The type of the object being validated.</typeparam>
+    /// <param name="ruleBuilder">The rule builder.</param>
+    /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
+    public static IRuleBuilderOptions<T, string?>
+        CustomIsValidNameIfNotNull<T>(this IRuleBuilder<T, string?> ruleBuilder)
+    {
+        return ruleBuilder
+            .Must(name => name == null || !string.IsNullOrWhiteSpace(name))
+            .WithMessage("Name must not be empty if provided.")
+            .Must(name => name == null || name.Length <= 30)
+            .WithMessage("Name must not exceed 30 characters.")
+            .Must(name => name == null || !ContainsHtml(name))
+            .WithMessage("Name must not contain HTML or markup.");
+    }
+
+
+    /// <summary>
     /// Validates that a phone number is valid: contains only digits, has a length between 7 and 15, and does not contain HTML.
     /// </summary>
     /// <typeparam name="T">The type of the object being validated.</typeparam>
     /// <param name="ruleBuilder">The rule builder.</param>
     /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, string> CustomIsValidPhoneNumber<T>(this IRuleBuilder<T, string> ruleBuilder)
+    public static IRuleBuilderOptions<T, string>
+        CustomIsValidPhoneNumber<T>(this IRuleBuilder<T, string> ruleBuilder)
     {
         return ruleBuilder
             .NotNull()
@@ -119,6 +129,27 @@ public static class ValidationRules
             .Matches("^\\d{7,15}$")
             .WithMessage("Phone number must contain only digits and be between 7 and 15 characters long.")
             .Must(phone => !ContainsHtml(phone))
+            .WithMessage("Phone number must not contain HTML or markup.");
+    }
+
+    /// <summary>
+    /// if the phone is provied and not null
+    /// Validates that a phone number is valid: contains only digits, has a length between 7 and 15, and does not contain HTML.
+    /// </summary>
+    /// <typeparam name="T">The type of the object being validated.</typeparam>
+    /// <param name="ruleBuilder">The rule builder.</param>
+    /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
+    public static IRuleBuilderOptions<T, string?>
+        CustomIsValidPhoneNumberIfNotNull<T>(this IRuleBuilder<T, string?> ruleBuilder)
+    {
+        return ruleBuilder
+            .Must(phone => phone == null || !string.IsNullOrWhiteSpace(phone))
+            .WithMessage("Phone number must not be empty if provided.")
+            .Must(phone => phone == null || phone.All(char.IsDigit))
+            .WithMessage("Phone number must contain only digits.")
+            .Must(phone => phone == null || (phone.Length >= 7 && phone.Length <= 15))
+            .WithMessage("Phone number must be between 7 and 15 characters long.")
+            .Must(phone => phone == null || !ContainsHtml(phone))
             .WithMessage("Phone number must not contain HTML or markup.");
     }
 
@@ -134,7 +165,8 @@ public static class ValidationRules
     /// <typeparam name="T">The type of the object being validated.</typeparam>
     /// <param name="ruleBuilder">The rule builder.</param>
     /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, string> CustomIsValidUsername<T>(this IRuleBuilder<T, string> ruleBuilder)
+    public static IRuleBuilderOptions<T, string> 
+        CustomIsValidUsername<T>(this IRuleBuilder<T, string> ruleBuilder)
     {
         return ruleBuilder
             .NotEmpty()
@@ -207,6 +239,7 @@ public static class ValidationRules
                !string.IsNullOrEmpty(lastName) && lowerInput.Contains(lastName.ToLower()) ||
                !string.IsNullOrEmpty(username) && lowerInput.Contains(username.ToLower());
     }
+
     /// <summary>
     /// Validates that a string contains only digits and does not contain HTML if it is not null.
     /// </summary>
@@ -220,6 +253,7 @@ public static class ValidationRules
             .Must(value => string.IsNullOrEmpty(value) || (Regex.IsMatch(value, "^\\d+$") && !ContainsHtml(value)))
             .WithMessage("Value must contain only digits and must not contain HTML or markup.");
     }
+
     /// <summary>
     /// Validates that a string does not contain HTML if it is not null.
     /// </summary>
@@ -233,6 +267,36 @@ public static class ValidationRules
             .Must(value => string.IsNullOrEmpty(value) || !ContainsHtml(value))
             .WithMessage("Value must not contain HTML or markup.");
     }
+    /// <summary>
+    /// Validates that a provided birth date is valid: not null, not in the future, and within a reasonable range (e.g., person is not older than 150 years).
+    /// </summary>
+    /// <typeparam name="T">The type of the object being validated.</typeparam>
+    /// <param name="ruleBuilder">The rule builder.</param>
+    /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
+    public static IRuleBuilderOptions<T, DateOnly> 
+        CustomIsValidBirthDate<T>(this IRuleBuilder<T, DateOnly> ruleBuilder)
+    {
+        return ruleBuilder
+            .Must(date => date <= DateOnly.FromDateTime(DateTime.UtcNow))
+            .WithMessage("Birth date must not be in the future.")
+            .Must(date => date >= DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-150)))
+            .WithMessage("Birth date must not indicate an age older than 150 years.");
+    }
+    /// <summary>
+    /// Validates that a provided birth date is valid if not null: not in the future, and within a reasonable range (e.g., person is not older than 150 years).
+    /// </summary>
+    /// <typeparam name="T">The type of the object being validated.</typeparam>
+    /// <param name="ruleBuilder">The rule builder.</param>
+    /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
+    public static IRuleBuilderOptions<T, DateOnly?>
+        CustomIsValidBirthDateIfNotNull<T>(this IRuleBuilder<T, DateOnly?> ruleBuilder)
+    {
+        return ruleBuilder
+            .Must(date => date == null || date <= DateOnly.FromDateTime(DateTime.UtcNow))
+            .WithMessage("Birth date must not be in the future.")
+            .Must(date => date == null || date >= DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-150)))
+            .WithMessage("Birth date must not indicate an age older than 150 years.");
+    }
 
     /// <summary>
     /// Checks if a string contains HTML or markup language.
@@ -242,7 +306,10 @@ public static class ValidationRules
     private static bool ContainsHtml(string input)
     {
         if (string.IsNullOrEmpty(input)) return false;
-        var htmlRegex = new Regex("<[^>]+>");
-        return htmlRegex.IsMatch(input);
+
+        var sanitizer = new HtmlSanitizer();
+        var sanitizedOutput = sanitizer.Sanitize(input);
+
+        return !string.Equals(input, sanitizedOutput, StringComparison.Ordinal);
     }
 }

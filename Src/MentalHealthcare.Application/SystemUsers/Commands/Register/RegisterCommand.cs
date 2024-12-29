@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using MediatR;
 using MentalHealthcare.Application.Common;
 
@@ -5,6 +6,8 @@ namespace MentalHealthcare.Application.SystemUsers.Commands.Register;
 
 public class RegisterCommand : IRequest<OperationResult<UserDto>>
 {
+    [JsonIgnore]
+
     public string? Tenant { get; set; }=default!;
     public string UserName { get; set; } = default!;
     public string FirstName { get; set; } = default!;

@@ -7,8 +7,7 @@ public class RegisterAdminCommandValidator : AbstractValidator<RegisterAdminComm
 {
     public RegisterAdminCommandValidator()
     {
-        RuleFor(x => x.Tenant!)
-            .IsAdminProgramTenant();
+
         RuleFor(x => x.FirstName)
             .CustomIsValidName();
         RuleFor(x => x.LastName)
@@ -23,7 +22,8 @@ public class RegisterAdminCommandValidator : AbstractValidator<RegisterAdminComm
             .CustomIsValidPassword()
             .Must((model, password) =>
                 !ValidationRules.ContainsPersonalInformation(password, model.FirstName, model.LastName,
-                    model.UserName));
+                    model.UserName)
+                ).WithMessage("Should contain personal information");
         RuleFor(x => x.Active2Fa)
             .NotNull();
     }

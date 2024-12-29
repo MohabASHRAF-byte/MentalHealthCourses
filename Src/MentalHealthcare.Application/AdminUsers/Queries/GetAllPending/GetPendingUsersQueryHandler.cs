@@ -2,6 +2,9 @@ using AutoMapper;
 using MediatR;
 using MentalHealthcare.Application.AdminUsers.Commands.Add;
 using MentalHealthcare.Application.Common;
+using MentalHealthcare.Application.SystemUsers;
+using MentalHealthcare.Domain.Constants;
+using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -48,12 +51,20 @@ namespace MentalHealthcare.Application.AdminUsers.Queries.GetAllPending;
 public class GetPendingUsersQueryHandler(
     ILogger<AddAdminCommandHandler> logger,
     IAdminRepository adminRepository,
-    IMapper mapper
+    IMapper mapper,
+    IUserContext userContext
 ) : IRequestHandler<GetPendingUsersQuery, PageResult<PendingUsersDto>>
 {
     public async Task<PageResult<PendingUsersDto>> Handle(GetPendingUsersQuery request,
         CancellationToken cancellationToken)
     {
+        var currentUser = userContext.GetCurrentUser();
+        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
+        {
+            logger.LogWarning("Unauthorized attempt to delete from cart by user: {UserId}", currentUser?.Id);
+            throw new ForBidenException("You do not have permission to delete items from the cart.");
+        }
+
         logger.LogInformation("Retrieving all pending users with search text: {SearchText}, page number: {PageNumber}, page size: {PageSize}", 
             request.SearchText, request.PageNumber, request.PageSize);
         

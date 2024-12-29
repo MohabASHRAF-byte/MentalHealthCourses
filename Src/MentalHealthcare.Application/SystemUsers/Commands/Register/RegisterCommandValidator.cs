@@ -9,8 +9,6 @@ namespace MentalHealthcare.Application.SystemUsers.Commands.Register
         {
             RuleFor(register => register.UserName)
                 .ValidateNoHtmlIfNotNull();
-            RuleFor(x => x.Tenant!)
-                .IsAdminProgramTenant();
             RuleFor(x => x.FirstName)
                 .CustomIsValidName();
             RuleFor(x => x.LastName)

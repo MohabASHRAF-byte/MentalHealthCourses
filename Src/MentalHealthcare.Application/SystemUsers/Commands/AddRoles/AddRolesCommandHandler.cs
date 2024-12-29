@@ -19,7 +19,7 @@ public class AddRolesCommandHandler(
     {
         //todo check the auth
         var adminTenant = userContext.GetCurrentUser()?.Tenant;
-        
+
         if (string.IsNullOrEmpty(adminTenant))
         {
             return OperationResult<string>.Failure("Unauthorized", StateCode.Unauthorized);
@@ -31,7 +31,8 @@ public class AddRolesCommandHandler(
             return OperationResult<string>.Failure("User does not exist");
         }
 
-        foreach (var Role in request.Roles)
+        var roles = new List<UserRoles>(){ UserRoles.Admin };
+        foreach (var Role in roles)
         {
             var val = (int)Role;
             changedUserRoles |= (uint)(1 << val);

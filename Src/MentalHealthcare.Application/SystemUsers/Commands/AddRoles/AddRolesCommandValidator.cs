@@ -11,9 +11,5 @@ public class AddRolesCommandValidator : AbstractValidator<AddRolesCommand>
             .NotEmpty().WithMessage("UserName must not be empty.")
             .MaximumLength(50).WithMessage("UserName must not exceed 50 characters.");
 
-        RuleFor(x => x.Roles)
-            .NotEmpty().WithMessage("Roles must not be empty.")
-            .Must(roles => roles.All(role => Enum.IsDefined(typeof(UserRoles), role)))
-            .WithMessage("Roles contain invalid values.");
-    }
+   }
 }

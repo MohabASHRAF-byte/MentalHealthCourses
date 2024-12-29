@@ -7,5 +7,4 @@ namespace MentalHealthcare.Application.SystemUsers.Commands.AddRoles;
 public class AddRolesCommand:IRequest<OperationResult<string>>
 {
     public string UserName { get; set; } = default!;
-    public List<UserRoles> Roles { get; set; } = default!;
 }
