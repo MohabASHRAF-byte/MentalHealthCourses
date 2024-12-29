@@ -13,42 +13,61 @@ public class AdminRepository(
     UserManager<User> userManager,
     ILogger<AdminRepository> logger) : IAdminRepository
 {
-    public async Task<(bool Succeeded, List<string> Errors)> RegisterUser(User user, string password, Admin userToRegister)
+    public async Task RegisterUser(User user, string password, Admin userToRegister)
     {
-        var errors = new List<string>();
-        var existingUser = await dbContext.Users
-            .Where(u =>
-                u.NormalizedUserName== user.UserName ||
-                u.Email ==user.Email
-            ).ToListAsync();
-        var validUserName = !existingUser.Any(u =>
-            u.NormalizedUserName!.Equals(user.UserName));
-        var validEmail = !existingUser.Any(u => u.Email!.Equals(user.Email));
-        if (!validUserName)
-            errors.Add($"{user.UserName} is already taken.");
-        if (!validEmail)
-            errors.Add($"{user.Email} is already taken.");
-        if (errors.Count != 0)
-            return (false, errors);
+        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+
         try
         {
-            IdentityResult createUserResult = await userManager.CreateAsync(user, password);
+            // Check if the username or email already exists
+            var existingUser = await dbContext.Users
+                .Where(u =>
+                    u.NormalizedUserName!.ToLower() == user.UserName!.ToLower() ||
+                    u.NormalizedEmail!.ToLower() == user.Email!.ToLower())
+                .Select(u => new { u.NormalizedUserName, u.NormalizedEmail })
+                .FirstOrDefaultAsync();
+
+            if (existingUser is not null)
+            {
+                if (existingUser.NormalizedUserName!.Equals(user.UserName, StringComparison.CurrentCultureIgnoreCase))
+                    throw new ForBidenException("Username is already taken");
+
+                if (existingUser.NormalizedEmail!.Equals(user.Email, StringComparison.CurrentCultureIgnoreCase))
+                    throw new ForBidenException("Email is already taken");
+            }
+
+            // Check if the email exists in the PendingAdmins table
+            var pendingAdmin = await dbContext.PendingAdmins
+                .Where(pa => pa.Email.ToLower() == user.Email!.ToLower())
+                .FirstOrDefaultAsync();
+
+            if (pendingAdmin is null)
+            {
+                throw new ForBidenException("Email is not registered as admin");
+            }
+
+            // Create the user in the Identity system
+            var createUserResult = await userManager.CreateAsync(user, password);
             if (!createUserResult.Succeeded)
-                return (false, new());
+            {
+                await transaction.RollbackAsync();
+                throw new CreationFailed("User creation failed Please try again.");
+            }
+
+            // Add the user to the Admins table and remove from PendingAdmins
             await dbContext.Admins.AddAsync(userToRegister);
+            dbContext.PendingAdmins.Remove(pendingAdmin);
+
             await dbContext.SaveChangesAsync();
-            return (true, new());
+
+            // Commit the transaction
+            await transaction.CommitAsync();
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            var userCred = await dbContext.Users.FindAsync(user.Id);
-            if (userCred != null)
-                dbContext.Users.Remove(user);
-            var sysUser = await dbContext.Admins.FindAsync(userToRegister.AdminId);
-            if (sysUser != null)
-                dbContext.Admins.Remove(sysUser);
-            logger.LogWarning(e.Message);
-            return (false, new());
+            // Rollback the transaction on error
+            await transaction.RollbackAsync();
+            throw;
         }
     }
 

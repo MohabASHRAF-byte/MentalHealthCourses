@@ -38,6 +38,7 @@ public class RegisterCommandHandler(
         systemUser.LName = request.LastName;
         systemUser.CreatedDate = DateTime.UtcNow;
         systemUser.LastUpdatedDate = DateTime.UtcNow;
+        systemUser.BirthDate = request.Birthday;
         //todo:systemUser.BirthDate
 
         logger.LogInformation("Inserting {@user} to the DB", request.UserName);

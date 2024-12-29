@@ -48,6 +48,39 @@ Content-Type: application/json
   ""OldEmail"": ""oldemail@example.com"",
   ""NewEmail"": ""newemail@example.com""
 }";
+    public const string RegisterAdminDescription = """
+                                                       ### Register a New Admin User
+                                                       Creates a new admin user and registers them in the system.
+                                                   
+                                                       #### Usage
+                                                       - **Endpoint**: `POST /api/admin/register`
+                                                       - **Authorization**: No authorization required.
+                                                       - **Parameters**:
+                                                         - `RegisterAdminCommand` (body): The command object containing the details of the admin user to register.
+                                                   
+                                                       #### Behavior
+                                                       - Ensures the email exists in the pending admin list.
+                                                       - Registers the admin user and sends a confirmation email.
+                                                   
+                                                       #### Response
+                                                       - **201 Created**: Successfully registered the admin user.
+                                                       - **400 Bad Request**: If the request data is invalid.
+                                                       - **403 Forbidden**: If the email is not in the pending admin list.
+                                                   
+                                                       #### Example
+                                                       ```http
+                                                       POST /api/admin/register
+                                                       Content-Type: application/json
+                                                   
+                                                       {
+                                                           "UserName": "adminuser",
+                                                           "Email": "admin@example.com",
+                                                           "FirstName": "Admin",
+                                                           "LastName": "User",
+                                                           "Password": "SecurePassword123!"
+                                                       }
+                                                       ```
+                                                   """;
 
     
 }

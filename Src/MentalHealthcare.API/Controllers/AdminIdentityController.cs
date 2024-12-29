@@ -4,7 +4,6 @@ using MentalHealthcare.Application.AdminUsers.Commands.Add;
 using MentalHealthcare.Application.AdminUsers.Commands.Delete;
 using MentalHealthcare.Application.AdminUsers.Commands.Register;
 using MentalHealthcare.Application.AdminUsers.Commands.Update;
-using MentalHealthcare.Application.AdminUsers.Queries;
 using MentalHealthcare.Application.AdminUsers.Queries.GetAllPending;
 using MentalHealthcare.Application.SystemUsers.Commands.AddRoles;
 using MentalHealthcare.Application.SystemUsers.Commands.ChangePassword;
@@ -12,7 +11,6 @@ using MentalHealthcare.Application.SystemUsers.Commands.ConfirmEmail;
 using MentalHealthcare.Application.SystemUsers.Commands.ForgetPassword;
 using MentalHealthcare.Application.SystemUsers.Commands.Login;
 using MentalHealthcare.Application.SystemUsers.Commands.Refresh;
-using MentalHealthcare.Application.SystemUsers.Commands.Register;
 using MentalHealthcare.Application.SystemUsers.Commands.RemoveRoles;
 using MentalHealthcare.Application.SystemUsers.Commands.ResendEmailConfirmtion;
 using MentalHealthcare.Application.SystemUsers.Commands.ResetPassword;
@@ -26,10 +24,9 @@ namespace MentalHealthcare.API.Controllers;
 [AllowAnonymous]
 [ApiController]
 [SwaggerTag("\"Tenant\": just ignore sending tenant in any request",
-    externalDocsUrl:"https://docs.google.com/document/d/1ZaLmmSHN9umbdhm02yTflUtidZUqavGue2xxfO4HNcw/edit?tab=t.0")]
-[ApiExplorerSettings(GroupName = Global.AllVersion)]
-
-[Route("admin/")]
+    externalDocsUrl: "https://docs.google.com/document/d/1ZaLmmSHN9umbdhm02yTflUtidZUqavGue2xxfO4HNcw/edit?tab=t.0")]
+[ApiExplorerSettings(GroupName = Global.DevelopmentVersion)]
+[Route("api/admin")]
 public class AdminIdentityController(
     IMediator mediator
 ) : ControllerBase
@@ -39,54 +36,59 @@ public class AdminIdentityController(
         Summary = "Add Admin User",
         Description = AdminDocs.AddPendingAdminDescription)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [HttpPost("PendingAdmin")]
+    [HttpPost("pending-admin")]
     public async Task<IActionResult> AddAdmin(AddAdminCommand command)
     {
         await mediator.Send(command);
         return Created();
     }
-    
-    
+
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [HttpPut("PendingAdmin")]
-    [SwaggerOperation(Summary = "Change pending admin Email",
-        Description = AdminDocs.AddPendingAdminDescription)]
-    
+    [HttpPut("pending-admin")]
+    [SwaggerOperation(
+        Summary = "Change pending admin Email",
+        Description = AdminDocs.UpdatePendingAdmin
+    )]
     public async Task<IActionResult> UpdatePendingAdmin(UpdatePendingAdminCommand command)
     {
         await mediator.Send(command);
         return NoContent();
     }
-    [Authorize(AuthenticationSchemes = "Bearer")]
 
-    [HttpDelete("PendingAdmin")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [HttpDelete("pending-admin")]
+    [SwaggerOperation(Summary = "Delete pending admin user.")]
     public async Task<IActionResult> DeletePendingAdmin(DeletePendingUsersCommand command)
     {
         await mediator.Send(command);
         return NoContent();
     }
-    [Authorize(AuthenticationSchemes = "Bearer")]
 
-    [HttpGet("PendingAdmin")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [HttpGet("pending-admin")]
+    [SwaggerOperation(Summary = "Get all pending admin users.")]
     public async Task<IActionResult> GetPendingAdmin([FromQuery] GetPendingUsersQuery query)
     {
         var result = await mediator.Send(query);
         return Ok(result);
     }
 
-    [HttpPost(nameof(Register))]
+
+    [HttpPost("register")]
+    [SwaggerOperation(
+        Description = AdminDocs.RegisterAdminDescription,
+        Summary = "Register a new admin user."
+    )]
     public async Task<IActionResult> Register(RegisterAdminCommand command)
     {
         command.Tenant = Global.ProgramName;
-        var result = await mediator.Send(command);
-        if (result.StatusCode == StateCode.Ok)
-        {
-            return Ok(result);
-        }
-        return BadRequest(result);
+        await mediator.Send(command);
+
+        return Created();
     }
 
-    [HttpPost(nameof(ConfirmEmail))]
+    [HttpPost("confirm-email")]
+    [SwaggerOperation(Summary = "Confirm admin user's email.")]
     public async Task<IActionResult> ConfirmEmail(ConfirmEmailCommand command)
     {
         command.Tenant = Global.ProgramName;
@@ -99,8 +101,8 @@ public class AdminIdentityController(
         return BadRequest(commandResult);
     }
 
-    [HttpPost(nameof(Login))]
-    [SwaggerOperation(Description = IdentityDocs.LoginDescription)]
+    [HttpPost("login")]
+    [SwaggerOperation(Description = IdentityDocs.LoginDescription, Summary = "Login admin user.")]
     public async Task<IActionResult> Login(LoginCommand command)
     {
         command.Tenant = Global.ProgramName;
@@ -108,7 +110,8 @@ public class AdminIdentityController(
         return Ok(commandResult);
     }
 
-    [HttpPost(nameof(Refresh))]
+    [HttpPost("refresh")]
+    [SwaggerOperation(Summary = "Refresh admin user token.")]
     public async Task<IActionResult> Refresh(RefreshCommand command)
     {
         var commandResult = await mediator.Send(command);
@@ -120,7 +123,8 @@ public class AdminIdentityController(
         };
     }
 
-    [HttpPost(nameof(ResendConfirmationEmail))]
+    [HttpPost("resend-confirmation-email")]
+    [SwaggerOperation(Summary = "Resend confirmation email to admin user.")]
     public async Task<IActionResult> ResendConfirmationEmail(ResendEmailConfirmationCommand command)
     {
         command.Tenant = Global.ProgramName;
@@ -133,7 +137,8 @@ public class AdminIdentityController(
         };
     }
 
-    [HttpPost(nameof(ForgetPassword))]
+    [HttpPost("forget-password")]
+    [SwaggerOperation(Summary = "Initiate admin user password reset.")]
     public async Task<IActionResult> ForgetPassword(ForgetPasswordCommand command)
     {
         command.Tenant = Global.ProgramName;
@@ -146,8 +151,8 @@ public class AdminIdentityController(
         };
     }
 
-    [HttpPost(nameof(ResetPassword))]
-    [SwaggerOperation(Description = IdentityDocs.ResetPasswordDescription)]
+    [HttpPost("reset-password")]
+    [SwaggerOperation(Description = IdentityDocs.ResetPasswordDescription, Summary = "Reset admin user password.")]
     public async Task<IActionResult> ResetPassword(ResetPasswordCommand command)
     {
         command.Tenant = Global.ProgramName;
@@ -156,8 +161,8 @@ public class AdminIdentityController(
     }
 
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [HttpPost(nameof(ChangePassword))]
-    [SwaggerOperation(Description = IdentityDocs.ChangePasswordDescription)]
+    [HttpPost("change-password")]
+    [SwaggerOperation(Description = IdentityDocs.ChangePasswordDescription, Summary = "Change admin user password.")]
     public async Task<IActionResult> ChangePassword(ChangePasswordCommand command)
     {
         var commandResult = await mediator.Send(command);
@@ -171,8 +176,8 @@ public class AdminIdentityController(
     }
 
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [HttpPost(nameof(Roles))]
-    [SwaggerOperation(Description = IdentityDocs.AddRolesDescription)]
+    [HttpPost("roles")]
+    [SwaggerOperation(Description = IdentityDocs.AddRolesDescription, Summary = "Add roles to admin user.")]
     public async Task<IActionResult> Roles(AddRolesCommand command)
     {
         var commandResult = await mediator.Send(command);
@@ -180,8 +185,8 @@ public class AdminIdentityController(
     }
 
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [HttpDelete("Roles")]
-    [SwaggerOperation(Description = IdentityDocs.RemoveRolesDescription)]
+    [HttpDelete("roles")]
+    [SwaggerOperation(Description = IdentityDocs.RemoveRolesDescription, Summary = "Remove roles from admin user.")]
     public async Task<IActionResult> RemoveRoles(RemoveRolesCommand command)
     {
         var commandResult = await mediator.Send(command);
