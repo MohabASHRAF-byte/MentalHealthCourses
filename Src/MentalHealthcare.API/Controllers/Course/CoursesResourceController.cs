@@ -14,7 +14,7 @@ namespace MentalHealthcare.API.Controllers.Course;
 
 [ApiController]
 [Route("Api/Courses/{courseId}/Sections/{sectionId}/Lessons/{lessonId}/Resources")]
-[ApiExplorerSettings(GroupName = Global.AllVersion)]
+[ApiExplorerSettings(GroupName = Global.DevelopmentVersion)]
 
 public class CoursesResourceController(IMediator mediator) : ControllerBase
 {

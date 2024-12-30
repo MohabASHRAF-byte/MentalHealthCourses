@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Http;
 
-namespace MentalHealthcare.Application.Courses.Commands.AddThumbnail;
+namespace MentalHealthcare.Application.Courses.Course.Commands.AddThumbnail;
 
 public class AddCourseThumbnailCommand:IRequest<string>
 {

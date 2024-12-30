@@ -10,14 +10,14 @@ namespace MentalHealthcare.Domain.Entities;
    =========
     - Remove title from course
    - changel thumbnail to stringUrl
-   - add isFree bool 
+   - add isFree bool
    - add reviewsCount
    - add is public
    - change rating to nullable decimal instead of int
- */public class Course
+ */
+public class Course
 {
-    [Key]
-    public int CourseId { set; get; }
+    [Key] public int CourseId { set; get; }
     [MaxLength(Global.TitleMaxLength)] public string Name { set; get; } = default!;
     [MaxLength(Global.UrlMaxLength)] public string? ThumbnailUrl { get; set; }
     [MaxLength(Global.UrlMaxLength)] public string? ThumbnailName { get; set; }
@@ -25,19 +25,22 @@ namespace MentalHealthcare.Domain.Entities;
     public decimal Rating { get; set; } = 0;
     public int ReviewsCount { get; set; } = 0;
     public int EnrollmentsCount { get; set; } = 0;
-    public string CollectionId { set; get; }=default!;
+    public string CollectionId { set; get; } = default!;
     public string Description { get; set; } = default!;
+
+    public DateTime CreatedAt { get; set; }
     public bool IsFree { get; set; } = false;
     public bool IsPublic { get; set; } = true;
     public bool IsFeatured { get; set; } = false;
+
     //TODO: remove is archived
     public bool IsArchived { get; set; } = false;
-    
-    [Required] 
+
+    [Required]
     [ForeignKey(nameof(Instructor))]
     public int InstructorId { get; set; } // Foreign Key property
+
     public Instructor Instructor { get; set; } = default!; // Navigation property
     public List<CourseSection> CourseSections { set; get; } = new List<CourseSection>();
     public ICollection<Category>? Categories { get; set; } = new HashSet<Category>();
-    
 }

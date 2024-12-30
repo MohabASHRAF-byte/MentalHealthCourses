@@ -116,4 +116,10 @@ public class CourseFavouriteRepository(
 
         return (totalCount, users);
     }
+
+    public async Task<bool> HasFavouriteCourseAsync(int courseId, int userId)
+    {
+        return await dbContext.FavouriteCourses
+            .AnyAsync(fc => fc.CourseId == courseId && fc.SystemUserId == userId);
+    }
 }

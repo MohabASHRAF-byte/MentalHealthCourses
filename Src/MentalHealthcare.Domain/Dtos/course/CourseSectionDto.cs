@@ -9,6 +9,7 @@ public class CourseSectionDto
     public int CourseSectionId { get; set; }
     [MaxLength(Global.CourseSectionNameMaxLength)]
     public string Name { get; set; }=string.Empty;
+    //todo: add json ignore now keep it for debugging 
     public int Order { get; set; }
     public List<CourseLessonDto> Lessons { get; set; } = new ();
 

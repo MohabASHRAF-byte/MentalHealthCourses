@@ -17,7 +17,7 @@ public class Global
     public const int MaxNameLength = 50;
     public const string AdminIdClaimType = "AdminId";
     public const string UserIdClaimType = "UserId";
-    public static string CourseThumbnailDirectory = "CoursesThumbnails";
+    public static string CourseThumbnailDirectory = "CoursesThumbnail";
     public static string ThumbnailFileExtension = ".jpeg";
 
     #region Terms and Conditions

@@ -2,12 +2,28 @@ using System.Text.RegularExpressions;
 using FluentValidation;
 using Ganss.Xss;
 using MentalHealthcare.Domain.Constants;
+using Microsoft.AspNetCore.Http;
 
 
 namespace MentalHealthcare.Application.validations;
 
 public static class ValidationRules
 {
+    private static readonly string[] AllowedExtensions = { ".jpg", ".jpeg", ".png" };
+    private const long MaxFileSize = 1 * 1024 * 1024; // 1 MB
+
+    public static IRuleBuilderOptions<T, IFormFile> CustomIsValidThumbnail<T>(this IRuleBuilder<T, IFormFile> ruleBuilder)
+    {
+        return ruleBuilder
+            .NotNull()
+            .WithMessage("Thumbnail is required.")
+            .Must(file => AllowedExtensions.Contains(Path.GetExtension(file.FileName).ToLower()))
+            .WithMessage($"Thumbnail must be one of the following types: {string.Join(", ", AllowedExtensions)}.")
+            .Must(file => file.Length > 0 && file.Length <= MaxFileSize)
+            .WithMessage($"Thumbnail size must be less than {MaxFileSize / (1024 * 1024)} MB.");
+    }
+
+
     /// <summary>
     /// Validates that a page size is valid.
     /// </summary>
@@ -75,7 +91,7 @@ public static class ValidationRules
             .WithMessage("Email address must not contain HTML or markup.");
     }
 
-    
+
     /// <summary>
     /// Validates that a name is valid: not exceeding 30 characters, not containing HTML, and not empty or null.
     /// </summary>
@@ -165,7 +181,7 @@ public static class ValidationRules
     /// <typeparam name="T">The type of the object being validated.</typeparam>
     /// <param name="ruleBuilder">The rule builder.</param>
     /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, string> 
+    public static IRuleBuilderOptions<T, string>
         CustomIsValidUsername<T>(this IRuleBuilder<T, string> ruleBuilder)
     {
         return ruleBuilder
@@ -260,20 +276,37 @@ public static class ValidationRules
     /// <typeparam name="T">The type of the object being validated.</typeparam>
     /// <param name="ruleBuilder">The rule builder.</param>
     /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, string?> ValidateNoHtmlIfNotNull<T>(
-        this IRuleBuilder<T, string?> ruleBuilder)
+    public static IRuleBuilderOptions<T, string?>
+        ValidateNoHtmlIfNotNull<T>(
+            this IRuleBuilder<T, string?> ruleBuilder)
     {
         return ruleBuilder
             .Must(value => string.IsNullOrEmpty(value) || !ContainsHtml(value))
             .WithMessage("Value must not contain HTML or markup.");
     }
+
+    /// <summary>
+    /// Validates that a string does not contain HTML if it is not null.
+    /// </summary>
+    /// <typeparam name="T">The type of the object being validated.</typeparam>
+    /// <param name="ruleBuilder">The rule builder.</param>
+    /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
+    public static IRuleBuilderOptions<T, string>
+        ValidateNoHtmlNotNull<T>(
+            this IRuleBuilder<T, string> ruleBuilder)
+    {
+        return ruleBuilder
+            .Must(value => !string.IsNullOrEmpty(value) && !ContainsHtml(value))
+            .WithMessage("Value must not contain HTML or markup.");
+    }
+
     /// <summary>
     /// Validates that a provided birth date is valid: not null, not in the future, and within a reasonable range (e.g., person is not older than 150 years).
     /// </summary>
     /// <typeparam name="T">The type of the object being validated.</typeparam>
     /// <param name="ruleBuilder">The rule builder.</param>
     /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, DateOnly> 
+    public static IRuleBuilderOptions<T, DateOnly>
         CustomIsValidBirthDate<T>(this IRuleBuilder<T, DateOnly> ruleBuilder)
     {
         return ruleBuilder
@@ -282,6 +315,7 @@ public static class ValidationRules
             .Must(date => date >= DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-150)))
             .WithMessage("Birth date must not indicate an age older than 150 years.");
     }
+
     /// <summary>
     /// Validates that a provided birth date is valid if not null: not in the future, and within a reasonable range (e.g., person is not older than 150 years).
     /// </summary>
@@ -296,6 +330,48 @@ public static class ValidationRules
             .WithMessage("Birth date must not be in the future.")
             .Must(date => date == null || date >= DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-150)))
             .WithMessage("Birth date must not indicate an age older than 150 years.");
+    }
+
+    /// <summary>
+    /// Validates that a price is valid: must be null or a non-negative value.
+    /// </summary>
+    /// <typeparam name="T">The type of the object being validated.</typeparam>
+    /// <param name="ruleBuilder">The rule builder.</param>
+    /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
+    public static IRuleBuilderOptions<T, decimal>
+        CustomValidatePrice<T>(this IRuleBuilder<T, decimal> ruleBuilder)
+    {
+        return ruleBuilder
+            .Must(price => price >= 0)
+            .WithMessage("Price must be null or a non-negative value.");
+    }
+
+    /// <summary>
+    /// Validates that a price is valid: must be null or a non-negative value.
+    /// </summary>
+    /// <typeparam name="T">The type of the object being validated.</typeparam>
+    /// <param name="ruleBuilder">The rule builder.</param>
+    /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
+    public static IRuleBuilderOptions<T, decimal?>
+        CustomValidatePriceIfNotNull<T>(this IRuleBuilder<T, decimal?> ruleBuilder)
+    {
+        return ruleBuilder
+            .Must(price => price == null || price >= 0)
+            .WithMessage("Price must be null or a non-negative value.");
+    }
+
+    /// <summary>
+    /// Validates that an ID is valid: must be a positive integer.
+    /// </summary>
+    /// <typeparam name="T">The type of the object being validated.</typeparam>
+    /// <param name="ruleBuilder">The rule builder.</param>
+    /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
+    public static IRuleBuilderOptions<T, int> CustomValidateId<T>(
+        this IRuleBuilder<T, int> ruleBuilder)
+    {
+        return ruleBuilder
+            .GreaterThan(0)
+            .WithMessage("ID must be a positive integer.");
     }
 
     /// <summary>

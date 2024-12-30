@@ -24,7 +24,7 @@ namespace MentalHealthcare.API.Controllers.Users;
 
 [ApiController]
 [Route("api/admin")]
-[ApiExplorerSettings(GroupName = Global.DevelopmentVersion)]
+[ApiExplorerSettings(GroupName = Global.DashboardVersion)]
 public class AdminIdentityController(
     IMediator mediator
 ) : ControllerBase

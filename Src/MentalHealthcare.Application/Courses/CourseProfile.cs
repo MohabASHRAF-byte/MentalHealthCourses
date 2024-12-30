@@ -1,5 +1,5 @@
 using AutoMapper;
-using MentalHealthcare.Application.Courses.Commands.Create;
+using MentalHealthcare.Application.Courses.Course.Commands.Create;
 using MentalHealthcare.Application.Courses.Lessons.Commands;
 using MentalHealthcare.Application.Courses.Lessons.Commands.CreateVideo;
 using MentalHealthcare.Application.Courses.Sections.Commands.Add_Section;

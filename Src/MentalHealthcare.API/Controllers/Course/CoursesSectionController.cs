@@ -1,5 +1,4 @@
 using MediatR;
-using MentalHealthcare.API.Docs;
 using MentalHealthcare.Application.Courses.Sections.Commands.Add_Section;
 using MentalHealthcare.Application.Courses.Sections.Commands.Remove_Section;
 using MentalHealthcare.Application.Courses.Sections.Commands.Update_order;
@@ -14,7 +13,7 @@ namespace MentalHealthcare.API.Controllers.Course;
 
 [ApiController]
 [Route("api/courses/{courseId}/sections")]
-[ApiExplorerSettings(GroupName = Global.AllVersion)]
+[ApiExplorerSettings(GroupName = Global.DevelopmentVersion)]
 public class CoursesSectionController(
     IMediator mediator
 ) : ControllerBase

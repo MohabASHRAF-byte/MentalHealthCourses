@@ -1,4 +1,4 @@
-namespace MentalHealthcare.Application.Courses.Commands.Create;
+namespace MentalHealthcare.Application.Courses.Course.Commands.Create;
 
 public class CreateCourseCommandResponse
 {

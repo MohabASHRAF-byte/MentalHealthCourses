@@ -173,4 +173,10 @@ public class CourseInteractionsRepository(
 
         return (totalCourses, result);
     }
+
+    public async Task<bool> IsCourseOwner(int courseId, int userId)
+    {
+        return await dbContext.CourseProgresses
+            .AnyAsync(cp => cp.CourseId == courseId && cp.SystemUserId == userId);
+    }
 }

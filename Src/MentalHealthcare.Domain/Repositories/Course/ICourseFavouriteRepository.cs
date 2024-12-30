@@ -20,4 +20,5 @@ public interface ICourseFavouriteRepository
         int courseId, int pageNumber,
         int pageSize, string? searchTerm
     );
+    public Task<bool> HasFavouriteCourseAsync(int courseId, int userId);
 }

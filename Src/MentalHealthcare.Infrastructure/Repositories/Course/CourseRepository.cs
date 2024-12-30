@@ -1,10 +1,14 @@
+using MentalHealthcare.Domain.Dtos;
+using MentalHealthcare.Domain.Dtos.Category;
+using MentalHealthcare.Domain.Dtos.course;
+using MentalHealthcare.Domain.Dtos.User;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
 using MentalHealthcare.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Npgsql;
+
 namespace MentalHealthcare.Infrastructure.Repositories.Course;
 
 public class CourseRepository(
@@ -12,35 +16,28 @@ public class CourseRepository(
     ILogger<CourseRepository> logger
 ) : ICourseRepository
 {
-    public async Task<int> CreateAsync(Domain.Entities.Course course)
+    public async Task<int> CreateAsync(Domain.Entities.Course course, List<int> categoryIds)
     {
         try
         {
+            var categories = await dbContext.Categories
+                .Where(c => categoryIds.Contains(c.CategoryId))
+                .ToListAsync();
+
+            course.Categories = categories;
 
             await dbContext.Courses.AddAsync(course);
             await dbContext.SaveChangesAsync();
-        }
-        catch (DbUpdateException ex)
-        {
-            if (ex.InnerException is PostgresException postgresException)
-            {
-                // Check for the specific foreign key constraint violation
-                if (postgresException.SqlState == PostgresConstants.ForeignKeyViolation &&
-                    postgresException.Message.Contains(PostgresConstants.CourseInstructorFkConstrain))
-                {
-                    logger.LogError(ex, "Foreign key violation: {Message}", postgresException.Message);
-                    throw new ResourceNotFound(nameof(Instructor), course.InstructorId.ToString());
-                }
-            }
+
+            return course.CourseId;
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "An error occurred while saving the course.");
             throw;
         }
-
-        return course.CourseId;
     }
+
 
     public async Task UpdateCourse(Domain.Entities.Course course)
     {
@@ -48,11 +45,13 @@ public class CourseRepository(
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task<Domain.Entities.Course> GetFullCourseByIdAsync(int id)
+    public async Task<Domain.Entities.Course> GetFullCourseByIdAsync(
+        int id
+    )
     {
         var course = await dbContext.Courses
             .AsNoTracking() // Avoid tracking for read-only queries
-            .Include(c=>c.Instructor)
+            .Include(c => c.Instructor)
             .Include(c => c.CourseSections) // Include sections
             .ThenInclude(cs => cs.Lessons) // Include lessons within sections
             .ThenInclude(cl => cl.CourseLessonResources) // Include materials within lessons
@@ -63,27 +62,6 @@ public class CourseRepository(
         {
             throw new ResourceNotFound(nameof(Domain.Entities.Course), id.ToString());
         }
-
-        // // Sort sections, lessons, and materials
-        // course.CourseSections = course.CourseSections
-        //     .OrderBy(cs => cs.Order)
-        //     .Select(cs =>
-        //     {
-        //         cs.Lessons = cs.Lessons
-        //             .OrderBy(cl => cl.Order)
-        //             .Select(cl =>
-        //             {
-        //                 cl.CourseMateriels = cl.CourseMateriels
-        //                     .OrderBy(cm => cm.ItemOrder)
-        //                     .ToList();
-        //                 return cl;
-        //             }).ToList();
-        //         return cs;
-        //     }).ToList();
-        //
-        // course.CourseMateriels = course.CourseMateriels
-        //     .OrderBy(cm => cm.ItemOrder)
-        //     .ToList();
 
         return course;
     }
@@ -98,24 +76,55 @@ public class CourseRepository(
         }
 
         return course;
-        
     }
 
 
-    public async Task<(int, IEnumerable<Domain.Entities.Course>)> GetAllAsync(string? searchName, int requestPageNumber,
-        int requestPageSize)
+    public async Task<(int TotalCount, IEnumerable<CourseViewDto> Courses)>
+        GetAllAsync(
+            int? userId,
+            string? searchName,
+            int requestPageNumber,
+            int requestPageSize)
     {
         searchName ??= string.Empty;
         searchName = searchName.ToLower();
+
         var baseQuery = dbContext.Courses
             .Where(r => r.Name.ToLower().Contains(searchName));
+
         var totalCount = await baseQuery.CountAsync();
+
         var courses = await baseQuery
+            .Where(c => c.IsArchived == false)
             .Skip(requestPageSize * (requestPageNumber - 1))
             .Take(requestPageSize)
+            .Select(c => new CourseViewDto
+            {
+                CourseId = c.CourseId,
+                Name = c.Name,
+                ThumbnailUrl = c.ThumbnailUrl,
+                Price = c.Price,
+                Rating = c.ReviewsCount > 0 ? Math.Round(c.Rating / c.ReviewsCount, 1) : null,
+                EnrollmentsCount = c.EnrollmentsCount,
+                ReviewsCount = c.ReviewsCount,
+                IsOwned =
+                    userId != null &&
+                    dbContext.CourseProgresses
+                        .Any(cp => cp.CourseId == c.CourseId && cp.SystemUserId == userId),
+                IsFree = c.IsFree || c.Price == 0,
+                Categories = c.Categories == null
+                    ? new List<MiniCategoryDto>()
+                    : c.Categories.Select(cat => new MiniCategoryDto
+                    {
+                        CategoryId = cat.CategoryId,
+                        Name = cat.Name
+                    }).ToList()
+            })
             .ToListAsync();
+
         return (totalCount, courses);
     }
+
 
     public async Task SaveChangesAsync()
     {
@@ -165,7 +174,6 @@ public class CourseRepository(
         }
 
         return collectionId;
-        
     }
 
     public async Task<string> GetCourseName(int courseId)

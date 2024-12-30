@@ -14,4 +14,5 @@ public interface ICourseInteractionsRepository
         int pageSize,
         string? courseName
     );
+    public Task<bool> IsCourseOwner(int courseId, int userId);
 }

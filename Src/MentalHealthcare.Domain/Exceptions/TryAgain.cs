@@ -1,6 +1,6 @@
 namespace MentalHealthcare.Domain.Exceptions;
 
-public class TryAgain(): Exception("Try again")
+public class TryAgain(string msg =""): Exception(msg)
 {
     
 }
