@@ -2,11 +2,8 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using MentalHealthcare.Application.BunnyServices.Dtos;
-using MentalHealthcare.Application.Videos.Commands;
-using MentalHealthcare.Application.Videos.Commands.CreateVideo;
-using Microsoft.AspNetCore.Authentication;
+using MentalHealthcare.Application.Courses.Lessons.Commands.CreateVideo;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using RestSharp;
 
@@ -68,9 +65,9 @@ public class BunnyClient(
         }
 
         var filename = fileName;
-        string hostname = string.IsNullOrEmpty(Region) ? BaseHostname : $"{Region}.{BaseHostname}";
-        string url = $"https://{hostname}/{StorageZoneName}/{folder}/{filename}";
-        string accessUrl = $"https://{HostName}/{folder}/{filename}";
+        var hostname = string.IsNullOrEmpty(Region) ? BaseHostname : $"{Region}.{BaseHostname}";
+        var url = $"https://{hostname}/{StorageZoneName}/{folder}/{filename}";
+        var accessUrl = $"https://{HostName}/{folder}/{filename}";
         HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
         request.Method = "PUT";
         request.ContentType = "image/jpeg";

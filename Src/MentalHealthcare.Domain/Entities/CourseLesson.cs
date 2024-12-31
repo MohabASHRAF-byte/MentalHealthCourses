@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using MentalHealthcare.Domain.Constants;
+using MentalHealthcare.Domain.Entities.Courses;
 
 namespace MentalHealthcare.Domain.Entities;
 
@@ -18,7 +19,9 @@ public class CourseLesson
     public string LessonBunnyName { get; set; } = string.Empty;
 
     public int views { get; set; } = 0;
-
+    
+    public int courseId { get; set; } = 0;
+    public Course Course { get; set; }
     #region Relationships
 
     public List<CourseLessonResource>? CourseLessonResources { get; set; }

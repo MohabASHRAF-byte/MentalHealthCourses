@@ -7,7 +7,6 @@ using MentalHealthcare.Application.Courses.Lessons.Commands.Update_order;
 using MentalHealthcare.Application.Courses.Lessons.Commands.Upload_pdf;
 using MentalHealthcare.Application.Courses.Lessons.Queries.GetById;
 using MentalHealthcare.Application.Courses.Lessons.Queries.GetLessonsBySectionId;
-using MentalHealthcare.Application.Videos.Commands.CreateVideo;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos.course;
 using Microsoft.AspNetCore.Authorization;
@@ -18,12 +17,12 @@ namespace MentalHealthcare.API.Controllers.Course;
 [ApiController]
 [Route("api/courses/{courseId}/sections/{sectionId}/lessons")]
 [ApiExplorerSettings(GroupName = Global.DevelopmentVersion)]
+[Authorize(AuthenticationSchemes = "Bearer")]
 
 public class LessonsController(IMediator mediator) : ControllerBase
 {
     [HttpPost("video")]
     [ProducesResponseType(typeof(CreateVideoCommandResponse), 200)]
-
     public async Task<IActionResult> AddVideoLesson(
         [FromRoute] int courseId,
         [FromRoute] int sectionId,

@@ -17,15 +17,17 @@ public class Course
     public decimal Rating { get; set; } = 0;
     public int ReviewsCount { get; set; } = 0;
     public int EnrollmentsCount { get; set; } = 0;
+    public int LessonsCount { get; set; } = 0;
     public string CollectionId { set; get; } = default!;
     public string Description { get; set; } = default!;
+    
     
     public DateTime CreatedAt { get; set; }
     public bool IsFree { get; set; } = false;
     public bool IsPublic { get; set; } = true;
     public bool IsFeatured { get; set; } = false;
 
-    //TODO: remove is archived
+    //TODO: remove is is public
     public bool IsArchived { get; set; } = false;
 
     [Required]

@@ -61,7 +61,7 @@ public class ConfirmUploadCommandHandler(
             courseLesson.ContentType = ContentType.Video;
             courseLesson.LessonName = pending.Title;
             courseLesson.MaterielBunneyId = pending.PendingVideoUploadId;
-
+            courseLesson.courseId = request.CourseId;
             // Save the course lesson
             logger.LogInformation("Adding CourseLesson for VideoId: {VideoId}", request.videoId);
             await courseLessonRepository.AddCourseLesson(courseLesson);

@@ -1,5 +1,7 @@
 using AutoMapper;
 using MediatR;
+using MentalHealthcare.Application.SystemUsers;
+using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
@@ -14,7 +16,8 @@ namespace MentalHealthcare.Application.Courses.Lessons.Commands.Update_Lesson;
 public class UpdateLessonCommandHandler(
     ILogger<UpdateLessonCommandHandler> logger,
     ICourseRepository courseRepository,
-    ICourseLessonRepository courseLessonRepository
+    ICourseLessonRepository courseLessonRepository,
+    IUserContext userContext
 ) : IRequestHandler<UpdateLessonCommand, int>
 {
     public async Task<int> Handle(UpdateLessonCommand request, CancellationToken cancellationToken)
@@ -22,13 +25,17 @@ public class UpdateLessonCommandHandler(
         logger.LogInformation("Starting UpdateLessonCommandHandler for LessonId: {LessonId}, LessonName: {LessonName}",
             request.LessonId, request.LessonName);
 
-        // TODO: Uncomment and implement user authorization.
-        // var currentUser = userContext.GetCurrentUser();
-        // if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        // {
-        //     logger.LogError("Unauthorized access attempt for updating lesson data.");
-        //     throw new UnauthorizedAccessException();
-        // }
+        // Authenticate and validate admin permissions
+        var currentUser = userContext.GetCurrentUser();
+        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
+        {
+            var userDetails = currentUser == null
+                ? "User is null"
+                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
+
+            logger.LogWarning("Unauthorized access attempt to update lesson data. User details: {UserDetails}", userDetails);
+            throw new ForBidenException("You do not have permission to update this lesson.");
+        }
 
         logger.LogInformation("Validating if the lesson exists with LessonId: {LessonId}", request.LessonId);
 

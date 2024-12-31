@@ -5,7 +5,7 @@ namespace MentalHealthcare.Domain.Repositories.Course;
 
 public interface ICourseSectionRepository
 {
-    public Task IsExistAsync(int courseId, int sectionId);
+    public Task IsSectionExistAndUpdatableAsync(int courseId, int sectionId);
     public Task<int> AddCourseSection(CourseSection courseSection);
 
     public Task<List<CourseSection>> GetCourseSections(int courseId);

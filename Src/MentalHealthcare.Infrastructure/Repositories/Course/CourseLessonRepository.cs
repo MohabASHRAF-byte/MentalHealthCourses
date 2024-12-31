@@ -19,26 +19,50 @@ public class CourseLessonRepository(
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
         try
         {
+            // Retrieve the maximum order within the section
             var maxOrder = await dbContext.CourseLessons
                 .Where(c => c.CourseSectionId == courseLesson.CourseSectionId)
                 .MaxAsync(c => (int?)c.Order) ?? 0;
 
+            // Set the order for the new lesson
             courseLesson.Order = maxOrder + 1;
             dbContext.CourseLessons.Add(courseLesson);
 
-            await dbContext.SaveChangesAsync();
-            await dbContext.UpdateCourseLessonsOrder(lessonId: courseLesson.CourseLessonId);
+            // Retrieve the associated course
+            var course = await dbContext.Courses
+                .Where(c => c.CourseId == courseLesson.courseId)
+                .FirstOrDefaultAsync();
+            if (course == null)
+            {
+                throw new ResourceNotFound("course", courseLesson.courseId.ToString());
+            }
+
+            // Increment the lesson count for the course
+            course.LessonsCount++;
+
+            // Save changes for adding the lesson and updating the course
             await dbContext.SaveChangesAsync();
 
+            // Update the order of lessons within the course if required
+            await dbContext.UpdateCourseLessonsOrder(lessonId: courseLesson.CourseLessonId);
+
+            // Commit the transaction
             await transaction.CommitAsync();
             return courseLesson.CourseLessonId;
         }
-        catch
+        catch (Exception ex)
         {
+            // Rollback the transaction on error
             await transaction.RollbackAsync();
-            throw;
+            throw new InvalidOperationException("Error adding course lesson", ex);
         }
-    }   
+    }
+
+    public async Task<bool> IsSectionOrderable(int courseId, int sectionId)
+    {
+        return !await dbContext.CourseProgresses
+            .AnyAsync(p => p.CourseId == courseId);
+    }
 
 
     public async Task<List<CourseLesson>> GetCourseLessons(int courseId, int sectionId)
@@ -95,6 +119,20 @@ public class CourseLessonRepository(
         return courseLesson;
     }
 
+    public async Task<CourseLesson> GetCourseLessonByIdAsync(int courseId, int sectionId, int lessonId)
+    {
+        var lesson = await dbContext.CourseLessons
+            .Where(
+                cls =>
+                    cls.CourseSectionId == sectionId
+                    && cls.CourseLessonId == lessonId
+                    && cls.courseId == courseId
+            ).FirstOrDefaultAsync();
+        if (lesson == null)
+            throw new ResourceNotFound(nameof(lesson), lessonId.ToString());
+        return lesson;
+    }
+
     public async Task<CourseLesson> GetCourseFullLessonByIdAsync(int id)
     {
         var courseLesson = await dbContext.CourseLessons
@@ -130,6 +168,66 @@ public class CourseLessonRepository(
         catch (DbUpdateConcurrencyException)
         {
             throw new ResourceNotFound(nameof(CourseLesson), lessonId.ToString());
+        }
+    }
+
+    public async Task RemoveLesson(int courseId, int sectionId, int lessonId)
+    {
+        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        try
+        {
+            // Fetch the lesson to be removed
+            var lesson = await dbContext.CourseLessons
+                .Where(
+                    cls =>
+                        cls.CourseSectionId == sectionId
+                        && cls.CourseLessonId == lessonId
+                        && cls.courseId == courseId
+                ).FirstOrDefaultAsync();
+
+            if (lesson == null)
+                throw new ResourceNotFound(nameof(lesson), lessonId.ToString());
+
+            // Update course progresses
+            var courseProgresses = await dbContext.CourseProgresses
+                .Where(cp => cp.CourseId == courseId)
+                .ToListAsync();
+
+            foreach (var courseProgress in courseProgresses)
+            {
+                if (courseProgress.LastLessonIdx >= lesson.OrderOnCourse)
+                    courseProgress.LastLessonIdx--;
+            }
+
+            // Adjust the order of lessons in the section
+            var sectionLessons = await dbContext.CourseLessons
+                .Where(l =>
+                    l.courseId == courseId
+                    && l.CourseSectionId == sectionId
+                ).ToListAsync();
+
+            foreach (var sectionLesson in sectionLessons)
+            {
+                if (sectionLesson.Order > lesson.Order)
+                {
+                    sectionLesson.Order--;
+                }
+            }
+
+            // Remove the lesson
+            dbContext.CourseLessons.Remove(lesson);
+
+            // Save changes and update lesson order
+            await dbContext.SaveChangesAsync();
+            await dbContext.UpdateCourseLessonsOrder(courseId);
+            await dbContext.SaveChangesAsync();
+            // Commit transaction
+            await transaction.CommitAsync();
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            throw new InvalidOperationException("Error occurred while removing the lesson.", ex);
         }
     }
 }

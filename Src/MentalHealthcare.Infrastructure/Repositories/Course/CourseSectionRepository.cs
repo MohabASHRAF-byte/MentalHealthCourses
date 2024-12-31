@@ -13,15 +13,21 @@ public class CourseSectionRepository(
     MentalHealthDbContext dbContext
 ) : ICourseSectionRepository
 {
-    public async Task IsExistAsync(int courseId, int sectionId)
+    public async Task IsSectionExistAndUpdatableAsync(int courseId, int sectionId)
     {
         var exists = await dbContext.CourseSections
             .AsNoTracking()
             .AnyAsync(c => c.CourseSectionId == sectionId);
-
+        
         if (!exists)
         {
             throw new ResourceNotFound(nameof(CourseSection), sectionId.ToString());
+        }
+        var updatable = await dbContext.CourseProgresses
+            .AnyAsync(progress =>progress.CourseId == courseId );
+        if (updatable)
+        {
+            throw new Exception("You can't update the section if course have already students please try to insert in the last section ");
         }
     }
 

@@ -23,7 +23,7 @@ public static class BunnyDeleteVideoExtension
         var apiLibraryKey = bunny.VideoLibraryKey;
         var accessKey = bunny.ApiAccessKey;
         httpRequest.AddHeader("accept", "application/json");
-        httpRequest.AddHeader(accessKey, apiLibraryKey);
+        httpRequest.AddHeader("AccessKey", apiLibraryKey);
         var response = await client.DeleteAsync(httpRequest);
         return new BunnyDeleteResponse { Success = response.StatusCode == HttpStatusCode.OK };
     }
