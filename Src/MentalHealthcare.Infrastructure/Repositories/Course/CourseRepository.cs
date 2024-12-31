@@ -36,99 +36,99 @@ public class CourseRepository(
         }
     }
 
-public async Task<int> UpdateCourseAsync(
-    int courseId,
-    string? name,
-    decimal? price,
-    string? description,
-    int? instructorId,
-    List<int>? categoryId,
-    bool? isFree,
-    bool? isFeatured,
-    bool? isArchived
-)
-{
-    await using var transaction = await dbContext.Database.BeginTransactionAsync();
-    try
+    public async Task<int> UpdateCourseAsync(
+        int courseId,
+        string? name,
+        decimal? price,
+        string? description,
+        int? instructorId,
+        List<int>? categoryId,
+        bool? isFree,
+        bool? isFeatured,
+        bool? isArchived
+    )
     {
-        // Retrieve course from the database
-        var course = await dbContext.Courses
-            .Where(c => c.CourseId == courseId)
-            .Include(c => c.Categories)
-            .FirstOrDefaultAsync();
-        if (course == null)
+        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        try
         {
-            throw new ResourceNotFound(nameof(course), courseId.ToString());
-        }
-
-        if (isFree.HasValue)
-        {
-            course.IsFree = isFree.Value;
-        }
-
-        if (isFeatured.HasValue)
-        {
-            course.IsFeatured = isFeatured.Value;
-        }
-
-        if (isArchived.HasValue)
-        {
-            course.IsArchived = isArchived.Value;
-        }
-
-        // Update course properties if values are provided
-        if (!string.IsNullOrWhiteSpace(name))
-        {
-            course.Name = name;
-        }
-
-        if (!string.IsNullOrWhiteSpace(description))
-        {
-            course.Description = description;
-        }
-
-        if (price.HasValue)
-        {
-            course.Price = price.Value;
-        }
-
-        if (instructorId.HasValue)
-        {
-            var instructor = await dbContext.Instructors.FindAsync(instructorId.Value);
-            if (instructor == null)
+            // Retrieve course from the database
+            var course = await dbContext.Courses
+                .Where(c => c.CourseId == courseId)
+                .Include(c => c.Categories)
+                .FirstOrDefaultAsync();
+            if (course == null)
             {
-                throw new ResourceNotFound(nameof(instructor), instructorId.ToString() ?? "");
+                throw new ResourceNotFound(nameof(course), courseId.ToString());
             }
 
-            course.Instructor = instructor;
-        }
+            if (isFree.HasValue)
+            {
+                course.IsFree = isFree.Value;
+            }
 
-        if (categoryId != null)
+            if (isFeatured.HasValue)
+            {
+                course.IsFeatured = isFeatured.Value;
+            }
+
+            if (isArchived.HasValue)
+            {
+                course.IsArchived = isArchived.Value;
+            }
+
+            // Update course properties if values are provided
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                course.Name = name;
+            }
+
+            if (!string.IsNullOrWhiteSpace(description))
+            {
+                course.Description = description;
+            }
+
+            if (price.HasValue)
+            {
+                course.Price = price.Value;
+            }
+
+            if (instructorId.HasValue)
+            {
+                var instructor = await dbContext.Instructors.FindAsync(instructorId.Value);
+                if (instructor == null)
+                {
+                    throw new ResourceNotFound(nameof(instructor), instructorId.ToString() ?? "");
+                }
+
+                course.Instructor = instructor;
+            }
+
+            if (categoryId != null)
+            {
+                course.Categories?.Clear();
+                var categories = await dbContext.Categories
+                    .Where(c => categoryId.Contains(c.CategoryId))
+                    .ToListAsync();
+
+                course.Categories = categories;
+            }
+
+            // Save changes to the database
+            dbContext.Courses.Update(course);
+            await dbContext.SaveChangesAsync();
+
+            // Commit the transaction
+            await transaction.CommitAsync();
+
+            return course.CourseId;
+        }
+        catch (Exception ex)
         {
-            course.Categories?.Clear();
-            var categories = await dbContext.Categories
-                .Where(c => categoryId.Contains(c.CategoryId))
-                .ToListAsync();
-
-            course.Categories = categories;
+            await transaction.RollbackAsync();
+            logger.LogError(ex, "An error occurred while updating the course with ID {CourseId}", courseId);
+            throw;
         }
-
-        // Save changes to the database
-        dbContext.Courses.Update(course);
-        await dbContext.SaveChangesAsync();
-
-        // Commit the transaction
-        await transaction.CommitAsync();
-
-        return course.CourseId;
     }
-    catch (Exception ex)
-    {
-        await transaction.RollbackAsync();
-        logger.LogError(ex, "An error occurred while updating the course with ID {CourseId}", courseId);
-        throw;
-    }
-}
 
 
     public async Task UpdateCourse(Domain.Entities.Courses.Course course)
@@ -286,5 +286,87 @@ public async Task<int> UpdateCourseAsync(
     public async Task<bool> DoesCourseExist(int courseId)
     {
         return await dbContext.Courses.AnyAsync(c => c.CourseId == courseId);
+    }
+
+    public async Task<bool> UpdateCourseProgressAfterDeletingSection(
+        int courseId,
+        int sectionId,
+        int sectionStart,
+        int sectionEnd
+    )
+    {
+        // Retrieve the order of the deleted section and its size
+        var oldSectionOrder = await dbContext.CourseSections
+            .Where(cs => cs.CourseId == courseId && cs.CourseSectionId == sectionId)
+            .Select(cs => cs.Order)
+            .FirstOrDefaultAsync();
+
+        if (oldSectionOrder == 0)
+        {
+            throw new ResourceNotFound("Section", sectionId.ToString());
+        }
+
+        // Find the last lesson index of the previous section
+        var previousSectionLastLessonIdx = await dbContext.CourseSections
+            .Where(cs => cs.CourseId == courseId && cs.Order == oldSectionOrder - 1)
+            .SelectMany(cs => cs.Lessons)
+            .OrderByDescending(cl => cl.OrderOnCourse)
+            .Select(cl => cl.OrderOnCourse)
+            .FirstOrDefaultAsync();
+
+        // Default to 0 if no previous section exists
+        previousSectionLastLessonIdx =
+            previousSectionLastLessonIdx > 0 ? previousSectionLastLessonIdx : 0;
+
+        // Fetch all progresses for the course
+        var progresses = await dbContext.CourseProgresses
+            .Where(cp => cp.CourseId == courseId)
+            .ToListAsync();
+
+        // Preload section order mappings for all lessons
+        var lessonSectionOrders = await dbContext.CourseLessons
+            .Where(cl => cl.CourseSection.CourseId == courseId)
+            .Select(cl => new { cl.OrderOnCourse, SectionOrder = cl.CourseSection.Order })
+            .ToDictionaryAsync(cl => cl.OrderOnCourse, cl => cl.SectionOrder);
+
+        foreach (var progress in progresses)
+        {
+            if (!lessonSectionOrders.TryGetValue(progress.LastLessonIdx, out var sectionOrder))
+            {
+                continue; // Skip if progress index is invalid
+            }
+
+            if (sectionOrder == oldSectionOrder)
+            {
+                // If progress is in the deleted section
+                progress.LastLessonIdx = previousSectionLastLessonIdx;
+            }
+            else if (sectionOrder > oldSectionOrder)
+            {
+                // If progress is in a section after the deleted section
+                progress.LastLessonIdx -= (sectionEnd - sectionStart + 1);
+            }
+            // Do nothing for sections before the deleted section
+        }
+
+        // Save updated progress
+        dbContext.CourseProgresses.UpdateRange(progresses);
+        await dbContext.SaveChangesAsync();
+
+        return true;
+    }
+    public async Task BeginTransactionAsync()
+    {
+        await dbContext.Database.BeginTransactionAsync();
+    }
+
+    public async Task CommitTransactionAsync()
+    {
+        await dbContext.Database.CommitTransactionAsync();
+    }
+
+    public async Task RollbackTransactionAsync()
+    {
+        await dbContext.Database.RollbackTransactionAsync();
     }
 }

@@ -40,4 +40,14 @@ public interface ICourseRepository
 
     public Task<string> GetCourseName(int courseId);
     public Task<bool> DoesCourseExist(int courseId);
+
+    public Task<bool> UpdateCourseProgressAfterDeletingSection(
+        int courseId,
+        int sectionId,
+        int sectionStart,
+        int sectionEnd
+    );
+    Task BeginTransactionAsync();
+    Task CommitTransactionAsync();
+    Task RollbackTransactionAsync();
 }

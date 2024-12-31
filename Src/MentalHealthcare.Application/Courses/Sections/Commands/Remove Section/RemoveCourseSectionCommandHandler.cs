@@ -1,6 +1,8 @@
 using MediatR;
 using MentalHealthcare.Application.Courses.LessonResources.Commands.Delete_Resource;
 using MentalHealthcare.Application.Courses.Lessons.Commands.RemoveLesson;
+using MentalHealthcare.Application.SystemUsers;
+using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Domain.Repositories.Course;
@@ -11,54 +13,35 @@ namespace MentalHealthcare.Application.Courses.Sections.Commands.Remove_Section;
 public class RemoveCourseSectionCommandHandler(
     ILogger<RemoveCourseSectionCommandHandler> logger,
     ICourseSectionRepository courseSectionRepository,
-    IMediator mediator
+    IUserContext userContext
 ) : IRequestHandler<RemoveCourseSectionCommand>
 {
     public async Task Handle(RemoveCourseSectionCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation($"Handling RemoveCourseSectionCommand for course{request.CourseId}");
-        var sections = await courseSectionRepository.GetCourseSections(request.CourseId);
-        if (sections.Count == 0)
+        logger.LogInformation("Start handling RemoveCourseSectionCommand for CourseId: {CourseId}, SectionId: {SectionId}", request.CourseId, request.SectionId);
+
+        // Retrieve current user and validate permissions
+        var currentUser = userContext.GetCurrentUser();
+        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
         {
-            logger.LogWarning($"No course found for id {request.SectionId}");
-            throw new ResourceNotFound("course ", request.SectionId.ToString());
+            var userDetails = currentUser == null
+                ? "User is null"
+                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
+
+            logger.LogWarning("Unauthorized access attempt to remove a course section. User details: {UserDetails}", userDetails);
+            throw new ForBidenException("You do not have permission to remove this section.");
         }
 
-        var targetSection = sections.FirstOrDefault(section => section.CourseSectionId == request.SectionId);
-        var delSection = await courseSectionRepository
-            .GetCourseSectionByIdUnTrackedAsync(request.SectionId);
-        foreach (var lesson in delSection.Lessons)
+        try
         {
-            var delLessonResource = new RemoveLessonCommand()
-            {
-                CourseId = request.CourseId,
-                SectionId = request.SectionId,
-                LessonId = lesson.CourseLessonId,
-            };
-            await mediator.Send(delLessonResource, cancellationToken);
+            logger.LogInformation("Attempting to delete section {SectionId} from course {CourseId}", request.SectionId, request.CourseId);
+            await courseSectionRepository.DeleteCourseSectionIfEmptyAsync(request.CourseId, request.SectionId);
+            logger.LogInformation("Successfully deleted section {SectionId} from course {CourseId}", request.SectionId, request.CourseId);
         }
-
-        if (targetSection == null)
+        catch (Exception ex)
         {
-            logger.LogWarning($"No section found for id {request.SectionId}");
-            throw new ResourceNotFound("Section ", request.SectionId.ToString());
-        }
-
-        await courseSectionRepository.DeleteCourseSectionAsync(targetSection);
-        // Adjust orders of remaining sections
-        var targetOrder = targetSection.Order;
-        var updatedSections = sections
-            .Where(section => section.Order > targetOrder)
-            .ToList();
-
-        foreach (var section in updatedSections)
-        {
-            section.Order--;
-        }
-
-        if (updatedSections.Any())
-        {
-            await courseSectionRepository.UpdateCourseSectionsAsync(updatedSections);
+            logger.LogError(ex, "Error occurred while deleting section {SectionId} from course {CourseId}", request.SectionId, request.CourseId);
+            throw;
         }
     }
 }

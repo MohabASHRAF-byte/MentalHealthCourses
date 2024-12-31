@@ -18,21 +18,25 @@ public class GetSectionByIdCommandHandler(
 {
     public async Task<CourseSectionDto> Handle(GetSectionByIdCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Processing request to retrieve SectionId: {SectionId} for CourseId: {CourseId}", 
+        logger.LogInformation("Processing request to retrieve SectionId: {SectionId} for CourseId: {CourseId}",
             request.SectionId, request.CourseId);
 
-        var courseSection = await sectionRepository.GetCourseSectionByIdAsync(request.SectionId);
+        var courseSection =
+            await sectionRepository
+                .GetCourseSectionByIdAsync(
+                    request.CourseId,
+                    request.SectionId
+                );
 
         if (courseSection == null)
         {
-            logger.LogWarning("Course section with SectionId: {SectionId} for CourseId: {CourseId} was not found", 
+            logger.LogWarning("Course section with SectionId: {SectionId} for CourseId: {CourseId} was not found",
                 request.SectionId, request.CourseId);
             throw new ResourceNotFound(nameof(courseSection), request.SectionId.ToString());
         }
 
         var dto = mapper.Map<CourseSectionDto>(courseSection);
-
-        logger.LogInformation("Successfully retrieved SectionId: {SectionId} for CourseId: {CourseId}", 
+        logger.LogInformation("Successfully retrieved SectionId: {SectionId} for CourseId: {CourseId}",
             request.SectionId, request.CourseId);
 
         return dto;

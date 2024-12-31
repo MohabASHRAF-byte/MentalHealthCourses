@@ -1,48 +1,52 @@
+using System.Text.Json.Serialization;
 using MediatR;
 using MentalHealthcare.Application.Common;
 using MentalHealthcare.Domain.Dtos.course;
 using MentalHealthcare.Domain.Repositories.Course;
+using MentalHealthcare.Application.SystemUsers;
+using MentalHealthcare.Domain.Constants;
+using MentalHealthcare.Domain.Exceptions;
 using Microsoft.Extensions.Logging;
 
 namespace MentalHealthcare.Application.Courses.Sections.Queries.Get_All;
 
 /// <summary>
-/// Handles the retrieval of course sections with pagination and search functionality.
+/// Handles the retrieval of all course sections for a specific course.
 /// </summary>
 public class GetAllCourseSectionsQueryHandler(
     ILogger<GetAllCourseSectionsQueryHandler> logger,
-    ICourseSectionRepository sectionRepository
-) : IRequestHandler<GetAllCourseSectionsQuery, PageResult<CourseSectionViewDto>>
+    ICourseSectionRepository sectionRepository,
+    IUserContext userContext
+) : IRequestHandler<GetAllCourseSectionsQuery, IEnumerable<CourseSectionViewDto>>
 {
-    public async Task<PageResult<CourseSectionViewDto>> Handle(GetAllCourseSectionsQuery request,
+    public async Task<IEnumerable<CourseSectionViewDto>> Handle(GetAllCourseSectionsQuery request,
         CancellationToken cancellationToken)
     {
-        // ToDo: Implement Authentication logic here
-        // Ensure the user has the appropriate permissions or roles to retrieve course sections
+        logger.LogInformation("Handling GetAllCourseSectionsQuery for CourseId: {CourseId}", request.courseId);
 
-        // ToDo: Add validation for request parameters
-        // Validate the courseId, page number, page size, and search string
+        // Authenticate and validate user permissions
+        var currentUser = userContext.GetCurrentUser();
+        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
+        {
+            var userDetails = currentUser == null
+                ? "User is null"
+                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
 
-        logger.LogInformation("Handling GetAllCourseSectionsQuery for CourseId: {CourseId}, Page: {PageNumber}, Size: {PageSize}, Search: {SearchString}", 
-            request.courseId, request.PageNumber, request.PageSize, request.SearchString);
+            logger.LogWarning("Unauthorized access attempt to retrieve course sections. User details: {UserDetails}",
+                userDetails);
+            throw new ForBidenException("You do not have permission to view course sections.");
+        }
 
-        // Retrieve course sections with pagination and search
-        (int totalCount, IEnumerable<CourseSectionViewDto> courseSectionDtos) =
-            await sectionRepository.GetCourseSectionsByCourseIdAsync(
-                courseId: request.courseId,
-                search: request.SearchString,
-                requestPageSize: request.PageSize,
-                requestPageNumber: request.PageNumber
-            );
+        // Retrieve course sections
+        var courseSectionDtos =
+            await sectionRepository
+                .GetCourseSectionsByCourseIdAsync(request.courseId);
 
-        logger.LogInformation("Retrieved {TotalCount} course sections for CourseId: {CourseId}", totalCount, request.courseId);
+        var courseSectionViewDtos = courseSectionDtos.ToList();
+        logger.LogInformation("Retrieved {TotalCount} course sections for CourseId: {CourseId}",
+            courseSectionViewDtos.Count(), request.courseId);
 
-        // Construct and return paginated result
-        return new PageResult<CourseSectionViewDto>(
-            courseSectionDtos,
-            totalCount,
-            request.PageSize,
-            request.PageNumber
-        );
+        // Return the result
+        return courseSectionViewDtos;
     }
 }
