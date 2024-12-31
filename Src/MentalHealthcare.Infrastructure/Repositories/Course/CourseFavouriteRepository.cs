@@ -71,6 +71,7 @@ public class CourseFavouriteRepository(
             {
                 Name = fc.Course.Name,
                 ThumbnailUrl = fc.Course.ThumbnailUrl,
+                IconUrl = fc.Course.IconUrl,
                 Price = fc.Course.Price,
                 Rating =
                     (fc.Course.ReviewsCount > 0 ? fc.Course.Rating / fc.Course.ReviewsCount : 0),

@@ -9,11 +9,11 @@ public class UpdateProfileDataCommandValidator : AbstractValidator<UpdateProfile
     {
         // FirstName validation
         RuleFor(x => x.FirstName)
-            .CustomIsValidNameIfNotNull();
+            .CustomIsValidNullableName();
 
         // LastName validation
         RuleFor(x => x.LastName)
-            .CustomIsValidNameIfNotNull();
+            .CustomIsValidNullableName();
 
         // PhoneNumber validation
         RuleFor(x => x.PhoneNumber)

@@ -60,7 +60,7 @@ public class CreateCourseCommandHandler(
 
         logger.LogInformation("Video folder created successfully with ID: {CollectionId}", collectionId);
 
-        var course = mapper.Map<Domain.Entities.Course>(request);
+        var course = mapper.Map<Domain.Entities.Courses.Course>(request);
         course.CollectionId = collectionId;
         // course.ThumbnailUrl = thumbnailResponse.Url;
         course.ThumbnailName = $"{request.Name}.jpeg";

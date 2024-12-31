@@ -10,17 +10,32 @@ namespace MentalHealthcare.Application.validations;
 public static class ValidationRules
 {
     private static readonly string[] AllowedExtensions = { ".jpg", ".jpeg", ".png" };
-    private const long MaxFileSize = 1 * 1024 * 1024; // 1 MB
+    private const long MaxThumbnailFileSize = 1 * 1024 * 1024; // 1 MB
+    private const long MaxIconFileSize = 10 * 1024; // 100 Kb
 
-    public static IRuleBuilderOptions<T, IFormFile> CustomIsValidThumbnail<T>(this IRuleBuilder<T, IFormFile> ruleBuilder)
+    public static IRuleBuilderOptions<T, IFormFile> CustomIsValidThumbnail<T>(
+        this IRuleBuilder<T, IFormFile> ruleBuilder)
     {
         return ruleBuilder
             .NotNull()
             .WithMessage("Thumbnail is required.")
             .Must(file => AllowedExtensions.Contains(Path.GetExtension(file.FileName).ToLower()))
             .WithMessage($"Thumbnail must be one of the following types: {string.Join(", ", AllowedExtensions)}.")
-            .Must(file => file.Length > 0 && file.Length <= MaxFileSize)
-            .WithMessage($"Thumbnail size must be less than {MaxFileSize / (1024 * 1024)} MB.");
+            .Must(file => file.Length > 0 && file.Length <= MaxThumbnailFileSize)
+            .WithMessage($"Thumbnail size must be less than {MaxThumbnailFileSize / (1024 * 1024)} MB.");
+    }
+
+    public static IRuleBuilderOptions<T, IFormFile>
+        CustomIsValidIcon<T>(
+            this IRuleBuilder<T, IFormFile> ruleBuilder)
+    {
+        return ruleBuilder
+            .NotNull()
+            .WithMessage("Icon is required.")
+            .Must(file => AllowedExtensions.Contains(Path.GetExtension(file.FileName).ToLower()))
+            .WithMessage($"Icon must be one of the following types: {string.Join(", ", AllowedExtensions)}.")
+            .Must(file => file.Length > 0 && file.Length <= MaxIconFileSize)
+            .WithMessage($"Icon size must be less than {MaxIconFileSize / (1024)} KB.");
     }
 
 
@@ -117,7 +132,7 @@ public static class ValidationRules
     /// <param name="ruleBuilder">The rule builder.</param>
     /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
     public static IRuleBuilderOptions<T, string?>
-        CustomIsValidNameIfNotNull<T>(this IRuleBuilder<T, string?> ruleBuilder)
+        CustomIsValidNullableName<T>(this IRuleBuilder<T, string?> ruleBuilder)
     {
         return ruleBuilder
             .Must(name => name == null || !string.IsNullOrWhiteSpace(name))
@@ -353,7 +368,7 @@ public static class ValidationRules
     /// <param name="ruleBuilder">The rule builder.</param>
     /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
     public static IRuleBuilderOptions<T, decimal?>
-        CustomValidatePriceIfNotNull<T>(this IRuleBuilder<T, decimal?> ruleBuilder)
+        CustomValidateNullablePrice<T>(this IRuleBuilder<T, decimal?> ruleBuilder)
     {
         return ruleBuilder
             .Must(price => price == null || price >= 0)
@@ -372,6 +387,20 @@ public static class ValidationRules
         return ruleBuilder
             .GreaterThan(0)
             .WithMessage("ID must be a positive integer.");
+    }
+
+    /// <summary>
+    /// Validates that an ID is valid if not null: must be a positive integer.
+    /// </summary>
+    /// <typeparam name="T">The type of the object being validated.</typeparam>
+    /// <param name="ruleBuilder">The rule builder.</param>
+    /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
+    public static IRuleBuilderOptions<T, int?> CustomValidateNullableId<T>(
+        this IRuleBuilder<T, int?> ruleBuilder)
+    {
+        return ruleBuilder
+            .Must(id => id == null || id > 0)
+            .WithMessage("ID must be null or a positive integer.");
     }
 
     /// <summary>

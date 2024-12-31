@@ -11,6 +11,7 @@ public class CourseDto
     [Key] public int CourseId { set; get; }
     [MaxLength(Global.TitleMaxLength)] public string Name { set; get; } = default!;
     [MaxLength(Global.UrlMaxLength)] public string? ThumbnailUrl { get; set; }
+    [MaxLength(Global.UrlMaxLength)] public string? IconUrl { get; set; }
     public decimal Price { get; set; }
     public decimal? Rating { get; set; }
     public DateTime CreatedAt { get; set; }

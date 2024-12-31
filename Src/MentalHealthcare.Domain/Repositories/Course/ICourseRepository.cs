@@ -5,12 +5,26 @@ namespace MentalHealthcare.Domain.Repositories.Course;
 
 public interface ICourseRepository
 {
-    public Task<int> CreateAsync(Entities.Course course ,List<int> categories);
-    public Task UpdateCourse(Entities.Course course);
-    public Task<Entities.Course> GetFullCourseByIdAsync(
+    public Task<int> CreateAsync(Entities.Courses.Course course, List<int> categories);
+
+    public Task<int> UpdateCourseAsync(
+        int courseId,
+        string? name,
+        decimal? price,
+        string? description,
+        int? instructorId,
+        List<int>? categoryId,
+        bool? isFree,
+        bool? isFeatured,
+        bool? isArchived);
+
+    public Task UpdateCourse(Entities.Courses.Course course);
+
+    public Task<Entities.Courses.Course> GetFullCourseByIdAsync(
         int id
-        );
-    public Task<Entities.Course> GetMinimalCourseByIdAsync(int id);
+    );
+
+    public Task<Entities.Courses.Course> GetMinimalCourseByIdAsync(int id);
 
     public Task<(int TotalCount, IEnumerable<CourseViewDto> Courses)> GetAllAsync(
         int? userId,

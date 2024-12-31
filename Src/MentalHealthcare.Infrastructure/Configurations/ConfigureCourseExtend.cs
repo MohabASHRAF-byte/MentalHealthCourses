@@ -1,4 +1,5 @@
 using MentalHealthcare.Domain.Entities;
+using MentalHealthcare.Domain.Entities.Courses;
 using Microsoft.EntityFrameworkCore;
 
 namespace MentalHealthcare.Infrastructure.Configurations;

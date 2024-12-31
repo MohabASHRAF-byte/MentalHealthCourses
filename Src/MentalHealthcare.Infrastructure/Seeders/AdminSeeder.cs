@@ -1,5 +1,6 @@
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
+using MentalHealthcare.Domain.Entities.Courses;
 using MentalHealthcare.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

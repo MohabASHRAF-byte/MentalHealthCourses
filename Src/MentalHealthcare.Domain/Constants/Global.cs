@@ -18,6 +18,7 @@ public class Global
     public const string AdminIdClaimType = "AdminId";
     public const string UserIdClaimType = "UserId";
     public static string CourseThumbnailDirectory = "CoursesThumbnail";
+    public static string CourseIconsDirectory = "CoursesIcons";
     public static string ThumbnailFileExtension = ".jpeg";
 
     #region Terms and Conditions

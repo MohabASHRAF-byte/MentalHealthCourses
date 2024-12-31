@@ -1,7 +1,5 @@
 using MentalHealthcare.Domain.Dtos;
 using MentalHealthcare.Domain.Dtos.Category;
-using MentalHealthcare.Domain.Dtos.course;
-using MentalHealthcare.Domain.Dtos.User;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
@@ -16,7 +14,7 @@ public class CourseRepository(
     ILogger<CourseRepository> logger
 ) : ICourseRepository
 {
-    public async Task<int> CreateAsync(Domain.Entities.Course course, List<int> categoryIds)
+    public async Task<int> CreateAsync(Domain.Entities.Courses.Course course, List<int> categoryIds)
     {
         try
         {
@@ -38,14 +36,108 @@ public class CourseRepository(
         }
     }
 
+public async Task<int> UpdateCourseAsync(
+    int courseId,
+    string? name,
+    decimal? price,
+    string? description,
+    int? instructorId,
+    List<int>? categoryId,
+    bool? isFree,
+    bool? isFeatured,
+    bool? isArchived
+)
+{
+    await using var transaction = await dbContext.Database.BeginTransactionAsync();
+    try
+    {
+        // Retrieve course from the database
+        var course = await dbContext.Courses
+            .Where(c => c.CourseId == courseId)
+            .Include(c => c.Categories)
+            .FirstOrDefaultAsync();
+        if (course == null)
+        {
+            throw new ResourceNotFound(nameof(course), courseId.ToString());
+        }
 
-    public async Task UpdateCourse(Domain.Entities.Course course)
+        if (isFree.HasValue)
+        {
+            course.IsFree = isFree.Value;
+        }
+
+        if (isFeatured.HasValue)
+        {
+            course.IsFeatured = isFeatured.Value;
+        }
+
+        if (isArchived.HasValue)
+        {
+            course.IsArchived = isArchived.Value;
+        }
+
+        // Update course properties if values are provided
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            course.Name = name;
+        }
+
+        if (!string.IsNullOrWhiteSpace(description))
+        {
+            course.Description = description;
+        }
+
+        if (price.HasValue)
+        {
+            course.Price = price.Value;
+        }
+
+        if (instructorId.HasValue)
+        {
+            var instructor = await dbContext.Instructors.FindAsync(instructorId.Value);
+            if (instructor == null)
+            {
+                throw new ResourceNotFound(nameof(instructor), instructorId.ToString() ?? "");
+            }
+
+            course.Instructor = instructor;
+        }
+
+        if (categoryId != null)
+        {
+            course.Categories?.Clear();
+            var categories = await dbContext.Categories
+                .Where(c => categoryId.Contains(c.CategoryId))
+                .ToListAsync();
+
+            course.Categories = categories;
+        }
+
+        // Save changes to the database
+        dbContext.Courses.Update(course);
+        await dbContext.SaveChangesAsync();
+
+        // Commit the transaction
+        await transaction.CommitAsync();
+
+        return course.CourseId;
+    }
+    catch (Exception ex)
+    {
+        await transaction.RollbackAsync();
+        logger.LogError(ex, "An error occurred while updating the course with ID {CourseId}", courseId);
+        throw;
+    }
+}
+
+
+    public async Task UpdateCourse(Domain.Entities.Courses.Course course)
     {
         dbContext.Courses.Update(course);
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task<Domain.Entities.Course> GetFullCourseByIdAsync(
+    public async Task<Domain.Entities.Courses.Course> GetFullCourseByIdAsync(
         int id
     )
     {
@@ -60,13 +152,13 @@ public class CourseRepository(
 
         if (course == null)
         {
-            throw new ResourceNotFound(nameof(Domain.Entities.Course), id.ToString());
+            throw new ResourceNotFound(nameof(Domain.Entities.Courses.Course), id.ToString());
         }
 
         return course;
     }
 
-    public async Task<Domain.Entities.Course> GetMinimalCourseByIdAsync(int id)
+    public async Task<Domain.Entities.Courses.Course> GetMinimalCourseByIdAsync(int id)
     {
         var course = await dbContext.Courses
             .FirstOrDefaultAsync(c => c.CourseId == id);
@@ -103,6 +195,7 @@ public class CourseRepository(
                 CourseId = c.CourseId,
                 Name = c.Name,
                 ThumbnailUrl = c.ThumbnailUrl,
+                IconUrl = c.IconUrl,
                 Price = c.Price,
                 Rating = c.ReviewsCount > 0 ? Math.Round(c.Rating / c.ReviewsCount, 1) : null,
                 EnrollmentsCount = c.EnrollmentsCount,

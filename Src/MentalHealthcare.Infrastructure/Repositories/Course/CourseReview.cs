@@ -130,7 +130,7 @@ public class CourseReview(
                 ).FirstOrDefaultAsync();
             if (review == null)
             {
-                throw new ResourceNotFound(nameof(Domain.Entities.Course), nameof(courseId));
+                throw new ResourceNotFound(nameof(Domain.Entities.Courses.Course), nameof(courseId));
             }
 
             if (!string.IsNullOrWhiteSpace(content))
@@ -140,7 +140,7 @@ public class CourseReview(
             {
                 var course = await dbContext.Courses.FindAsync(courseId);
                 if (course == null)
-                    throw new ResourceNotFound(nameof(Domain.Entities.Course), nameof(courseId));
+                    throw new ResourceNotFound(nameof(Domain.Entities.Courses.Course), nameof(courseId));
 
                 course.Rating -= (decimal)review.Rating;
                 review.Rating = (float)rating;
@@ -189,7 +189,7 @@ public class CourseReview(
             var course = await dbContext.Courses.FindAsync(courseId);
             if (course == null)
             {
-                throw new ResourceNotFound(nameof(Domain.Entities.Course), nameof(courseId));
+                throw new ResourceNotFound(nameof(Domain.Entities.Courses.Course), nameof(courseId));
             }
 
             course.Rating -= (decimal)review.Rating;

@@ -7,6 +7,7 @@ public class CourseViewDto
     public int CourseId { get; set; }
     public string Name { set; get; } = default!;
     public string? ThumbnailUrl { get; set; }
+    public string? IconUrl { get; set; }
     public decimal Price { get; set; }
     public decimal? Rating { get; set; }
     public int ReviewsCount { get; set; } = 0;
