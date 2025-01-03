@@ -9,9 +9,8 @@ public class CreateVideoCommandValidator:AbstractValidator<CreateVideoCommand>
     {
         RuleFor(x => x.Title)
             .CustomIsValidName();
-        RuleFor(x => x.Description)
-            .ValidateNoHtmlIfNotNull()
-            .MaximumLength(800)
-            .WithMessage("Course description must be no more than 800 characters");
+        RuleFor(x => x.LengthWithSeconds)
+            .GreaterThanOrEqualTo(1)
+            .WithMessage("Length with seconds must be greater than or equal to 1.");
     }
 }

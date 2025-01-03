@@ -81,7 +81,6 @@ public class CreateVideoCommandHandler(
         pendingUpload.PendingVideoUploadId = videoId;
         pendingUpload.Url = bunny.GenerateVideoFrameUrl(videoId);
         pendingUpload.AdminId = currentUser.AdminId ?? 1; // Use actual admin ID
-        pendingUpload.Description = request.Description ?? "";
 
         // Save the pending upload in the repository
         logger.LogInformation("Saving PendingVideoUpload entity to the repository for VideoId: {VideoId}", videoId);

@@ -93,7 +93,7 @@ public class UpdateLessonsOrderCommandHandler(
         // Save changes if any updates were made
         if (changesMade)
         {
-            await lessonRepository.UpdateCourseLessonsAsync(lessons);
+            await lessonRepository.UpdateCourseLessonsAsync(lessons,request.CourseId);
             logger.LogInformation(
                 "Successfully updated lessons order for section {SectionId} in course {CourseId}.",
                 request.SectionId,

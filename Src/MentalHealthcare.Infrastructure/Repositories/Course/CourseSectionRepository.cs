@@ -182,7 +182,7 @@ public class CourseSectionRepository(
     )
     {
         var courseSection = await dbContext.CourseSections
-            .Include(cs => cs.Lessons)
+            .Include(cs => cs.Lessons.OrderBy(l => l.Order))
             .ThenInclude(l => l.CourseLessonResources)
             .FirstOrDefaultAsync(
                 c =>
@@ -209,7 +209,7 @@ public class CourseSectionRepository(
     {
         var courseSection = await dbContext.CourseSections
             .AsNoTracking()
-            .Include(cs => cs.Lessons)
+            .Include(cs => cs.Lessons.OrderBy(l=>l.Order))
             .ThenInclude(l => l.CourseLessonResources)
             .FirstOrDefaultAsync(c => c.CourseSectionId == id);
         if (courseSection == null)

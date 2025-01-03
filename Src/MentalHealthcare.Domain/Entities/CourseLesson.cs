@@ -19,7 +19,7 @@ public class CourseLesson
     public string LessonBunnyName { get; set; } = string.Empty;
 
     public int views { get; set; } = 0;
-    
+    public int LessonLengthInSeconds { get; set; } = 0;
     public int courseId { get; set; } = 0;
     public Course Course { get; set; }
     #region Relationships

@@ -5,13 +5,11 @@ using MentalHealthcare.Domain.Repositories.Course;
 using MentalHealthcare.Infrastructure.Persistence;
 using MentalHealthcare.Infrastructure.scripts;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace MentalHealthcare.Infrastructure.Repositories.Course;
 
 public class CourseLessonRepository(
-    MentalHealthDbContext dbContext,
-    ILogger<CourseLessonRepository> logger
+    MentalHealthDbContext dbContext
 ) : ICourseLessonRepository
 {
     public async Task<int> AddCourseLesson(CourseLesson courseLesson)
@@ -77,7 +75,9 @@ public class CourseLessonRepository(
     {
         // Fetch the lessons from the database
         var lessons = await dbContext.CourseLessons
-            .Where(cs => cs.CourseSectionId == sectionId).Include(courseLesson => courseLesson.CourseLessonResources)
+            .Where(cs => cs.CourseSectionId == sectionId)
+            .Include(courseLesson => courseLesson.CourseLessonResources)
+            .OrderBy(cl => cl.Order)
             .ToListAsync();
 
         // Map CourseLesson entities to CourseLessonViewDto using AutoMapper
@@ -99,11 +99,30 @@ public class CourseLessonRepository(
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateCourseLessonsAsync(List<CourseLesson> updatedLessons)
+    public async Task UpdateCourseLessonsAsync(List<CourseLesson> updatedLessons, int courseId)
     {
-        dbContext.CourseLessons.UpdateRange(updatedLessons);
-        await dbContext.SaveChangesAsync();
+        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        try
+        {
+            // Update the lessons
+            dbContext.CourseLessons.UpdateRange(updatedLessons);
+            // Save changes
+            await dbContext.SaveChangesAsync();
+            // Update the course lessons order
+            await dbContext.UpdateCourseLessonsOrder(courseId: courseId);
+
+            await dbContext.SaveChangesAsync();
+            // Commit the transaction
+            await transaction.CommitAsync();
+        }
+        catch (Exception ex)
+        {
+            // Rollback the transaction in case of an error
+            await transaction.RollbackAsync();
+            throw new Exception("An error occurred while updating course lessons.", ex);
+        }
     }
+
 
     public async Task<CourseLesson> GetCourseLessonByIdAsync(int id)
     {
@@ -227,7 +246,7 @@ public class CourseLessonRepository(
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            throw new InvalidOperationException("Error occurred while removing the lesson.", ex);
+            throw new TryAgain("Error occurred while removing the lesson.");
         }
     }
 }

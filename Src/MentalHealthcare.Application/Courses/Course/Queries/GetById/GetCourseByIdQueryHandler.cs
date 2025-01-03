@@ -26,7 +26,7 @@ public class GetCourseByIdQueryHandler(
 
         // Retrieve the current user
         var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null )
+        if (currentUser == null)
         {
             logger.LogWarning(
                 "Unauthorized access attempt to retrieve course details. User information: {UserDetails}",
@@ -79,6 +79,17 @@ public class GetCourseByIdQueryHandler(
                 await courseFavouriteRepository.HasFavouriteCourseAsync(request.Id, currentUser.SysUserId!.Value);
             courseDto.IsOwned =
                 await courseInteractionsRepository.IsCourseOwner(request.Id, currentUser.SysUserId!.Value);
+            foreach (var section in courseDto.CourseSections)
+            {
+                foreach (var lesson in section.Lessons)
+                {
+                    lesson.Url = "";
+                    foreach (var resource in lesson.CourseLessonResources)
+                    {
+                        resource.Url = "";
+                    }
+                }
+            }
         }
         else
         {
@@ -86,6 +97,7 @@ public class GetCourseByIdQueryHandler(
             courseDto.IsOwned = null;
             courseDto.IsFavourite = null;
         }
+
 
         logger.LogInformation("Successfully retrieved course details for CourseId: {CourseId}.", request.Id);
         return courseDto;

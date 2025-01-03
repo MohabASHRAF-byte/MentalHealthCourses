@@ -20,7 +20,7 @@ namespace MentalHealthcare.API.Controllers.Course;
 
 [ApiController]
 [Route("api/courses")]
-[ApiExplorerSettings(GroupName = Global.DevelopmentVersion)]
+[ApiExplorerSettings(GroupName = Global.DashboardVersion)]
 public class CourseController(IMediator mediator) : ControllerBase
 {
     /// <summary>
@@ -43,6 +43,8 @@ public class CourseController(IMediator mediator) : ControllerBase
     [HttpGet]
     [Authorize(AuthenticationSchemes = "Bearer")]
     [SwaggerOperation(Summary = "Get all courses", Description = CourseDocs.GetAllCoursesDescription)]
+    [ApiExplorerSettings(GroupName = Global.SharedVersion)]
+
     [ProducesResponseType(typeof(OperationResult<PageResult<CourseViewDto>>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllCourses([FromQuery] GetAllCoursesQuery query)
     {
@@ -58,6 +60,8 @@ public class CourseController(IMediator mediator) : ControllerBase
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ProducesResponseType(typeof(CourseDto), StatusCodes.Status200OK)]
     [SwaggerOperation(Summary = "Get a course by ID", Description = CourseDocs.GetCourseByIdDescription)]
+    [ApiExplorerSettings(GroupName = Global.SharedVersion)]
+
     public async Task<ActionResult<Domain.Entities.Courses.Course>> GetCourseById([FromRoute] int courseId)
     {
         var query = new GetCourseByIdQuery { Id = courseId };

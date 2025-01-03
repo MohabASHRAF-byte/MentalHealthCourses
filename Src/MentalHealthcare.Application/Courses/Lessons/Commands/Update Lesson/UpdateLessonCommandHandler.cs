@@ -15,7 +15,6 @@ namespace MentalHealthcare.Application.Courses.Lessons.Commands.Update_Lesson;
 /// </summary>
 public class UpdateLessonCommandHandler(
     ILogger<UpdateLessonCommandHandler> logger,
-    ICourseRepository courseRepository,
     ICourseLessonRepository courseLessonRepository,
     IUserContext userContext
 ) : IRequestHandler<UpdateLessonCommand, int>

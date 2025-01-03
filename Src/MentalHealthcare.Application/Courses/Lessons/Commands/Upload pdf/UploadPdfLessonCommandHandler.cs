@@ -52,9 +52,11 @@ public class UploadPdfLessonCommandHandler(
             AdminId = currentUser.AdminId!.Value, 
             LessonName = request.PdfName,
             ContentType = ContentType.Pdf,
+            courseId = request.CourseId,
             CourseSectionId = request.SectionId,
             Url = string.Empty ,// URL will be updated after uploading the file.
-            OrderOnCourse = 1000000
+            OrderOnCourse = 1000000,
+            LessonLengthInSeconds = request.LessonLengthInSeconds,
         };
 
         logger.LogInformation("Adding new CourseLesson to the repository.");

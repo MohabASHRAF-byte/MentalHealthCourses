@@ -14,6 +14,6 @@ public class CreateVideoCommand : IRequest<CreateVideoCommandResponse>
 
     public int CourseSectionId { get; set; }
 
-    
-    [MaxLength(500)] public string? Description { set; get; }
+
+    public int LengthWithSeconds { set; get; }
 }
