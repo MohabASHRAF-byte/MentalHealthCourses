@@ -2,7 +2,6 @@ using MediatR;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities.OrderProcessing;
-using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
 using MentalHealthcare.Domain.Repositories.OrderProcessing;
 using Microsoft.Extensions.Logging;
@@ -21,13 +20,11 @@ public class AddToCartCommandHandler(
         logger.LogInformation("Starting Add to Cart Command handling for user.");
 
         // Validate user context
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.User))
-        {
-            logger.LogWarning("Unauthorized attempt to add to cart by user: {UserId}", currentUser?.Id);
-            throw new ForBidenException("You do not have permission to add items to the cart.");
-        }
-
+        var currentUser = userContext
+            .EnsureAuthorizedUser(
+                [UserRoles.User],
+                logger
+            );
         logger.LogInformation("Fetching cart for user: {UserId}", currentUser.Id);
 
         // Fetch or initialize the user's cart
@@ -51,7 +48,13 @@ public class AddToCartCommandHandler(
             throw new ArgumentException("The cart has reached its maximum item capacity.");
         }
 
-        // TODO: Check if the user already has access to the course
+        var isEnrolled = await courseRepository
+            .IsEnrolledInCourse(request.CourseId, currentUser.SysUserId!.Value);
+        if (isEnrolled)
+        {
+            logger.LogWarning("You already Joint the course");
+            throw new ArgumentException("You already Joint the course");
+        }
 
         // Check if the course is already in the cart
         logger.LogInformation("Checking if course {CourseId} is already in the cart for user: {UserId}",

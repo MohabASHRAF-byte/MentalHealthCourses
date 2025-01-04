@@ -27,7 +27,6 @@ public class UploadPdfLessonCommandHandler(
             "Starting UploadPdfLessonCommandHandler for CourseId: {CourseId}, SectionId: {SectionId}, PdfName: {PdfName}",
             request.CourseId, request.SectionId, request.PdfName);
 
-        // TODO: Uncomment and implement user validation.
         var currentUser = userContext.GetCurrentUser();
         if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
         {

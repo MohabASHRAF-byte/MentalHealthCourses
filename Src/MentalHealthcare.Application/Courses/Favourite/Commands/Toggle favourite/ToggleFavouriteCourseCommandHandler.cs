@@ -1,7 +1,6 @@
 using MediatR;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
-using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
 using Microsoft.Extensions.Logging;
 
@@ -15,17 +14,32 @@ public class ToggleFavouriteCourseCommandHandler(
 {
     public async Task Handle(ToggleFavouriteCourseCommand request, CancellationToken cancellationToken)
     {
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.User))
-        {
-            logger.LogWarning("Unauthorized attempt to delete from cart by user: {UserId}", currentUser?.Id);
-            throw new ForBidenException("You do not have permission to delete items from the cart.");
-        }
+        logger.LogInformation("Handling ToggleFavouriteCourseCommand for Course ID: {CourseId}", request.CourseId);
 
-
-        await favouriteRepository.ToggleFavouriteCourseAsync(
-            request.CourseId,
-            currentUser.SysUserId!.Value
+        // Ensure the user is authorized
+        var currentUser = userContext.EnsureAuthorizedUser(
+            [UserRoles.User], logger
         );
+        logger.LogInformation("User {UserId} authorized to toggle favourite for Course ID: {CourseId}",
+            currentUser.SysUserId, request.CourseId);
+
+        // Perform the toggle favourite operation
+        try
+        {
+            logger.LogInformation("Toggling favourite status for Course ID: {CourseId} by User ID: {UserId}",
+                request.CourseId, currentUser.SysUserId);
+            await favouriteRepository.ToggleFavouriteCourseAsync(
+                request.CourseId,
+                currentUser.SysUserId!.Value
+            );
+            logger.LogInformation("Successfully toggled favourite status for Course ID: {CourseId}", request.CourseId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex,
+                "Error occurred while toggling favourite status for Course ID: {CourseId} by User ID: {UserId}",
+                request.CourseId, currentUser.SysUserId);
+            throw;
+        }
     }
 }

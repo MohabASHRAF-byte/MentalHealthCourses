@@ -24,10 +24,8 @@ public class Course
     
     public DateTime CreatedAt { get; set; }
     public bool IsFree { get; set; } = false;
-    public bool IsPublic { get; set; } = true;
     public bool IsFeatured { get; set; } = false;
 
-    //TODO: remove is is public
     public bool IsArchived { get; set; } = false;
 
     [Required]

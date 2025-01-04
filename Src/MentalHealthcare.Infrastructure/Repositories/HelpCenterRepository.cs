@@ -39,7 +39,10 @@ public class HelpCenterRepository(
     public async Task Update(HelpCenterItem term)
     {
         var newTerm =
-            dbContext.HelpCenterItems.FirstOrDefault(t => t.HelpCenterItemId == term.HelpCenterItemId);
+            dbContext.HelpCenterItems.FirstOrDefault(
+                t => t.HelpCenterItemId == term.HelpCenterItemId
+                     && t.Type == term.Type
+            );
         if (newTerm == null)
             throw new ResourceNotFound("HelpCenterItems", term.HelpCenterItemId.ToString());
         newTerm.Description = term.Description;

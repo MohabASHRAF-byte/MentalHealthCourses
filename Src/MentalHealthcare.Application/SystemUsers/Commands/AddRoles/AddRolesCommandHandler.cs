@@ -17,7 +17,8 @@ public class AddRolesCommandHandler(
 {
     public async Task<OperationResult<string>> Handle(AddRolesCommand request, CancellationToken cancellationToken)
     {
-        //todo check the auth
+        userContext.EnsureAuthorizedUser(
+            [UserRoles.Admin], logger);
         var adminTenant = userContext.GetCurrentUser()?.Tenant;
 
         if (string.IsNullOrEmpty(adminTenant))

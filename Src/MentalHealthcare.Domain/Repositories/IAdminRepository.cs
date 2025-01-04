@@ -7,8 +7,6 @@ public interface IAdminRepository
     public Task RegisterUser(User user, string password, Admin userToRegister);
 
     public Task<bool> IsExistAsync(string email);
-    public Task<bool> UpdateAsync(string oldEmail, string newEmail);
-    public Task<bool> DeleteAsync(string email);
     public Task<bool> IsPendingExistAsync(string email);
     public Task<bool> AddPendingAsync(string email, int admin);
     public Task<bool> UpdatePendingAsync(string oldEmail, string newEmail, int adminId);

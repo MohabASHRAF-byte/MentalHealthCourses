@@ -77,7 +77,6 @@ public class GeneralPromoCodeRepository(
     {
         if (string.IsNullOrWhiteSpace(promoCodeName))
         {
-
             throw new ArgumentException("Promo code name cannot be null or empty.", nameof(promoCodeName));
         }
 

@@ -36,10 +36,7 @@ public class CourseReview(
                 throw new ArgumentException("Reviews limit reached Delete Some Before Add new ");
             }
 
-            var totalLessons = await dbContext.CourseSections
-                .Where(cs => cs.CourseId == review.courseId)
-                .SelectMany(cs => cs.Lessons)
-                .CountAsync();
+            var totalLessons = course.LessonsCount;
 
             var lastCompletedLessonIndex = await dbContext.CourseProgresses
                 .Where(cp => cp.CourseId == review.courseId && cp.SystemUserId == review.SystemUserId)

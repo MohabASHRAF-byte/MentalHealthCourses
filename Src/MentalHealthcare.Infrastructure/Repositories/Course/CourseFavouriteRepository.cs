@@ -79,7 +79,6 @@ public class CourseFavouriteRepository(
                 EnrollmentsCount = fc.Course.EnrollmentsCount,
                 IsOwned = false
             })
-            //todo: update progress
             .ToListAsync();
 
         return (totalCount, courses);

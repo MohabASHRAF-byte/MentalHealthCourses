@@ -3,7 +3,6 @@ using MentalHealthcare.Application.Common;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos;
-using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
 using Microsoft.Extensions.Logging;
 
@@ -23,12 +22,9 @@ public class GetFavouriteCoursesQueryHandler(
             "Handling GetFavouriteCoursesQuery for PageNumber: {PageNumber}, PageSize: {PageSize}, Search: {SearchTerm}",
             request.PageNumber, request.PageSize, request.Search);
 
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.User))
-        {
-            logger.LogWarning("Unauthorized attempt to access favourite courses by user: {UserId}", currentUser?.Id);
-            throw new ForBidenException("You do not have permission to access favourite courses.");
-        }
+        var currentUser = userContext.EnsureAuthorizedUser(
+            [UserRoles.User], logger
+        );
 
         try
         {

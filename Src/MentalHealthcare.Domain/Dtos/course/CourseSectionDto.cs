@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
 
@@ -9,7 +10,7 @@ public class CourseSectionDto
     public int CourseSectionId { get; set; }
     [MaxLength(Global.CourseSectionNameMaxLength)]
    
-    //todo: add json ignore now keep it for debugging 
+    [JsonIgnore]
     public int Order { get; set; }
     public List<CourseLessonDto> Lessons { get; set; } = new ();
 

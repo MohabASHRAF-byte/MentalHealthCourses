@@ -47,6 +47,8 @@ public interface ICourseRepository
         int sectionStart,
         int sectionEnd
     );
+
+    public Task<bool> IsEnrolledInCourse(int courseId, int userId);
     Task BeginTransactionAsync();
     Task CommitTransactionAsync();
     Task RollbackTransactionAsync();

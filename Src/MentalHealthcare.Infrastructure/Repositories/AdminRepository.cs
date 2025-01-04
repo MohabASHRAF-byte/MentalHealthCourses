@@ -75,16 +75,7 @@ public class AdminRepository(
     {
         return await dbContext.Admins.AnyAsync(a => a.User.Email == email);
     }
-
-    public Task<bool> UpdateAsync(string oldEmail, string newEmail)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<bool> DeleteAsync(string email)
-    {
-        throw new NotImplementedException();
-    }
+    
 
     public async Task<bool> IsPendingExistAsync(string email)
     {

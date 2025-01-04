@@ -13,15 +13,22 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace MentalHealthcare.API.Controllers.Course;
 
 [ApiController]
-[Route("[controller]")]
-[ApiExplorerSettings(GroupName = Global.AllVersion)]
+[Route("api/course")]
+[ApiExplorerSettings(GroupName = Global.MobileVersion)]
+[Authorize(AuthenticationSchemes = "Bearer")]
 public class CourseInteractionsController(
     IMediator mediator
 ) : ControllerBase
 {
-    [HttpPost("Enroll/{courseId}")]
-    [Authorize(AuthenticationSchemes = "Bearer")]
-    // [SwaggerOperation(Description = CourseInteractionDocs.EnrollCourseDescription)]
+    /// <summary>
+    /// Enroll in a course.
+    /// </summary>
+    [HttpPost("{courseId}/enroll")]
+    
+    [SwaggerOperation(
+        Summary = "Enroll in a Course",
+        Description = CourseInteractionDocs.EnrollCourseDescription
+    )]
     public async Task<IActionResult> EnrollCourse([FromRoute] int courseId)
     {
         var command = new EnrollCourseCommand
@@ -32,9 +39,15 @@ public class CourseInteractionsController(
         return NoContent();
     }
 
+    /// <summary>
+    /// Mark a lesson as completed within a course.
+    /// </summary>
     [HttpPost("{courseId}/complete/{lessonId}")]
-    [Authorize(AuthenticationSchemes = "Bearer")]
-    [SwaggerOperation(Description = CourseInteractionDocs.CompleteLessonDescription)]
+    
+    [SwaggerOperation(
+        Summary = "Complete a Lesson",
+        Description = CourseInteractionDocs.CompleteLessonDescription
+    )]
     public async Task<IActionResult> CompleteLesson([FromRoute] int courseId, [FromRoute] int lessonId)
     {
         var command = new CompleteLessonCommand
@@ -46,13 +59,19 @@ public class CourseInteractionsController(
         return NoContent();
     }
 
+    /// <summary>
+    /// Get the details of a specific lesson within a course.
+    /// </summary>
     [HttpGet("{courseId}/watch/{lessonId}")]
-    [Authorize(AuthenticationSchemes = "Bearer")]
+    
     [ProducesResponseType(typeof(CourseLessonDto), 200)]
-    [SwaggerOperation(Description = CourseInteractionDocs.GetCourseLessonDescription)]
+    [SwaggerOperation(
+        Summary = "Get Course Lesson",
+        Description = CourseInteractionDocs.GetCourseLessonDescription
+    )]
     public async Task<IActionResult> GetCourseLesson([FromRoute] int courseId, [FromRoute] int lessonId)
     {
-        var query = new GetWatchLessonQuery()
+        var query = new GetWatchLessonQuery
         {
             CourseId = courseId,
             LessonId = lessonId
@@ -61,10 +80,16 @@ public class CourseInteractionsController(
         return Ok(result);
     }
 
+    /// <summary>
+    /// Get all active courses the user is currently enrolled in along with progress in each course.
+    /// </summary>
     [HttpGet("courses/active")]
-    [Authorize(AuthenticationSchemes = "Bearer")]
-
-    public async Task<IActionResult> GetActiveCourses([FromQuery]GetMyCoursesQuery query)
+    
+    [SwaggerOperation(
+        Summary = "Get Active Courses",
+        Description = "Retrieve all the courses the user is currently enrolled in, including progress for each course."
+    )]
+    public async Task<IActionResult> GetActiveCourses([FromQuery] GetMyCoursesQuery query)
     {
         var result = await mediator.Send(query);
         return Ok(result);

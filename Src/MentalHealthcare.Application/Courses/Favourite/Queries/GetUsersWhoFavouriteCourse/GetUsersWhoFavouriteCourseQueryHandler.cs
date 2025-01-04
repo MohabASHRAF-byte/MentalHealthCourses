@@ -3,7 +3,6 @@ using MentalHealthcare.Application.Common;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
-using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
 using Microsoft.Extensions.Logging;
 
@@ -18,26 +17,42 @@ public class GetUsersWhoFavouriteCourseQueryHandler(
     public async Task<PageResult<SystemUser>> Handle(GetUsersWhoFavouriteCourseQuery request,
         CancellationToken cancellationToken)
     {
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
+        logger.LogInformation("Handling GetUsersWhoFavouriteCourseQuery for Course ID: {CourseId}", request.CourseId);
+
+        // Ensure the user is authorized
+        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
+        logger.LogInformation("User {UserId} authorized to retrieve users who favourited Course ID: {CourseId}",
+            currentUser.Id, request.CourseId);
+
+        try
         {
-            logger.LogWarning("Unauthorized attempt to access favourite courses by user: {UserId}", currentUser?.Id);
-            throw new ForBidenException("You do not have permission to access favourite courses.");
-        }
+            logger.LogInformation(
+                "Fetching users who favourited Course ID: {CourseId}, Page Number: {PageNumber}, Page Size: {PageSize}, Search Term: {SearchTerm}",
+                request.CourseId, request.PageNumber, request.PageSize, request.SearchTerm);
 
-        var (count, users) = await favouriteRepository
-            .GetUsersWhoFavouriteCourseAsync(
-                request.CourseId,
-                request.PageNumber,
+            var (count, users) = await favouriteRepository
+                .GetUsersWhoFavouriteCourseAsync(
+                    request.CourseId,
+                    request.PageNumber,
+                    request.PageSize,
+                    request.SearchTerm ?? ""
+                );
+
+            logger.LogInformation("Successfully fetched {Count} users who favourited Course ID: {CourseId}", count,
+                request.CourseId);
+
+            return new PageResult<SystemUser>(
+                users,
+                count,
                 request.PageSize,
-                request.SearchTerm ?? ""
+                request.PageNumber
             );
-
-        return new PageResult<SystemUser>(
-            users,
-            count,
-            request.PageSize,
-            request.PageNumber
-        );
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occurred while fetching users who favourited Course ID: {CourseId}",
+                request.CourseId);
+            throw;
+        }
     }
 }

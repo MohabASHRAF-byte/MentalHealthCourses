@@ -16,7 +16,6 @@ namespace MentalHealthcare.API.Controllers.Course;
 
 [ApiController]
 [Route("api/Course")]
-[ApiExplorerSettings(GroupName = Global.AllVersion)]
 public class CourseReviewController(
     IMediator mediator
 ) : ControllerBase
@@ -24,6 +23,8 @@ public class CourseReviewController(
     [HttpPost("{courseId}/reviews")]
     [Authorize(AuthenticationSchemes = "Bearer")]
     [SwaggerOperation(Description = CourseReviewDocs.PostCourseReviewDescription)]
+    [ApiExplorerSettings(GroupName = Global.MobileVersion)]
+
     public async Task<IActionResult> PostReview([FromRoute] int courseId, AddCourseReviewCommand command)
     {
         command.CourseId = courseId;
@@ -35,6 +36,8 @@ public class CourseReviewController(
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ProducesResponseType(typeof(PageResult<UserReviewDto>), 200)]
     [SwaggerOperation(Description = CourseReviewDocs.GetCourseReviewsDescription)]
+    [ApiExplorerSettings(GroupName = Global.SharedVersion)]
+
     public async Task<IActionResult> GetReviews(
         [FromRoute] int courseId,
         [FromQuery] GetAllCourseReviewsQuery query
@@ -49,6 +52,8 @@ public class CourseReviewController(
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ProducesResponseType(typeof(UserReviewDto), 200)]
     [SwaggerOperation(Description = CourseReviewDocs.GetCourseReviewDescription)]
+    [ApiExplorerSettings(GroupName = Global.SharedVersion)]
+
     public async Task<IActionResult> GetReview(
         [FromRoute] int courseId,
         [FromRoute] int reviewId
@@ -67,6 +72,8 @@ public class CourseReviewController(
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ProducesResponseType(204)]
     [SwaggerOperation(Description = CourseReviewDocs.UpdateCourseReviewDescription)]
+    [ApiExplorerSettings(GroupName = Global.MobileVersion)]
+
     public async Task<IActionResult> UpdateReview(
         [FromRoute] int courseId,
         [FromRoute] int reviewId,
@@ -83,6 +90,8 @@ public class CourseReviewController(
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ProducesResponseType(204)]
     [SwaggerOperation(Description = CourseReviewDocs.DeleteCourseReviewDescription)]
+    [ApiExplorerSettings(GroupName = Global.SharedVersion)]
+
     public async Task<IActionResult> DeleteReview(
         [FromRoute] int courseId,
         [FromRoute] int reviewId

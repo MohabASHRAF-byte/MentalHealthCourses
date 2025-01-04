@@ -39,7 +39,6 @@ public class RegisterCommandHandler(
         systemUser.CreatedDate = DateTime.UtcNow;
         systemUser.LastUpdatedDate = DateTime.UtcNow;
         systemUser.BirthDate = request.Birthday;
-        //todo:systemUser.BirthDate
 
         logger.LogInformation("Inserting {@user} to the DB", request.UserName);
         var isInserted = await userRepository.RegisterUser(user, request.Password, systemUser);

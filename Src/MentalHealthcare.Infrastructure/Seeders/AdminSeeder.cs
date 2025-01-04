@@ -134,7 +134,6 @@ public class AdminSeeder(
             EnrollmentsCount = 5,
             IsFree = false,
             ReviewsCount = 2,
-            IsPublic = false,
             ThumbnailUrl = "fsadfa",
             CollectionId = "28d97e2c-2561-44a9-bb55-1cb8ed14807a",
         };

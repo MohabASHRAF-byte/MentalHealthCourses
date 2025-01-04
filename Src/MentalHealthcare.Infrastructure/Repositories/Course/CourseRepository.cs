@@ -355,6 +355,16 @@ public class CourseRepository(
 
         return true;
     }
+
+    public async Task<bool> IsEnrolledInCourse(int courseId, int userId)
+    {
+        return await dbContext.CourseProgresses
+            .Where(cp =>
+                cp.CourseId == courseId
+                && cp.SystemUserId == userId
+            ).AnyAsync();
+    }
+
     public async Task BeginTransactionAsync()
     {
         await dbContext.Database.BeginTransactionAsync();

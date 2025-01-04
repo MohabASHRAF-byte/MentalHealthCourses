@@ -1,8 +1,6 @@
 using MediatR;
-using AutoMapper;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
-using MentalHealthcare.Domain.Repositories.Course;
 using MentalHealthcare.Domain.Repositories.OrderProcessing;
 using Microsoft.Extensions.Logging;
 using MentalHealthcare.Domain.Exceptions;
@@ -11,9 +9,7 @@ namespace MentalHealthcare.Application.OrderProcessing.Cart.Commands.Delete_from
 
 public class DeleteFromCartCommandHandler(
     ILogger<DeleteFromCartCommandHandler> logger,
-    IMapper mapper,
     ICartRepository cartRepository,
-    ICourseRepository courseRepository,
     IUserContext userContext
 ) : IRequestHandler<DeleteFromCartCommand>
 {

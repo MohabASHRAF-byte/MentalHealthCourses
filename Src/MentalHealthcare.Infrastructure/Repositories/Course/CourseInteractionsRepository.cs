@@ -152,10 +152,7 @@ public class CourseInteractionsRepository(
 
         var result = paginatedCourses.Select(c =>
         {
-            var totalLessons = dbContext.CourseSections
-                .Where(cs => cs.CourseId == c.CourseId)
-                .SelectMany(cs => cs.Lessons)
-                .Count();
+            var totalLessons = c.Course.LessonsCount;
 
             return new CourseActivityDto()
             {

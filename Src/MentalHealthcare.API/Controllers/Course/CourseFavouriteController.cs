@@ -14,18 +14,12 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace MentalHealthcare.API.Controllers.Course;
 
 [ApiController]
-[Route("Api/Favourite")]
-[ApiExplorerSettings(GroupName = Global.AllVersion)]
-
-public class CourseFavouriteController : ControllerBase
+[Route("api/Favourite")]
+[ApiExplorerSettings(GroupName = Global.MobileVersion)]
+public class CourseFavouriteController(
+    IMediator mediator
+) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public CourseFavouriteController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
     [HttpPost("{courseId}")]
     [Authorize(AuthenticationSchemes = "Bearer")]
     [SwaggerOperation(Summary = "Toggle Favourite Course",
@@ -36,7 +30,7 @@ public class CourseFavouriteController : ControllerBase
         {
             CourseId = courseId,
         };
-        await _mediator.Send(command);
+        await mediator.Send(command);
         return NoContent();
     }
 
@@ -45,13 +39,14 @@ public class CourseFavouriteController : ControllerBase
     [ProducesResponseType(typeof(PageResult<SystemUser>), StatusCodes.Status200OK)]
     [SwaggerOperation(Summary = "Get Users Who Favourited Course",
         Description = CourseFavouriteDocs.GetUsersWhoFavouriteCourseDescription)]
+    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
     public async Task<IActionResult> GetUsersWhoFavouriteCourse([FromRoute] int courseId)
     {
         var command = new GetUsersWhoFavouriteCourseQuery
         {
             CourseId = courseId,
         };
-        var result = await _mediator.Send(command);
+        var result = await mediator.Send(command);
         return Ok(result);
     }
 
@@ -62,7 +57,7 @@ public class CourseFavouriteController : ControllerBase
         Description = CourseFavouriteDocs.GetFavouriteCoursesDescription)]
     public async Task<IActionResult> GetFavouriteCourses([FromQuery] GetFavouriteCoursesQuery query)
     {
-        var result = await _mediator.Send(query);
+        var result = await mediator.Send(query);
         return Ok(result);
     }
 }

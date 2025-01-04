@@ -71,7 +71,7 @@ internal class UserContext(
     {
         var currentUser = GetCurrentUser();
 
-        if (currentUser == null || !currentUser.IsAuthorized(requiredRoles))
+        if (currentUser == null || !currentUser.HasRole(requiredRoles))
         {
             var userId = currentUser?.Id ?? "Anonymous";
             logger.LogWarning("Unauthorized access attempt by user: {UserId}", userId);

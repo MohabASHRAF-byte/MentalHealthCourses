@@ -18,7 +18,6 @@ namespace MentalHealthcare.API.Controllers.Course;
 [Route("api/courses/{courseId}/sections/{sectionId}/lessons")]
 [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
 [Authorize(AuthenticationSchemes = "Bearer")]
-
 public class LessonsController(IMediator mediator) : ControllerBase
 {
     [HttpPost("video")]
@@ -43,15 +42,16 @@ public class LessonsController(IMediator mediator) : ControllerBase
         command.CourseId = courseId;
         command.SectionId = sectionId;
         var result = await mediator.Send(command);
-        // await mediator.Send(command);
-        // return CreatedAtAction(nameof(GetAdvertisementById), new { advertisementId = advertisement }, null);
-
-        return Ok(result);
+        return CreatedAtAction(nameof(GetLesson), new
+        {
+            courseId,
+            sectionId,
+            lessonId = result
+        }, null);
     }
 
     [HttpPost("pdf")]
     [Authorize(AuthenticationSchemes = "Bearer")]
-
     public async Task<IActionResult> AddPdfLesson(
         [FromRoute] int courseId,
         [FromRoute] int sectionId,
@@ -60,8 +60,12 @@ public class LessonsController(IMediator mediator) : ControllerBase
         command.CourseId = courseId;
         command.SectionId = sectionId;
         var result = await mediator.Send(command);
-        //TODO: createdAtAction
-        return Ok(result);
+        return CreatedAtAction(nameof(GetLesson), new
+        {
+            courseId,
+            sectionId,
+            lessonId = result
+        }, null);
     }
 
     [HttpPatch("{lessonId}")]
@@ -75,6 +79,7 @@ public class LessonsController(IMediator mediator) : ControllerBase
         command.SectionId = sectionId;
         command.LessonId = lessonId;
         var result = await mediator.Send(command);
+
         return Ok(result);
     }
 
@@ -105,24 +110,25 @@ public class LessonsController(IMediator mediator) : ControllerBase
         await mediator.Send(command);
         return NoContent();
     }
+
     [HttpGet]
     [ProducesResponseType(typeof(List<CourseLessonDto>), 200)]
-
     public async Task<IActionResult> GetLessons(
         [FromRoute] int courseId,
-        [FromRoute] int sectionId)
+        [FromRoute] int sectionId
+    )
     {
         var command = new GetLessonsBySectionIdQuery()
         {
             CourseId = courseId,
             CourseSectionId = sectionId,
         };
-        var result =await mediator.Send(command);
+        var result = await mediator.Send(command);
         return Ok(result);
     }
+
     [HttpGet("{lessonId}")]
     [ProducesResponseType(typeof(CourseLessonViewDto), 200)]
-
     public async Task<IActionResult> GetLesson(
         [FromRoute] int courseId,
         [FromRoute] int sectionId,
@@ -134,7 +140,7 @@ public class LessonsController(IMediator mediator) : ControllerBase
             CourseSectionId = sectionId,
             LessonId = lessonId
         };
-        var result =await mediator.Send(command);
+        var result = await mediator.Send(command);
         return Ok(result);
     }
 }

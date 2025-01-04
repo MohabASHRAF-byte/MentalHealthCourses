@@ -15,14 +15,16 @@ public class DeleteHelpCenterItemHandler(
 {
     public async Task Handle(DeleteHelpCenterItemCommand request, CancellationToken cancellationToken)
     {
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.IsAuthorized([UserRoles.Admin]))
-        {
-            logger.LogWarning("Unauthorized attempt to delete HelpCenter Item by user: {UserId}", currentUser?.Id);
-            throw new ForBidenException("Don't have the permission delete HelpCenter Item");
-        }
-        logger.LogInformation(@"Delete Term with id {}", request.HelpCenterId);
+        logger.LogInformation("Handling DeleteHelpCenterItemCommand for item ID: {HelpCenterId}", request.HelpCenterId);
+
+        // Authorize user
+        logger.LogInformation("Authorizing user for deleting HelpCenter item.");
+        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.Admin ], logger);
+        logger.LogInformation("User {UserId} authorized to delete HelpCenter items.", currentUser.Id);
+
+        // Delete HelpCenter item
+        logger.LogInformation("Deleting HelpCenter item with ID: {HelpCenterId}.", request.HelpCenterId);
         await helpCenterRepository.DeleteAsync(request.HelpCenterId);
-        logger.LogInformation(@"Term with id {} deleted", request.HelpCenterId);
+        logger.LogInformation("HelpCenter item with ID: {HelpCenterId} deleted successfully.", request.HelpCenterId);
     }
 }

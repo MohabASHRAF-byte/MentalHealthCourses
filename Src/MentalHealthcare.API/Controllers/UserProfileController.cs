@@ -1,6 +1,5 @@
 using MediatR;
 using MentalHealthcare.API.Docs;
-using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Application.SystemUsers.Profile.GetUserProfileData;
 using MentalHealthcare.Application.SystemUsers.Profile.UpdateProfile;
 using MentalHealthcare.Domain.Constants;
@@ -13,7 +12,7 @@ namespace MentalHealthcare.API.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-[ApiExplorerSettings(GroupName = Global.AllVersion)]
+[ApiExplorerSettings(GroupName = Global.MobileVersion)]
 public class UserProfileController(
     IMediator mediator
 ) : ControllerBase
