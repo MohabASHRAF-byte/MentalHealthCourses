@@ -1,10 +1,7 @@
-using AutoMapper;
 using MediatR;
-using MentalHealthcare.Application.ContactUs.Commands.Create;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
-using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -13,20 +10,29 @@ namespace MentalHealthcare.Application.ContactUs.Queries.GetById;
 public class GetContactFormByIdQueryHandler(
     ILogger<GetContactFormByIdQueryHandler> logger,
     IContactUsRepository dbRepository,
-    IMapper mapper,
     IUserContext userContext
 ) : IRequestHandler<GetContactFormByIdQuery, ContactUsForm>
 {
     public async Task<ContactUsForm> Handle(GetContactFormByIdQuery request, CancellationToken cancellationToken)
     {
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.IsAuthorized([UserRoles.Admin]))
-        {
-            logger.LogWarning("Unauthorized attempt to get contactUs by user: {UserId}", currentUser?.Id);
-            throw new ForBidenException("Don't have the permission get contactUs");
-        }
-        logger.LogInformation($"Handling GetContactFormByIdQueryHandler for Contact {request.Id}");
+        logger.LogInformation("Starting GetContactFormByIdQueryHandler for Contact Form ID: {Id}", request.Id);
+
+        // Ensure the user is authorized
+        var currentUser = userContext.EnsureAuthorizedUser( [UserRoles.Admin],logger);
+        logger.LogInformation("User {UserId} authorized to access Contact Form ID: {Id}", currentUser.Id, request.Id);
+
+        // Retrieve the contact form from the database
+        logger.LogInformation("Fetching Contact Form ID: {Id} from the database", request.Id);
         var form = await dbRepository.GetFromById(request.Id);
+
+        if (form == null)
+        {
+            logger.LogWarning("Contact Form ID: {Id} not found in the database", request.Id);
+            throw new KeyNotFoundException($"Contact Form with ID {request.Id} not found.");
+        }
+
+        logger.LogInformation("Successfully fetched Contact Form ID: {Id} from the database", request.Id);
+
         return form;
     }
 }

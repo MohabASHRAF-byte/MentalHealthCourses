@@ -15,17 +15,14 @@ public class DeleteContactUsCommandHandler(
 {
     public async Task Handle(DeleteContactUsCommand request, CancellationToken cancellationToken)
     {
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.IsAuthorized([UserRoles.Admin]))
-        {
-            logger.LogWarning("Unauthorized attempt to delete contactUs form Item by user: {UserId}", currentUser?.Id);
-            throw new ForBidenException("Don't have the permission delete contactUs form .");
-        }
+        userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
+
         if (request.FormsId.Count < 1)
         {
             logger.LogInformation("DeleteContactUsCommandHandler.Handle: No forms selected");
             return;
         }
+
         logger.LogInformation(@"deleting {num} Forms ", request.FormsId.Count);
         await dbRepository.DeleteAsync(request.FormsId);
         logger.LogInformation(@"{num} form  deleted", request.FormsId.Count);
