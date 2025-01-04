@@ -1,5 +1,7 @@
 using AutoMapper;
 using MediatR;
+using MentalHealthcare.Application.SystemUsers;
+using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Repositories.PromoCode;
 using Microsoft.Extensions.Logging;
@@ -9,43 +11,46 @@ namespace MentalHealthcare.Application.PromoCode.General.Commands.AddGeneralProm
 public class AddGeneralPromoCodeCommandHandler(
     ILogger<AddGeneralPromoCodeCommandHandler> logger,
     IMapper mapper,
-    IGeneralPromoCodeRepository generalPromoCodeRepository
+    IGeneralPromoCodeRepository generalPromoCodeRepository,
+    IUserContext userContext
 ) : IRequestHandler<AddGeneralPromoCodeCommand, int>
 {
     public async Task<int> Handle(AddGeneralPromoCodeCommand request, CancellationToken cancellationToken)
     {
-        //TODO: add auth and validation
-        logger.LogInformation("Starting to handle {CommandName}", nameof(AddGeneralPromoCodeCommand));
+        logger.LogInformation("Handling {CommandName} for Promo Code: {Code}", nameof(AddGeneralPromoCodeCommand), request.Code);
+
+        // Authorize user
+        var currentUser = userContext.EnsureAuthorizedUser(new List<UserRoles> { UserRoles.Admin }, logger);
+        logger.LogInformation("User {UserId} authorized to add general promo codes.", currentUser.Id);
 
         try
         {
             logger.LogInformation("Received AddGeneralPromoCodeCommand: {@Request}", request);
 
-            // Map the request to the entity
-            var generalPromoCode = mapper.Map<GeneralPromoCode>(request);
-
-            // Log mapping result
-            logger.LogInformation("Mapped AddGeneralPromoCodeCommand to generalPromoCode: {@generalPromoCode}",
-                generalPromoCode.Code);
-
+            // Validate and parse ExpireDate
             if (!DateTime.TryParse(request.ExpireDate, out var parsedExpireDate))
             {
                 logger.LogWarning("Invalid ExpireDate format received: {ExpireDate}", request.ExpireDate);
                 throw new ArgumentException("Invalid date format for ExpireDate.");
             }
 
+            // Map the request to the entity
+            var generalPromoCode = mapper.Map<GeneralPromoCode>(request);
             generalPromoCode.expiredate = parsedExpireDate;
-    
+
+            logger.LogInformation("Mapped AddGeneralPromoCodeCommand to GeneralPromoCode: {@GeneralPromoCode}", generalPromoCode);
+
             // Add to repository
             await generalPromoCodeRepository.AddGeneralPromoCodeAsync(generalPromoCode);
 
-            logger.LogInformation("Successfully added generalPromoCode with Code: {Code} ",
-                request.Code);
+            logger.LogInformation("Successfully added GeneralPromoCode with Code: {Code} and ID: {PromoCodeId}",
+                generalPromoCode.Code, generalPromoCode.GeneralPromoCodeId);
+
             return generalPromoCode.GeneralPromoCodeId;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error occurred while handling {CommandName} for Code: {Code}",
+            logger.LogError(ex, "Error occurred while handling {CommandName} for Promo Code: {Code}",
                 nameof(AddGeneralPromoCodeCommand), request.Code);
             throw;
         }

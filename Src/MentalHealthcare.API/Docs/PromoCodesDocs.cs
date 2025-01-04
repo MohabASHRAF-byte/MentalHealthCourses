@@ -75,5 +75,49 @@ Edge Cases:
 - If no promo codes match the criteria, the Items list will be empty, but TotalCount will reflect the total matching count.
 - To avoid unexpected results, ensure PageSize and PageNumber are reasonable values.
 ";
+  public const string UpdateCoursePromoCodeDescription = """
+                                                         ### Update a Course Promo Code
+                                                         Allows an authorized admin to update an existing promo code for a specific course.
+
+                                                         #### Authorization
+                                                         - **Requires**: A valid Bearer token with admin privileges.
+
+                                                         #### Endpoint
+                                                         - **PUT** `/api/course-promo-code/{courseId}/promocode/{promoCodeId}`
+
+                                                         #### Parameters
+                                                         - **Path Parameters**:
+                                                           - `courseId` (int): The ID of the course associated with the promo code.
+                                                           - `promoCodeId` (int): The ID of the promo code to update.
+                                                         - **Body**:
+                                                           - `Percentage` (float, optional): The new discount percentage (e.g., 25.5). Send `null` if no update is required.
+                                                           - `ExpireDate` (string, optional): The new expiration date in `YYYY-MM-DD` format. Must be a future date. Send `null` if no update is required.
+                                                           - `IsActive` (bool, optional): Indicates whether the promo code should be active. Send `null` if no update is required.
+
+                                                         #### Behavior
+                                                         - If the promo code is not found, the endpoint will return a `404 Not Found` error.
+                                                         - If `ExpireDate` is provided, it must be a valid future date.
+                                                         - If the input data is invalid, a `400 Bad Request` response will be returned.
+
+                                                         #### Response
+                                                         - **204 No Content**: Promo code updated successfully.
+                                                         - **400 Bad Request**: Invalid input data or `ExpireDate` is not a future date.
+                                                         - **401 Unauthorized**: If the user is not authenticated.
+                                                         - **403 Forbidden**: If the user does not have admin privileges.
+                                                         - **404 Not Found**: If the promo code or course does not exist.
+
+                                                         #### Example Request
+                                                         ```http
+                                                         PUT /api/course-promo-code/123/promocode/456 HTTP/1.1
+                                                         Authorization: Bearer <token>
+                                                         Content-Type: application/json
+
+                                                         {
+                                                           "Percentage": 25.5,
+                                                           "ExpireDate": "2025-06-01",
+                                                           "IsActive": null
+                                                         }
+                                                         ```
+                                                         """;
 
 }

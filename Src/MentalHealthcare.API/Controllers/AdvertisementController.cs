@@ -18,7 +18,7 @@ namespace MentalHealthcare.API.Controllers;
 [ApiController]
 [Route("[controller]")]
 [Authorize(AuthenticationSchemes = "Bearer")]
-[ApiExplorerSettings(GroupName = Global.AllVersion)]
+[ApiExplorerSettings(GroupName = Global.DashboardVersion)]
 
 
 public class AdvertisementController(

@@ -11,7 +11,7 @@ public class CoursePromoCode
     public DateTime expiredate { get; set; }
 
     public float percentage { get; set; }
-
+    public bool IsActive { get; set; }
     //Relations
     public int CourseId { get; set; }
     public Course Course { get; set; }

@@ -15,11 +15,11 @@ public class CoursePromoCodeRepository(
     public async Task<int> AddCoursePromoCodeAsync(CoursePromoCode coursePromoCode)
     {
         var promoCodeExists = await dbContext.CoursePromoCodes
-            .AnyAsync(cp => cp.Code == coursePromoCode.Code && cp.CourseId == coursePromoCode.CourseId);
+            .AnyAsync(cp => cp.Code == coursePromoCode.Code);
 
         if (promoCodeExists)
         {
-            throw new ArgumentException("Course promo code already exists for the specified course.");
+            throw new TryAgain("Course promo code already exists for the specified course.");
         }
 
         try
@@ -29,7 +29,7 @@ public class CoursePromoCodeRepository(
         }
         catch
         {
-            throw new ArgumentException("Please try again.");
+            throw new TryAgain("Please try again.");
         }
 
         return coursePromoCode.CoursePromoCodeId;

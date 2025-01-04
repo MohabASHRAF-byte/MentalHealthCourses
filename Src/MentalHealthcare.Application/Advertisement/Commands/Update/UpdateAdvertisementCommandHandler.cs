@@ -1,9 +1,7 @@
-using AutoMapper;
 using MediatR;
 using MentalHealthcare.Application.BunnyServices;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
-using MentalHealthcare.Domain.Dtos;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
@@ -13,83 +11,68 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace MentalHealthcare.Application.Advertisement.Commands.Update;
 
-/// <summary>
-/// Handles updating an advertisement with new or existing data.
-/// </summary>
-/// <param name="request">The command containing details for updating the advertisement.</param>
-/// <param name="cancellationToken">Token to observe for cancellation requests.</param>
-/// <returns>A task representing the operation, containing the ID of the updated advertisement.</returns>
-/// 
-/// <remarks>
-/// Logic flow:
-/// <list type="number">
-/// <item>
-/// <description>Log the start of the advertisement update process.</description>
-/// </item>
-/// <item>
-/// <description>Validate the input:
-/// <list type="bullet">
-/// <item>Check if <c>AdvertisementId</c> is null. Return 0 if invalid.</item>
-/// <item>Ensure uploaded images do not exceed the allowed size.</item>
-/// </list>
-/// </description>
-/// </item>
-/// <item>
-/// <description>Retrieve and update the advertisement's basic details:
-/// <list type="bullet">
-/// <item>Update fields such as <c>IsActive</c>, <c>AdvertisementName</c>, and <c>AdvertisementDescription</c>.</item>
-/// </list>
-/// </description>
-/// </item>
-/// <item>
-/// <description>Manage images:
-/// <list type="bullet">
-/// <item>If `ImagesUrls` is empty, keep all current images.</item>
-/// <item>If `ImagesUrls` has specific URLs, keep only those and delete others.</item>
-/// <item>Upload new images and associate them with the advertisement.</item>
-/// <item>Ensure at least one image is associated with the advertisement.</item>
-/// </list>
-/// </description>
-/// </item>
-/// <item>
-/// <description>Persist the updated advertisement.</description>
-/// </item>
-/// </list>
-/// </remarks>
-/// <exception cref="Exception">Thrown if any validation fails or there is an issue updating the advertisement.</exception>
 public class UpdateAdvertisementCommandHandler(
     ILogger<UpdateAdvertisementCommandHandler> logger,
     IAdvertisementRepository advertisementRepository,
-    IMapper mapper,
     IConfiguration configuration,
     IUserContext userContext
 ) : IRequestHandler<UpdateAdvertisementCommand, int>
 {
     public async Task<int> Handle(UpdateAdvertisementCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation($"Starting update process for Advertisement ID {request.AdvertisementId}.");
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            logger.LogWarning("Unauthorized attempt to update advertisement by user: {UserId}", currentUser?.Id);
-            throw new ForBidenException("Don't have the permission to update advertisement.");
-        }
+        logger.LogInformation("Starting update process for Advertisement ID {AdId}.", request.AdvertisementId);
+
+        // Authorize user
+        logger.LogInformation("Authorizing user for updating advertisement.");
+        var currentUser = userContext.EnsureAuthorizedUser(new List<UserRoles> { UserRoles.Admin }, logger);
+        logger.LogInformation("User {UserId} authorized to update advertisements.", currentUser.Id);
+
+        // Validate Advertisement ID
         if (request.AdvertisementId == null)
+        {
+            logger.LogWarning("Advertisement ID is null. Aborting update process.");
             return 0;
+        }
 
         request.Images ??= new();
         ValidateImageSizes(request);
 
+        // Retrieve advertisement
+        logger.LogInformation("Fetching advertisement with ID: {AdId}.", request.AdvertisementId);
         var advertisement = await advertisementRepository.GetAdvertisementByIdAsync((int)request.AdvertisementId);
+
+        if (advertisement == null)
+        {
+            logger.LogError("Advertisement with ID {AdId} not found.", request.AdvertisementId);
+            throw new KeyNotFoundException($"Advertisement with ID {request.AdvertisementId} not found.");
+        }
+
+        // Update advertisement details
+        logger.LogInformation("Updating details for Advertisement ID: {AdId}.", request.AdvertisementId);
         UpdateAdvertisementDetails(ref advertisement, request);
 
         var bunnyClient = new BunnyClient(configuration);
 
+        // Handle existing images
+        logger.LogInformation("Handling existing images for Advertisement ID: {AdId}.", request.AdvertisementId);
         HandleExistingImages(ref advertisement, request, bunnyClient);
+
+        // Upload new images
+        logger.LogInformation("Uploading new images for Advertisement ID: {AdId}.", request.AdvertisementId);
         UploadNewImages(ref advertisement, request, bunnyClient);
+
+        // Check for at least one image
         if (!advertisement.AdvertisementImageUrls.Any())
+        {
+            logger.LogWarning("No images found for Advertisement ID: {AdId}. Marking as inactive.", request.AdvertisementId);
             advertisement.IsActive = false;
+        }
+
+        // Persist changes
+        logger.LogInformation("Saving changes for Advertisement ID: {AdId}.", request.AdvertisementId);
         await advertisementRepository.UpdateAdvertisementAsync(advertisement);
+
+        logger.LogInformation("Advertisement ID: {AdId} updated successfully.", request.AdvertisementId);
         return advertisement.AdvertisementId;
     }
 
@@ -100,7 +83,7 @@ public class UpdateAdvertisementCommandHandler(
             var imageSizeInMb = image.Length / (1 << 20);
             if (imageSizeInMb > Global.AdvertisementImgSize)
             {
-                logger.LogWarning($"Attempted to upload an image exceeding the allowed size: {imageSizeInMb} MB.");
+                logger.LogWarning("Attempted to upload an image exceeding the allowed size: {ImageSize} MB.", imageSizeInMb);
                 throw new Exception($"Image size cannot exceed {Global.AdvertisementImgSize} MB.");
             }
         }
@@ -109,13 +92,22 @@ public class UpdateAdvertisementCommandHandler(
     private void UpdateAdvertisementDetails(ref Domain.Entities.Advertisement advertisement, UpdateAdvertisementCommand request)
     {
         if (request.IsActive.HasValue)
+        {
             advertisement.IsActive = request.IsActive.Value;
+            logger.LogInformation("Updated IsActive for Advertisement ID: {AdId} to {IsActive}.", advertisement.AdvertisementId, request.IsActive.Value);
+        }
 
         if (!request.AdvertisementName.IsNullOrEmpty())
+        {
             advertisement.AdvertisementName = request.AdvertisementName!;
+            logger.LogInformation("Updated AdvertisementName for Advertisement ID: {AdId} to {AdName}.", advertisement.AdvertisementId, request.AdvertisementName);
+        }
 
         if (!request.AdvertisementDescription.IsNullOrEmpty())
+        {
             advertisement.AdvertisementDescription = request.AdvertisementDescription!;
+            logger.LogInformation("Updated AdvertisementDescription for Advertisement ID: {AdId}.", advertisement.AdvertisementId);
+        }
     }
 
     private void HandleExistingImages(
@@ -135,14 +127,17 @@ public class UpdateAdvertisementCommandHandler(
                     continue;
                 }
 
+                logger.LogInformation("Deleting image: {ImgName} for Advertisement ID: {AdId}.", imageName, advertisement.AdvertisementId);
                 bunnyClient.DeleteFileAsync(imageName, Global.AdvertisementFolderName).Wait();
             }
 
             advertisementRepository.DeleteAdvertisementPhotosUrlsAsync(advertisement.AdvertisementId).Wait();
             advertisement.AdvertisementImageUrls = retainedImages;
-        }else
+        }
+        else
         {
-            advertisement.AdvertisementImageUrls = [];
+            logger.LogWarning("No image URLs provided for Advertisement ID: {AdId}. Removing all existing images.", advertisement.AdvertisementId);
+            advertisement.AdvertisementImageUrls = new List<AdvertisementImageUrl>();
         }
     }
 
@@ -159,14 +154,11 @@ public class UpdateAdvertisementCommandHandler(
 
             if (!response.IsSuccessful || response.Url == null)
             {
-                logger.LogWarning(
-                    "Failed to upload image for Advertisement {AdvertisementName}. Error: {Message}",
-                    request.AdvertisementName,
-                    response.Message ?? ""
-                );
+                logger.LogWarning("Failed to upload image for Advertisement ID: {AdId}. Error: {Message}", advertisement.AdvertisementId, response.Message ?? "Unknown error");
                 continue;
             }
 
+            logger.LogInformation("Successfully uploaded image for Advertisement ID: {AdId}. URL: {Url}", advertisement.AdvertisementId, response.Url);
             advertisement.AdvertisementImageUrls.Add(new AdvertisementImageUrl
             {
                 ImageUrl = response.Url,
