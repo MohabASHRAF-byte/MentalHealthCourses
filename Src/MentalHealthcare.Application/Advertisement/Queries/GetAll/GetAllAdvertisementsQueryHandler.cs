@@ -15,22 +15,33 @@ public class GetAllAdvertisementsQueryHandler(
     IAdvertisementRepository advertisementRepository,
     IMapper mapper,
     IUserContext userContext
-    ):IRequestHandler<GetAllAdvertisementsQuery, PageResult<AdvertisementDto>>
+) : IRequestHandler<GetAllAdvertisementsQuery, PageResult<AdvertisementDto>>
 {
     public async Task<PageResult<AdvertisementDto>> Handle(GetAllAdvertisementsQuery request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Handling GetAllAdvertisementsQuery");
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            logger.LogWarning("Unauthorized attempt to get all advertisements by user: {UserId}", currentUser?.Id);
-            throw new ForBidenException("Don't have the permission to get all advertisements");
-        }
+        logger.LogInformation("Handling GetAllAdvertisementsQuery with PageNumber: {PageNumber}, PageSize: {PageSize}, IsActive: {IsActive}", 
+            request.PageNumber, request.PageSize, request.IsActive);
+
+        // Authorize user
+        logger.LogInformation("Authorizing user for retrieving all advertisements.");
+        var currentUser = userContext.EnsureAuthorizedUser(new List<UserRoles> { UserRoles.Admin }, logger);
+        logger.LogInformation("User {UserId} authorized to retrieve all advertisements.", currentUser.Id);
+
+        // Fetch advertisements
+        logger.LogInformation("Fetching advertisements from the repository.");
         var ads = await advertisementRepository.GetAdvertisementsAsync(
             request.PageNumber, request.PageSize, request.IsActive
-            );
+        );
+
+        logger.LogInformation("Advertisements fetched successfully. Total records: {TotalRecords}", ads.Item1);
+
+        // Map to DTOs
+        logger.LogInformation("Mapping advertisements to DTOs.");
         var adsDto = mapper.Map<IEnumerable<AdvertisementDto>>(ads.Item2);
-        
-        return new PageResult<AdvertisementDto>(adsDto, ads.Item1,request.PageSize, request.PageNumber);
+
+        logger.LogInformation("Returning PageResult with {TotalPages} total pages and {TotalRecords} total records", 
+            (int)Math.Ceiling((double)ads.Item1 / request.PageSize), ads.Item1);
+
+        return new PageResult<AdvertisementDto>(adsDto, ads.Item1, request.PageSize, request.PageNumber);
     }
 }

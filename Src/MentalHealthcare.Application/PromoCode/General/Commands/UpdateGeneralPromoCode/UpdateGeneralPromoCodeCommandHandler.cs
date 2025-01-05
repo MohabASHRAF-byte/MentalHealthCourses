@@ -1,5 +1,7 @@
 using AutoMapper;
 using MediatR;
+using MentalHealthcare.Application.SystemUsers;
+using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Repositories.PromoCode;
 using Microsoft.Extensions.Logging;
 
@@ -7,50 +9,77 @@ namespace MentalHealthcare.Application.PromoCode.General.Commands.UpdateGeneralP
 
 public class UpdateGeneralPromoCodeCommandHandler(
     ILogger<UpdateGeneralPromoCodeCommandHandler> logger,
-    IGeneralPromoCodeRepository generalPromoCodeRepository
+    IGeneralPromoCodeRepository generalPromoCodeRepository,
+    IUserContext userContext
 ) : IRequestHandler<UpdateGeneralPromoCodeCommand>
 {
     public async Task Handle(UpdateGeneralPromoCodeCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("UpdateGeneralPromoCodeCommandHandler invoked.");
+        logger.LogInformation("Handling UpdateGeneralPromoCodeCommand for Promo Code ID: {PromoCodeId}",
+            request.GeneralPromoCodeId);
 
-        // Log for fetching the promo code
-        logger.LogInformation($"Fetching generalPromoCode with ID: {request.GeneralPromoCodeId}");
-        //TODO:  ADD AUTH AND VAL 
+        // Authorize user
+        logger.LogInformation("Authorizing user for updating promo codes.");
+        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
+        logger.LogInformation("User {UserId} authorized to update general promo codes.", currentUser.Id);
+
+        // Fetch existing promo code
+        logger.LogInformation("Fetching GeneralPromoCode with ID: {PromoCodeId}", request.GeneralPromoCodeId);
         var generalPromoCode =
             await generalPromoCodeRepository.GetGeneralPromoCodeByIdAsync(request.GeneralPromoCodeId);
+        if (generalPromoCode == null)
+        {
+            logger.LogError("GeneralPromoCode with ID: {PromoCodeId} not found.", request.GeneralPromoCodeId);
+            throw new KeyNotFoundException($"GeneralPromoCode with ID {request.GeneralPromoCodeId} not found.");
+        }
 
-        // Log for percentage update
+        // Update Percentage
         if (request.Percentage.HasValue)
         {
-            logger.LogInformation(
-                $"Updating Percentage for generalPromoCode ID: {request.GeneralPromoCodeId} to {request.Percentage.Value}");
+            logger.LogInformation("Updating Percentage for GeneralPromoCode ID: {PromoCodeId} to {Percentage}",
+                request.GeneralPromoCodeId, request.Percentage.Value);
             generalPromoCode.percentage = (float)Math.Round(request.Percentage.Value, 2);
         }
 
-        // Log for expire date update
-        if (request.ExpireDate != null)
+        // Update ExpireDate
+        if (!string.IsNullOrEmpty(request.ExpireDate))
         {
-            logger.LogInformation(
-                $"Attempting to parse ExpireDate: {request.ExpireDate} for generalPromoCode ID: {request.GeneralPromoCodeId}");
-            var tryParse = DateTime.TryParse(request.ExpireDate, out var parsedExpireDate);
-            if (tryParse)
+            logger.LogInformation("Parsing ExpireDate: {ExpireDate} for GeneralPromoCode ID: {PromoCodeId}",
+                request.ExpireDate, request.GeneralPromoCodeId);
+            if (DateTime.TryParse(request.ExpireDate, out var parsedExpireDate))
             {
-                logger.LogInformation($"ExpireDate parsed successfully. Updating to {parsedExpireDate}");
+                logger.LogInformation("ExpireDate parsed successfully. Updating to {ParsedExpireDate}",
+                    parsedExpireDate);
+                if (parsedExpireDate <= DateTime.UtcNow)
+                {
+                    logger.LogWarning("ExpireDate {ParsedExpireDate} is not in the future. Rejecting update.",
+                        parsedExpireDate);
+                    throw new ArgumentException("ExpireDate must be a future date.");
+                }
+
                 generalPromoCode.expiredate = parsedExpireDate;
             }
             else
             {
-                logger.LogWarning(
-                    $"Failed to parse ExpireDate: {request.ExpireDate} for generalPromoCode ID: {request.GeneralPromoCodeId}");
+                logger.LogError("Failed to parse ExpireDate: {ExpireDate} for GeneralPromoCode ID: {PromoCodeId}",
+                    request.ExpireDate, request.GeneralPromoCodeId);
+                throw new ArgumentException("Invalid ExpireDate format. Please provide a valid date.");
             }
         }
 
-        generalPromoCode.isActive = request.IsActive ?? generalPromoCode.isActive;
+        // Update IsActive
+        if (request.IsActive.HasValue)
+        {
+            logger.LogInformation("Updating IsActive for GeneralPromoCode ID: {PromoCodeId} to {IsActive}",
+                request.GeneralPromoCodeId, request.IsActive.Value);
+            generalPromoCode.isActive = request.IsActive.Value;
+        }
 
-        logger.LogInformation($"Saving changes for generalPromoCode ID: {request.GeneralPromoCodeId}");
+        // Save Changes
+        logger.LogInformation("Saving changes for GeneralPromoCode ID: {PromoCodeId}", request.GeneralPromoCodeId);
         await generalPromoCodeRepository.SaveChangesAsync();
 
-        logger.LogInformation($"generalPromoCode with ID: {request.GeneralPromoCodeId} updated successfully.");
+        logger.LogInformation("GeneralPromoCode with ID: {PromoCodeId} updated successfully.",
+            request.GeneralPromoCodeId);
     }
 }

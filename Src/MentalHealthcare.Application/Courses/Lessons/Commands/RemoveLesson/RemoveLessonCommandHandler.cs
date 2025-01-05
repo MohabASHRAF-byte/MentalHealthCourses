@@ -1,11 +1,9 @@
-using AutoMapper;
 using MediatR;
 using MentalHealthcare.Application.BunnyServices;
 using MentalHealthcare.Application.BunnyServices.VideoContent.Video;
-using MentalHealthcare.Application.Courses.LessonResources.Commands.Delete_Resource;
+using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Exceptions;
-using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Domain.Repositories.Course;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -20,7 +18,7 @@ public class RemoveLessonCommandHandler(
     ICourseLessonRepository courseLessonRepository,
     ICourseRepository courseRepository,
     IConfiguration configuration,
-    IMediator mediator
+    IUserContext userContext
 ) : IRequestHandler<RemoveLessonCommand>
 {
     public async Task Handle(RemoveLessonCommand request, CancellationToken cancellationToken)
@@ -28,36 +26,36 @@ public class RemoveLessonCommandHandler(
         logger.LogInformation("Starting RemoveLessonCommandHandler for LessonId: {LessonId}, CourseId: {CourseId}, SectionId: {SectionId}",
             request.LessonId, request.CourseId, request.SectionId);
 
-        // TODO: Uncomment and implement user authorization.
-        // var currentUser = userContext.GetCurrentUser();
-        // if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        // {
-        //     logger.LogError("Unauthorized access attempt for removing a lesson.");
-        //     throw new UnauthorizedAccessException();
-        // }
-
-        // Retrieve all lessons for the given course and section.
-        logger.LogInformation("Fetching lessons for CourseId: {CourseId}, SectionId: {SectionId}", 
-            request.CourseId, request.SectionId);
-
-        var lessons = await courseLessonRepository.GetCourseLessons(request.CourseId, request.SectionId);
-
-        if (!lessons.Any())
+        // Authenticate and validate admin permissions
+        var currentUser = userContext.GetCurrentUser();
+        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
         {
-            logger.LogWarning("No lessons found for SectionId: {SectionId} in CourseId: {CourseId}", 
-                request.SectionId, request.CourseId);
-            throw new ResourceNotFound("Lesson", request.SectionId.ToString());
+            var userDetails = currentUser == null
+                ? "User is null"
+                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
+
+            logger.LogWarning("Unauthorized access attempt to remove a lesson. User details: {UserDetails}", userDetails);
+            throw new ForBidenException("You do not have permission to remove this lesson.");
         }
 
-        // Find the target lesson to be removed.
-        var targetLesson = lessons.FirstOrDefault(lesson => lesson.CourseLessonId == request.LessonId);
+        // Retrieve the target lesson
+        logger.LogInformation("Fetching target lesson for CourseId: {CourseId}, SectionId: {SectionId}, LessonId: {LessonId}", 
+            request.CourseId, request.SectionId, request.LessonId);
+
+        var targetLesson = 
+            await courseLessonRepository
+                .GetCourseLessonByIdAsync(
+                    request.CourseId, request.SectionId, request.LessonId
+                );
+
         if (targetLesson == null)
         {
-            logger.LogWarning("No lesson found with LessonId: {LessonId}", request.LessonId);
-            throw new ResourceNotFound("Lesson", request.LessonId.ToString());
+            logger.LogWarning("Lesson not found for CourseId: {CourseId}, SectionId: {SectionId}, LessonId: {LessonId}", 
+                request.CourseId, request.SectionId, request.LessonId);
+            throw new ResourceNotFound(nameof(targetLesson), request.LessonId.ToString());
         }
 
-        // Initialize Bunny client.
+        // Initialize Bunny client
         var bunnyClient = new BunnyClient(configuration);
 
         if (targetLesson.ContentType == ContentType.Video)
@@ -72,44 +70,13 @@ public class RemoveLessonCommandHandler(
             await bunnyClient.DeleteFileAsync(targetLesson.LessonBunnyName, courseName);
         }
 
-        var tobeDeLesson = await courseLessonRepository.GetCourseLessonByIdAsync(request.LessonId);
-        if(tobeDeLesson.CourseLessonResources != null)
-        {
-            foreach (var resource in tobeDeLesson.CourseLessonResources)
-            {
-                var tobeDeletedResource = new DeleteLessonResourceCommand()
-                {
-                    CourseId = request.CourseId,
-                    LessonId = request.LessonId,
-                    ResourceId = resource.CourseLessonResourceId
-                };
-                await mediator.Send(tobeDeletedResource, cancellationToken);
-            }
-        }
-        
-        // Delete the target lesson from the database.
-        logger.LogInformation("Deleting lesson with LessonId: {LessonId}", request.LessonId);
-        await courseLessonRepository.DeleteCourseLessonAsync(targetLesson);
+        // Remove lesson from the database
+        logger.LogInformation("Removing lesson from the database for CourseId: {CourseId}, SectionId: {SectionId}, LessonId: {LessonId}", 
+            request.CourseId, request.SectionId, request.LessonId);
 
-        // Adjust the order of the remaining lessons.
-        logger.LogInformation("Adjusting order of remaining lessons for SectionId: {SectionId}", request.SectionId);
-        var targetOrder = targetLesson.Order;
-        var updatedLessons = lessons
-            .Where(lesson => lesson.Order > targetOrder)
-            .ToList();
+        await courseLessonRepository.RemoveLesson(request.CourseId, request.SectionId, request.LessonId);
 
-        foreach (var lesson in updatedLessons)
-        {
-            lesson.Order--;
-        }
-
-        // Update the adjusted lessons in the database.
-        if (updatedLessons.Any())
-        {
-            logger.LogInformation("Updating order for {LessonCount} remaining lessons.", updatedLessons.Count);
-            await courseLessonRepository.UpdateCourseLessonsAsync(updatedLessons);
-        }
-
-        logger.LogInformation("Successfully removed lesson with LessonId: {LessonId} and updated lesson orders.", request.LessonId);
+        logger.LogInformation("Successfully removed lesson with LessonId: {LessonId} from CourseId: {CourseId}, SectionId: {SectionId}", 
+            request.LessonId, request.CourseId, request.SectionId);
     }
 }

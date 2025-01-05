@@ -1,4 +1,6 @@
+using MentalHealthcare.Domain.Dtos.User;
 using MentalHealthcare.Domain.Entities;
+using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
@@ -17,10 +19,10 @@ public class UserRepository(
         var errors = new List<string>();
         var existingUser = await dbContext.Users
             .Where(u =>
-                u.NormalizedUserName== user.UserName ||
-                u.Email ==user.Email
+                u.NormalizedUserName == user.UserName ||
+                u.Email == user.Email
             ).ToListAsync();
-        var validUserName =! existingUser.Any(u =>
+        var validUserName = !existingUser.Any(u =>
             u.NormalizedUserName!.Equals(user.UserName));
         var validEmail = !existingUser.Any(u => u.Email!.Equals(user.Email));
         if (!validUserName)
@@ -141,5 +143,69 @@ public class UserRepository(
             .Where(u => u.PhoneNumber == phoneNumber && u.Tenant == tenant)
             .FirstOrDefaultAsync();
         return user;
+    }
+
+    public async Task<(int? systemUserId, int? adminId)> GetSystemUserOrAdminIdByIdentityIdAsync(string userId)
+    {
+        var systemUser = await dbContext.SystemUsers
+            .Where(su => su.UserId == userId)
+            .FirstOrDefaultAsync();
+
+        var adminUser = await dbContext.Admins
+            .Where(au => au.UserId == userId)
+            .FirstOrDefaultAsync();
+        return (systemUser?.SystemUserId, adminUser?.AdminId);
+    }
+
+    public async Task<UserProfileDto> GetUserProfileByIdAsync(int userId)
+    {
+        var userProfile = await dbContext.SystemUsers
+            .Where(su => su.SystemUserId == userId)
+            .Include(su => su.User)
+            .Select(su => new UserProfileDto
+            {
+                PhoneNumber = su.User.PhoneNumber!,
+                Email = su.User.Email!,
+                userName = su.User.UserName!,
+                FirstName = su.FName,
+                LastName = su.LName,
+                BirthDate = su.BirthDate,
+                SecondsSinceCreate = (long)DateTime.UtcNow.Subtract(su.CreatedDate).TotalSeconds,
+                SecondsSinceUpdate = (long)DateTime.UtcNow.Subtract(su.LastUpdatedDate).TotalSeconds
+            }).FirstOrDefaultAsync();
+        if (userProfile == null)
+        {
+            throw new ResourceNotFound(nameof(User), userId.ToString());
+        }
+
+        return userProfile;
+    }
+
+    public async Task UpdateUserProfileAsync(
+        int userId,
+        string? firstName,
+        string? lastName,
+        string? phoneNumber,
+        DateOnly? birthDate
+    )
+    {
+        var user = await dbContext.SystemUsers
+            .Where(su => su.SystemUserId == userId)
+            .Include(su => su.User)
+            .FirstOrDefaultAsync();
+        if (user == null)
+        {
+            throw new ResourceNotFound(nameof(User), userId.ToString());
+        }
+
+        if (!string.IsNullOrWhiteSpace(firstName))
+            user.FName = firstName;
+        if (!string.IsNullOrWhiteSpace(lastName))
+            user.LName = lastName;
+        if (!string.IsNullOrWhiteSpace(phoneNumber))
+            user.User.PhoneNumber = phoneNumber;
+        if (birthDate.HasValue)
+            user.BirthDate = birthDate.Value;
+        await dbContext.SaveChangesAsync();
     }
 }

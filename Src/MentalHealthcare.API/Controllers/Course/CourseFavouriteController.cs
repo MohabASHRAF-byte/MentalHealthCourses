@@ -1,29 +1,63 @@
 using MediatR;
-using MentalHealthcare.Application.Courses.Favourite.Commands.Add_favourite.Add_Course_Favourite;
+using MentalHealthcare.API.Docs;
+using MentalHealthcare.Application.Common;
+using MentalHealthcare.Application.Courses.Favourite.Commands.Toggle_favourite;
+using MentalHealthcare.Application.Courses.Favourite.Queries.GetFavouriteCourse;
+using MentalHealthcare.Application.Courses.Favourite.Queries.GetUsersWhoFavouriteCourse;
 using MentalHealthcare.Domain.Constants;
+using MentalHealthcare.Domain.Dtos;
+using MentalHealthcare.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace MentalHealthcare.API.Controllers.Course;
 
 [ApiController]
-[Route("Api/Favourite")]
-[ApiExplorerSettings(GroupName = Global.DevelopmentVersion)]
-
+[Route("api/Favourite")]
+[ApiExplorerSettings(GroupName = Global.MobileVersion)]
 public class CourseFavouriteController(
     IMediator mediator
-    ): ControllerBase
+) : ControllerBase
 {
-
     [HttpPost("{courseId}")]
     [Authorize(AuthenticationSchemes = "Bearer")]
+    [SwaggerOperation(Summary = "Toggle Favourite Course",
+        Description = CourseFavouriteDocs.ToggleFavouriteCourseDescription)]
     public async Task<IActionResult> ToggleFavouriteCourse([FromRoute] int courseId)
     {
-        var command = new ToggleFavouriteCourseCommand()
+        var command = new ToggleFavouriteCourseCommand
         {
             CourseId = courseId,
         };
         await mediator.Send(command);
         return NoContent();
+    }
+
+    [HttpGet("{courseId}")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [ProducesResponseType(typeof(PageResult<SystemUser>), StatusCodes.Status200OK)]
+    [SwaggerOperation(Summary = "Get Users Who Favourited Course",
+        Description = CourseFavouriteDocs.GetUsersWhoFavouriteCourseDescription)]
+    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
+    public async Task<IActionResult> GetUsersWhoFavouriteCourse([FromRoute] int courseId)
+    {
+        var command = new GetUsersWhoFavouriteCourseQuery
+        {
+            CourseId = courseId,
+        };
+        var result = await mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [ProducesResponseType(typeof(PageResult<CourseViewDto>), StatusCodes.Status200OK)]
+    [SwaggerOperation(Summary = "Get Favourite Courses",
+        Description = CourseFavouriteDocs.GetFavouriteCoursesDescription)]
+    public async Task<IActionResult> GetFavouriteCourses([FromQuery] GetFavouriteCoursesQuery query)
+    {
+        var result = await mediator.Send(query);
+        return Ok(result);
     }
 }

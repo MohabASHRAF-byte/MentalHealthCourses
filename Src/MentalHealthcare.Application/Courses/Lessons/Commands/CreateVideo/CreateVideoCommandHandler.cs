@@ -3,12 +3,13 @@ using MediatR;
 using MentalHealthcare.Application.BunnyServices;
 using MentalHealthcare.Application.BunnyServices.VideoContent.Video;
 using MentalHealthcare.Application.SystemUsers;
-using MentalHealthcare.Application.Videos.Commands.CreateVideo;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Domain.Repositories.Course;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using MentalHealthcare.Domain.Constants;
+using MentalHealthcare.Domain.Exceptions;
 
 namespace MentalHealthcare.Application.Courses.Lessons.Commands.CreateVideo;
 
@@ -20,7 +21,8 @@ public class CreateVideoCommandHandler(
     ICourseRepository courseRepository,
     ICourseSectionRepository courseSectionRepository,
     IConfiguration configuration,
-    IMapper mapper
+    IMapper mapper,
+    IUserContext userContext
 ) : IRequestHandler<CreateVideoCommand, CreateVideoCommandResponse>
 {
     public async Task<CreateVideoCommandResponse> Handle(CreateVideoCommand request,
@@ -29,18 +31,22 @@ public class CreateVideoCommandHandler(
         logger.LogInformation("Start handling CreateVideoCommand for CourseId: {CourseId}, SectionId: {SectionId}",
             request.CourseId, request.CourseSectionId);
 
-        // TODO: Ensure proper authorization for the current user
-        // var currentUser = userContext.GetCurrentUser();
-        // if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        //     throw new UnauthorizedAccessException();
+        // Authenticate and validate admin permissions
+        var currentUser = userContext.GetCurrentUser();
+        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
+        {
+            var userDetails = currentUser == null
+                ? "User is null"
+                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
 
-        // Validate that the course section exists
+            logger.LogWarning("Unauthorized access attempt to create a video. User details: {UserDetails}", userDetails);
+            throw new ForBidenException("You do not have permission to create a video lesson.");
+        }
+
+        // Validate course and section existence
         logger.LogInformation("Validating existence of CourseId: {CourseId}, SectionId: {SectionId}",
             request.CourseId, request.CourseSectionId);
-        await courseSectionRepository.IsExistAsync(request.CourseId, request.CourseSectionId);
-
-        // TODO: Link admin with the action and retrieve admin info
-        // var admin = await adminRepository.GetAdminByIdentityAsync(currentUser.Id);
+        await courseSectionRepository.IsSectionExistAndUpdatableAsync(request.CourseId, request.CourseSectionId);
 
         // Retrieve the collection ID for the course
         logger.LogInformation("Retrieving CollectionId for CourseId: {CourseId}", request.CourseId);
@@ -51,9 +57,10 @@ public class CreateVideoCommandHandler(
             "Calling BunnyCDN API to create video with Title: {Title} in CollectionId: {CollectionId}",
             request.Title, collectionId);
         var bunny = new BunnyClient(configuration);
-        var videoId = await bunny.CreateVideoAsync(request.Title, collectionId);
+        var videoId = await 
+            bunny
+                .CreateVideoAsync(request.Title, collectionId);
 
-        // TODO: Handle video creation errors more gracefully
         if (videoId == null)
         {
             logger.LogError("Failed to create video on BunnyCDN for Title: {Title}", request.Title);
@@ -65,7 +72,7 @@ public class CreateVideoCommandHandler(
         // Generate a secure signature for the video
         logger.LogInformation("Generating signature for VideoId: {VideoId} in CollectionId: {CollectionId}",
             videoId, collectionId);
-        var ret = bunny.GenerateSignature(collectionId, videoId);
+        var signatureResponse = bunny.GenerateSignature(collectionId, videoId);
 
         // Map request data to PendingVideoUpload entity
         logger.LogInformation("Mapping request data to PendingVideoUpload entity for VideoId: {VideoId}", videoId);
@@ -73,13 +80,13 @@ public class CreateVideoCommandHandler(
         pendingUpload.CreatedDate = DateTime.UtcNow;
         pendingUpload.PendingVideoUploadId = videoId;
         pendingUpload.Url = bunny.GenerateVideoFrameUrl(videoId);
-        pendingUpload.AdminId = 1;
+        pendingUpload.AdminId = currentUser.AdminId ?? 1; // Use actual admin ID
 
         // Save the pending upload in the repository
         logger.LogInformation("Saving PendingVideoUpload entity to the repository for VideoId: {VideoId}", videoId);
         await courseRepository.AddPendingUpload(pendingUpload);
 
         logger.LogInformation("Successfully handled CreateVideoCommand for VideoId: {VideoId}", videoId);
-        return ret;
+        return signatureResponse;
     }
 }

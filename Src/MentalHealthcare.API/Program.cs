@@ -63,6 +63,7 @@ try
             c.SwaggerEndpoint("/swagger/Dashboard/swagger.json", "Dashboard API v1");
             c.SwaggerEndpoint("/swagger/MobileApp/swagger.json", "Mobile App API v1");
             c.SwaggerEndpoint("/swagger/Development/swagger.json", "Development API v1"); // Ensure this is included
+            c.SwaggerEndpoint("/swagger/All/swagger.json", "All API v1"); // Ensure this is included
 
         });
     }

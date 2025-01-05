@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using MentalHealthcare.Domain.Constants;
+using MentalHealthcare.Domain.Entities.Courses;
 
 namespace MentalHealthcare.Domain.Entities;
 

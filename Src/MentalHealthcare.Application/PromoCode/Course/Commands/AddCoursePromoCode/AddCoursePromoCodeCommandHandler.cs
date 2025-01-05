@@ -1,5 +1,7 @@
 using AutoMapper;
 using MediatR;
+using MentalHealthcare.Application.SystemUsers;
+using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Repositories.PromoCode;
 using Microsoft.Extensions.Logging;
@@ -9,12 +11,13 @@ namespace MentalHealthcare.Application.PromoCode.Course.Commands.AddCoursePromoC
 public class AddCoursePromoCodeCommandHandler(
     ILogger<AddCoursePromoCodeCommandHandler> logger,
     IMapper mapper,
-    ICoursePromoCodeRepository promoCodeRepository
-) : IRequestHandler<AddCoursePromoCodeCommand,int>
+    ICoursePromoCodeRepository promoCodeRepository,
+    IUserContext userContext
+) : IRequestHandler<AddCoursePromoCodeCommand, int>
 {
     public async Task<int> Handle(AddCoursePromoCodeCommand request, CancellationToken cancellationToken)
     {
-        //TODO: add auth and validation
+        userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
         logger.LogInformation("Starting to handle {CommandName}", nameof(AddCoursePromoCodeCommand));
 
         try
@@ -42,7 +45,6 @@ public class AddCoursePromoCodeCommandHandler(
             logger.LogInformation("Successfully added CoursePromoCode with Code: {Code} for CourseId: {CourseId}",
                 request.Code, request.CourseId);
             return coursePromoCode.CoursePromoCodeId;
-
         }
         catch (Exception ex)
         {

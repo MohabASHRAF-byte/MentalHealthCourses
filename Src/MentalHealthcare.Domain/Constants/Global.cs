@@ -6,6 +6,7 @@ public class Global
     public const string DashboardVersion = "Dashboard";
     public const string SharedVersion = "Shared";
     public const string DevelopmentVersion = "Development";
+    public const string AllVersion = "All";
     public const string Roles = "Roles";
     public const string PassCode = "TokenPassCode";
     public const string ProgramName = "MentalHealthcare";
@@ -15,8 +16,9 @@ public class Global
     public const int TitleMaxLength = 100;
     public const int MaxNameLength = 50;
     public const string AdminIdClaimType = "AdminId";
-    public const string UserIdClaimType = "AdminId";
-    public static string CourseThumbnailDirectory = "CoursesThumbnails";
+    public const string UserIdClaimType = "UserId";
+    public static string CourseThumbnailDirectory = "CoursesThumbnail";
+    public static string CourseIconsDirectory = "CoursesIcons";
     public static string ThumbnailFileExtension = ".jpeg";
 
     #region Terms and Conditions
@@ -54,15 +56,21 @@ public class Global
     #region Courses
 
     public const int CourseSectionNameMaxLength = 50;
-    
-    public const int CourseRecourseSize = 10;//Mb
+
+    public const int CourseRecourseSize = 10; //Mb
     public const string CourseRecoursesPath = "CourseResourses";
-    public const int CourseLessonPdfSize = 10;//Mb
+
+    public const int CourseLessonPdfSize = 10; //Mb
+
+    //todo: up to 95 %
+    public const float CourseCompleteToReview = .0f;
+    public const int UserReviewsLimit = 5;
+
     #endregion
 
     #region Cart
+
     public const int MaxCartItems = 20;
-    
 
     #endregion
 }

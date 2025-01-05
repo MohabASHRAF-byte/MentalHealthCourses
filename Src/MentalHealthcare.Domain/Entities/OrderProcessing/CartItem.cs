@@ -1,3 +1,5 @@
+using MentalHealthcare.Domain.Entities.Courses;
+
 namespace MentalHealthcare.Domain.Entities.OrderProcessing;
 
 public class CartItem

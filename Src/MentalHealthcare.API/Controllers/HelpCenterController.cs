@@ -11,67 +11,73 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace MentalHealthcare.API.Controllers;
 
-
 [ApiController]
-[Route("HelpCenter")]
-[Authorize(AuthenticationSchemes = "Bearer")]
+[Route("api/helpCenter")]
 [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
-
-
+[Authorize(AuthenticationSchemes = "Bearer")]
 public class HelpCenterController(
     IMediator mediator
 ) : ControllerBase
 {
-
+    /// <summary>
+    /// Creates a new Help Center item.
+    /// </summary>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [SwaggerOperation(Description = HelpCenterControllerDocs.HelpCenterPostDescription)]
-
+    [SwaggerOperation(Summary = "Create Help Center Item",
+            Description = HelpCenterControllerDocs.HelpCenterPostDescription
+        )
+    ]
     public async Task<IActionResult> Post(CreateHelpCenterItemCommand command)
     {
         await mediator.Send(command);
         return NoContent();
     }
-    
+
+    /// <summary>
+    /// Deletes an existing Help Center item.
+    /// </summary>
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
-
+    [SwaggerOperation(Summary = "Delete Help Center Item",
+        Description = "Deletes an existing item in the Help Center by ID."
+    )]
     public async Task<IActionResult> Delete(DeleteHelpCenterItemCommand command)
     {
         await mediator.Send(command);
         return NoContent();
     }
 
-
-    
-    [Produces("application/json")]
+    /// <summary>
+    /// Retrieves Help Center items based on the specified query.
+    /// </summary>
     [HttpGet]
+    [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [SwaggerOperation(
-        Description = HelpCenterControllerDocs.HelpCenterGetDescription
+    [SwaggerOperation(Summary = "Get Help Center Items",
+        Description = HelpCenterControllerDocs.GetAllSummery
     )]
     [AllowAnonymous]
     [ApiExplorerSettings(GroupName = Global.SharedVersion)]
 
-    public async Task<IActionResult> GetTerm([FromQuery]GetHelpCenterItemQuery query)
+    public async Task<IActionResult> GetTerm([FromQuery] GetHelpCenterItemQuery query)
     {
         var terms = await mediator.Send(query);
         return Ok(terms);
     }
 
-
-    [SwaggerOperation(
-        Summary = HelpCenterControllerDocs.PatchSummery,
-        Description = HelpCenterControllerDocs.HelpCenterUpdateDescription)]
+    /// <summary>
+    /// Updates an existing Help Center item.
+    /// </summary>
     [HttpPut]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
-
+    [SwaggerOperation(Summary = "Update Help Center Item",
+        Description = HelpCenterControllerDocs.HelpCenterUpdateDescription
+    )]
     public async Task<IActionResult> Update(UpdateHelpCenterCommand command)
     {
         await mediator.Send(command);

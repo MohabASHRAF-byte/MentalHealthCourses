@@ -1,4 +1,4 @@
-namespace MentalHealthcare.Application.Videos.Commands.CreateVideo;
+namespace MentalHealthcare.Application.Courses.Lessons.Commands.CreateVideo;
 
 public class CreateVideoCommandResponse
 {

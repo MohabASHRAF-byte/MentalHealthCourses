@@ -21,7 +21,7 @@ public class InvoiceRepository(
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task<InvoiceDto> GetInvoiceByIdAsync(int id, string? userId = null)
+    public async Task<InvoiceDto> GetInvoiceByIdAsync(int id, int? userId = null)
     {
         if (id <= 0)
         {
@@ -31,25 +31,20 @@ public class InvoiceRepository(
         // Query invoice and project directly into InvoiceDto
         var invoiceDto = await dbContext.Invoices
             .Where(i => i.InvoiceId == id)
-            .Where(i => string.IsNullOrEmpty(userId) || i.UserId == userId)
+            .Where(i => (userId != null && i.SystemUserId == userId) || userId == null)
+            .Include(i => i.SystemUser)
             .Select(i => new InvoiceDto
             {
                 InvoiceId = i.InvoiceId,
-                UserId = i.UserId,
-                FirstName = dbContext.SystemUsers
-                    .Where(s => s.UserId == i.UserId)
-                    .Select(s => s.FName)
-                    .FirstOrDefault(),
-                LastName = dbContext.SystemUsers
-                    .Where(s => s.UserId == i.UserId)
-                    .Select(s => s.LName)
-                    .FirstOrDefault(),
+                UserId = i.SystemUserId,
+                FirstName = i.SystemUser.FName,
+                LastName = i.SystemUser.LName,
                 PhoneNumber = dbContext.Users
-                    .Where(u => u.Id == i.UserId)
+                    .Where(u => u.Id == i.SystemUser.UserId)
                     .Select(u => u.PhoneNumber)
                     .FirstOrDefault(),
                 Email = dbContext.Users
-                    .Where(u => u.Id == i.UserId)
+                    .Where(u => u.Id == i.SystemUser.UserId)
                     .Select(u => u.Email)
                     .FirstOrDefault(),
                 OrderStatus = OrderStatus.Pending,
@@ -79,15 +74,17 @@ public class InvoiceRepository(
         string? invoiceId,
         OrderStatus? status, string? email,
         string? phoneNumber, DateTime? fromDate, DateTime? toDate,
-        string? promoCode, string? userId = null)
+        string? promoCode,
+        int? systemUserId = null
+    )
     {
         // Start with all invoices
         var invoices = dbContext.Invoices.AsNoTracking();
 
         // Apply filters in order of expected elimination effectiveness
-        if (!string.IsNullOrEmpty(userId))
+        if (systemUserId != null)
         {
-            invoices = invoices.Where(i => i.UserId == userId);
+            invoices = invoices.Where(i => i.SystemUserId == systemUserId);
         }
 
         if (!string.IsNullOrEmpty(invoiceId))
@@ -146,6 +143,7 @@ public class InvoiceRepository(
             .OrderByDescending(i => i.OrderDate)
             .Skip(pageSize * (pageNumber - 1))
             .Take(pageSize)
+            .Include(p => p.SystemUser)
             .Select(i => new InvoiceViewDto
             {
                 InvoiceId = i.InvoiceId,
@@ -157,10 +155,7 @@ public class InvoiceRepository(
                     .Where(a => a.AdminId == i.AdminId)
                     .Select(a => a.FName + " " + a.LName)
                     .FirstOrDefault() ?? "N/A", // Fetch Admin name
-                Name = dbContext.SystemUsers
-                    .Where(s => s.UserId == i.UserId)
-                    .Select(s => s.FName + " " + s.LName)
-                    .FirstOrDefault() ?? "Unknown", // Fetch User name
+                Name = i.SystemUser.FName,
                 Email = i.User.Email ?? "",
                 Phone = i.User.PhoneNumber ?? "",
                 PromoCode = i.PromoCode
@@ -174,7 +169,7 @@ public class InvoiceRepository(
         int invoiceId,
         List<MiniCourse> courses,
         decimal discount,
-        string adminId
+        int adminId
     )
     {
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
@@ -229,22 +224,25 @@ public class InvoiceRepository(
             }
 
             // Assign admin and update status
-            invoice.Admin = await dbContext.Admins
-                .Where(a => a.UserId == adminId)
-                .FirstOrDefaultAsync();
+            invoice.AdminId = adminId;
             invoice.OrderStatus = OrderStatus.Done;
             invoice.ProcessedDate = DateTime.UtcNow;
 
             // Add course progress records
             foreach (var course in courses)
             {
-                // Check if user already has the course
-                var existingCourseProgress = await dbContext
-                    .CourseProgresses
-                    .FirstOrDefaultAsync(
-                        cp => cp.CourseId == course.CourseId &&
-                              cp.UserId == invoice.UserId
-                    );
+                // check if the course is exist and increase the enrollment count 
+                var courseEntity = await dbContext.Courses
+                    .FirstOrDefaultAsync(c => c.CourseId == course.CourseId);
+                if (courseEntity != null)
+                {
+                    courseEntity.EnrollmentsCount += 1;
+                }
+
+                var existingCourseProgress = await dbContext.CourseProgresses
+                    .Where(p => p.CourseId == course.CourseId &&
+                                p.SystemUserId == invoice.SystemUserId
+                    ).FirstOrDefaultAsync();
                 if (existingCourseProgress != null)
                 {
                     throw new ArgumentException($"User already has course with ID: {course.CourseId}");
@@ -253,10 +251,11 @@ public class InvoiceRepository(
                 var courseProgress = new CourseProgress
                 {
                     CourseId = course.CourseId,
-                    UserId = invoice.UserId,
+                    SystemUserId = invoice.SystemUserId,
                     LastLessonIdx = 0,
                     LastChange = DateTime.UtcNow
                 };
+
                 dbContext.CourseProgresses.Add(courseProgress);
             }
 

@@ -17,9 +17,10 @@ public class AddRolesCommandHandler(
 {
     public async Task<OperationResult<string>> Handle(AddRolesCommand request, CancellationToken cancellationToken)
     {
-        //todo check the auth
+        userContext.EnsureAuthorizedUser(
+            [UserRoles.Admin], logger);
         var adminTenant = userContext.GetCurrentUser()?.Tenant;
-        
+
         if (string.IsNullOrEmpty(adminTenant))
         {
             return OperationResult<string>.Failure("Unauthorized", StateCode.Unauthorized);
@@ -31,7 +32,8 @@ public class AddRolesCommandHandler(
             return OperationResult<string>.Failure("User does not exist");
         }
 
-        foreach (var Role in request.Roles)
+        var roles = new List<UserRoles>(){ UserRoles.Admin };
+        foreach (var Role in roles)
         {
             var val = (int)Role;
             changedUserRoles |= (uint)(1 << val);

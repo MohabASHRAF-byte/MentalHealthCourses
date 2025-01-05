@@ -28,7 +28,14 @@ namespace MentalHealthcare.Application.SystemUsers;
    /// </remarks>
    
 
-public record CurrentUser(string Id, string UserName, long Roles,string Tenant)
+public record CurrentUser(
+    string Id,
+    string UserName,
+    long Roles,
+    string Tenant,
+    int? SysUserId ,
+    int? AdminId
+    )
 {
     // return true if the user have the Role you passed
     public bool HasRole(UserRoles role)

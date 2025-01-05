@@ -1,9 +1,7 @@
 using MediatR;
-using MentalHealthcare.Domain.Dtos;
 using MentalHealthcare.Domain.Dtos.course;
-using MentalHealthcare.Domain.Entities;
 
-namespace MentalHealthcare.Application.Courses.Queries.GetById;
+namespace MentalHealthcare.Application.Courses.Course.Queries.GetById;
 
 public class GetCourseByIdQuery:IRequest<CourseDto>
 {

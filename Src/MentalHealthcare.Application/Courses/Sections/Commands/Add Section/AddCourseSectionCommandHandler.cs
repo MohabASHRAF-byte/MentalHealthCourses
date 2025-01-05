@@ -1,6 +1,9 @@
 using AutoMapper;
 using MediatR;
+using MentalHealthcare.Application.SystemUsers;
+using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
+using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Domain.Repositories.Course;
 using Microsoft.Extensions.Logging;
@@ -10,26 +13,46 @@ namespace MentalHealthcare.Application.Courses.Sections.Commands.Add_Section;
 public class AddCourseSectionCommandHandler(
     ILogger<AddCourseSectionCommandHandler> logger,
     ICourseSectionRepository sectionRepository,
-    IMapper mapper
+    IMapper mapper,
+    IUserContext userContext
 ) : IRequestHandler<AddCourseSectionCommand, int>
 {
     public async Task<int> Handle(AddCourseSectionCommand request, CancellationToken cancellationToken)
     {
-        // ToDo: Implement Authentication logic here
-        // Ensure the user has the appropriate role or permissions to add a section
+        logger.LogInformation("Start handling AddCourseSectionCommand for CourseId: {CourseId}", request.CourseId);
 
-        // ToDo: Add validation for request input
-        // Validate the courseId, section name, and any other required fields
+        // Retrieve current user and validate permissions
+        var currentUser = userContext.GetCurrentUser();
+        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
+        {
+            var userDetails = currentUser == null
+                ? "User is null"
+                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
 
+            logger.LogWarning("Unauthorized access attempt to add a course section. User details: {UserDetails}", userDetails);
+            throw new ForBidenException("You do not have permission to add a section to this course.");
+        }
+
+        logger.LogInformation("User {UserId} authorized to add course section.", currentUser.Id);
+
+        // Map request to CourseSection entity
         var newCourseSection = mapper.Map<CourseSection>(request);
         newCourseSection.Name = request.Name;
 
-        // ToDo: Add logging for the creation of the section
-        logger.LogInformation($"Adding new section: {newCourseSection.Name} for course {request.CourseId}");
+        logger.LogInformation("Mapped new section: {SectionName} for course {CourseId}", newCourseSection.Name, request.CourseId);
 
-        await sectionRepository.AddCourseSection(newCourseSection);
-        
-        // ToDo: Return appropriate response after adding the section
+        try
+        {
+            await sectionRepository.AddCourseSection(newCourseSection);
+            logger.LogInformation("Successfully added section: {SectionName} for course {CourseId}", newCourseSection.Name, request.CourseId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while adding section: {SectionName} for course {CourseId}", newCourseSection.Name, request.CourseId);
+            throw;
+        }
+
+        logger.LogInformation("Returning CourseSectionId: {SectionId} for the newly added section.", newCourseSection.CourseSectionId);
         return newCourseSection.CourseSectionId;
     }
 }

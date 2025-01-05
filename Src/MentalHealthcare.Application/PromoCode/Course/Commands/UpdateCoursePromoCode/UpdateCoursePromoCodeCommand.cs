@@ -11,4 +11,5 @@ public class UpdateCoursePromoCodeCommand : IRequest<int>
     public string? ExpireDate { get; set; }
 
     public double? Percentage { get; set; }
+    public bool? IsActive { get; set; }
 }

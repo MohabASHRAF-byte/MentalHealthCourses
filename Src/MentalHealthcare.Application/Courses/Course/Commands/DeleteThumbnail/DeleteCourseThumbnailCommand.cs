@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace MentalHealthcare.Application.Courses.Commands.DeleteThumbnail;
+namespace MentalHealthcare.Application.Courses.Course.Commands.DeleteThumbnail;
 
 public class DeleteCourseThumbnailCommand:IRequest
 {

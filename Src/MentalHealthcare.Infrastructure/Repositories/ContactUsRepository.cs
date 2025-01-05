@@ -19,10 +19,7 @@ public class ContactUsRepository(
         return contactUsForm.ContactUsFormId;
     }
 
-    public async Task<ContactUsForm> GetContactUsByIdAsync(int id)
-    {
-        throw new NotImplementedException();
-    }
+
 
     public async Task DeleteAsync(List<int> formsId)
     {

@@ -4,14 +4,31 @@ namespace MentalHealthcare.Application.BunnyServices;
 
 public static class PurgeLink
 {
-    public static async Task ClearCacheAsync(this BunnyClient bunnyClient, string url, bool async = true)
+    public static async Task ClearCacheAsync(this BunnyClient bunnyClient, string url, bool isAsync = true)
     {
-        var requestLink = $"https://api.bunny.net/purge?url={url}&async={async}";
-        var options = new RestClientOptions(requestLink);
-        var client = new RestClient(options);
-        var request = new RestRequest("");
-        request.AddHeader("AccessKey", bunnyClient.AccessKey);
+        try
+        {
+            var encodedUrl = Uri.EscapeDataString(url);
+            var requestLink = $"https://api.bunny.net/purge?url={encodedUrl}&async={isAsync.ToString().ToLower()}";
 
-        await client.PostAsync(request);
+            var options = new RestClientOptions(requestLink);
+            var client = new RestClient(options);
+
+            var request = new RestRequest();
+            request.AddHeader("AccessKey", bunnyClient.ApiAccessKey);
+
+            var response = await client.PostAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                throw new Exception($"Failed to clear cache: {response.StatusCode} - {response.ErrorMessage}");
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log the error properly
+            Console.WriteLine($"Error clearing cache for URL {url}: {ex.Message}");
+            throw;
+        }
     }
 }

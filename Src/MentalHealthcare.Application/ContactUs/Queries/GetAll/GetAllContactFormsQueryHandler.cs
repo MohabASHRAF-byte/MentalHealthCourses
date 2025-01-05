@@ -21,14 +21,9 @@ public class GetAllContactFormsQueryHandler(
     public async Task<PageResult<ContactUsForm>> Handle(GetAllContactFormsQuery request,
         CancellationToken cancellationToken)
     {
-        logger.LogInformation($"GetAllContactFormsQueryHandler.Handle()");
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            logger.LogWarning("Unauthorized attempt to get contactUs by user: {UserId}", currentUser?.Id);
-            throw new ForBidenException("Don't have the permission get contactUs");
-        }
-        var forms = await dbRepository.GetAllFormsAsync(request.PageNumber, request.PageSize, request.ViewMsgLengthLimiter,request.SenderName,
+        userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
+        var forms = await dbRepository.GetAllFormsAsync(request.PageNumber, request.PageSize,
+            request.ViewMsgLengthLimiter, request.SenderName,
             request.SenderEmail, request.SenderPhone, request.IsRead);
         var contactUsForms = forms.Item2;
         var count = forms.Item1;

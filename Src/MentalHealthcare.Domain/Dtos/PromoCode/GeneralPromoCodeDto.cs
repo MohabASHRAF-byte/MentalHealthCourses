@@ -6,6 +6,7 @@ public class GeneralPromoCodeDto
     public string Code { get; set; }
     public DateTime expiredate { get; set; }
     public int expiresInDays { get; set; }
+    public int expiresInSeconds { get; set; }
     public float percentage { get; set; }
     public bool isActive { get; set; }
 

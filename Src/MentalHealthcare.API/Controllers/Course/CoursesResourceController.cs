@@ -6,6 +6,8 @@ using MentalHealthcare.Application.Courses.LessonResources.Commands.Update_Resou
 using MentalHealthcare.Application.Courses.LessonResources.Commands.Upload_Resource;
 using MentalHealthcare.Application.Courses.LessonResources.Queries.Get_By_id;
 using MentalHealthcare.Application.Courses.LessonResources.Queries.GetAll_Resources;
+using MentalHealthcare.Domain.Constants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -13,6 +15,9 @@ namespace MentalHealthcare.API.Controllers.Course;
 
 [ApiController]
 [Route("Api/Courses/{courseId}/Sections/{sectionId}/Lessons/{lessonId}/Resources")]
+[ApiExplorerSettings(GroupName = Global.DashboardVersion)]
+[Authorize(AuthenticationSchemes = "Bearer")]
+
 public class CoursesResourceController(IMediator mediator) : ControllerBase
 {
     // 1. Get all resources for the lesson

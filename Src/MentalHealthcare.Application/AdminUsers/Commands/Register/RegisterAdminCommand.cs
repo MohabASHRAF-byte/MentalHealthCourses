@@ -1,10 +1,12 @@
+using System.Text.Json.Serialization;
 using MediatR;
 using MentalHealthcare.Application.Common;
 
 namespace MentalHealthcare.Application.AdminUsers.Commands.Register;
 
-public class RegisterAdminCommand:IRequest<OperationResult<string>>
+public class RegisterAdminCommand:IRequest
 {
+    [JsonIgnore]
     public string? Tenant { get; set; }=default!;
     public string UserName { get; set; } = default!;
     public string FirstName { get; set; } = default!;

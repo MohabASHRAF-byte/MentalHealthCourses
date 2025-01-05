@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using MediatR;
 using MentalHealthcare.Application.BunnyServices;
+using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Repositories.Course;
@@ -13,13 +14,28 @@ public class UploadLessonResourceCommandHandler(
     ILogger<UploadLessonResourceCommandHandler> logger,
     ICourseResourcesRepository courseResourcesRepository,
     ICourseRepository courseRepository,
-    IConfiguration configuration
+    IConfiguration configuration,
+    IUserContext userContext
 ) : IRequestHandler<UploadLessonResourceCommand, int>
 {
     public async Task<int> Handle(UploadLessonResourceCommand request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Starting resource upload process for Course ID: {CourseId}, Lesson ID: {LessonId}", 
             request.CourseId, request.LessonId);
+
+        // Authenticate and validate admin permissions
+        var currentUser = userContext.GetCurrentUser();
+        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
+        {
+            var userDetails = currentUser == null
+                ? "User is null"
+                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
+
+            logger.LogWarning("Unauthorized access attempt to upload resource. User details: {UserDetails}", userDetails);
+            throw new UnauthorizedAccessException("You do not have permission to perform this action.");
+        }
+
+        logger.LogInformation("Admin access granted for user {UserId}", currentUser.Id);
 
         // Validate file size
         var fileSizeInMB = request.File.Length / (1 << 20); // Convert bytes to MB
@@ -63,7 +79,7 @@ public class UploadLessonResourceCommandHandler(
 
         // Construct file path and file name
         var filePath = $"{Global.CourseRecoursesPath}/{course.Name}";
-        var fileName = $"{courseResource.CourseLessonResourceId}.{request.ContentType switch
+        var fileName = $"{courseResource.CourseLessonResourceId}{request.ContentType switch
         {
             ContentType.Video => ContentExtension.Video,
             ContentType.Image => ContentExtension.Image,

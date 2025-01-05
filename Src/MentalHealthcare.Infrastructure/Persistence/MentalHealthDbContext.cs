@@ -57,6 +57,8 @@ public class MentalHealthDbContext : IdentityDbContext<User>
 
     public DbSet<FavouriteCourse> FavouriteCourses { get; set; }
 
+    public DbSet<UserReview> UserReviews { get; set; }
+
     #endregion
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -83,5 +85,6 @@ public class MentalHealthDbContext : IdentityDbContext<User>
         modelBuilder.ConfigureInvoice();
         modelBuilder.ConfigureCourseProgress();
         modelBuilder.ConfigureCourseFavourite();
+        modelBuilder.ConfigureCourseReview();
     }
 }

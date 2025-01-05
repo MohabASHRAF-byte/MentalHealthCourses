@@ -28,14 +28,15 @@ public class GetAllInvoicesQueryHandler(
         logger.LogInformation("Fetching invoices for user: {UserId} with role: {UserRole}", currentUser.Id,
             currentUser.Roles);
 
-        var userId = currentUser.HasRole(UserRoles.Admin) ? null : currentUser.Id;
+        var userId = currentUser.HasRole(UserRoles.Admin) ? (int?)null : currentUser.SysUserId!.Value;
 
         var (count, invoices) = await invoiceRepository.GetInvoicesAsync(
             request.PageNumber, request.PageSize,
             request.InvoiceId,
             request.Status,  request.Email,
             request.PhoneNumber, request.FromDate, request.ToDate,
-            request.PromoCode, userId
+            request.PromoCode,
+            userId
         );
 
         logger.LogInformation("Retrieved {InvoiceCount} invoices for user: {UserId}", invoices.Count, currentUser.Id);

@@ -13,28 +13,45 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace MentalHealthcare.API.Controllers.OrderProcessing;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/cart")]
 [ApiExplorerSettings(GroupName = Global.MobileVersion)]
+[Authorize(AuthenticationSchemes = "Bearer")]
+
 public class CartController(
     IMediator mediator
 ) : ControllerBase
 {
-    [Authorize(AuthenticationSchemes = "Bearer")]
-    [HttpPost]
-    [SwaggerOperation(Description = OrderProcessingDocs.AddToCartDescription)]
-    public async Task<IActionResult> Post(AddToCartCommand command)
+    /// <summary>
+    /// Add an item to the cart.
+    /// </summary>
+    [HttpPost("items")]
+    [SwaggerOperation(Summary = "Add to Cart", Description = OrderProcessingDocs.AddToCartDescription)]
+    public async Task<IActionResult> AddToCart(AddToCartCommand command)
     {
         var id = await mediator.Send(command);
-        return Created($"/api/cart/{id}", new { id });
+        return Created($"/api/cart/items/{id}", new { id });
     }
 
-    [Authorize(AuthenticationSchemes = "Bearer")]
-    [HttpDelete("items/{itemId}")]
-    [SwaggerOperation(Description = OrderProcessingDocs.DeleteFromCartDescription)]
-
-    public async Task<IActionResult> DeleteItem([FromRoute] int itemId)
+    /// <summary>
+    /// Retrieve all items in the cart.
+    /// </summary>
+    [HttpGet("items")]
+    [ProducesResponseType(typeof(CartDto), 200)]
+    [SwaggerOperation(Summary = "Get Cart Items", Description = OrderProcessingDocs.GetCartItemsDescription)]
+    public async Task<IActionResult> GetCartItems([FromQuery] GetCartItemsQuery query)
     {
-        var command = new DeleteFromCartCommand()
+        var result = await mediator.Send(query);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Remove a specific item from the cart.
+    /// </summary>
+    [HttpDelete("items/{itemId}")]
+    [SwaggerOperation(Summary = "Remove from Cart", Description = OrderProcessingDocs.DeleteFromCartDescription)]
+    public async Task<IActionResult> RemoveFromCart([FromRoute] int itemId)
+    {
+        var command = new DeleteFromCartCommand
         {
             CourseId = itemId
         };
@@ -42,24 +59,14 @@ public class CartController(
         return Ok();
     }
 
-    [Authorize(AuthenticationSchemes = "Bearer")]
-    [HttpGet]
-    [ProducesResponseType(typeof(CartDto), 200)]
-    [SwaggerOperation(Description = OrderProcessingDocs.GetCartItemsDescription)]
-    public async Task<IActionResult> GetAll([FromQuery] GetCartItemsQuery query)
-    {
-        var result = await mediator.Send(query);
-        return Ok(result);
-    }
-
-    [Authorize(AuthenticationSchemes = "Bearer")]
+    /// <summary>
+    /// Clear all items from the cart.
+    /// </summary>
     [HttpDelete]
-    [SwaggerOperation(
-        Description = OrderProcessingDocs.ClearCartDescription)]
-    public async Task<IActionResult> DeleteAllFromCart()
+    [SwaggerOperation(Summary = "Clear Cart", Description = OrderProcessingDocs.ClearCartDescription)]
+    public async Task<IActionResult> ClearCart()
     {
         await mediator.Send(new ClearCartItemsCommand());
         return Ok();
     }
 }
-

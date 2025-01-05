@@ -1,27 +1,45 @@
 using MediatR;
+using MentalHealthcare.Application.Courses.LessonResources.Commands.Update_resource_Order;
+using MentalHealthcare.Application.SystemUsers;
+using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Repositories.Course;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace MentalHealthcare.Application.Courses.LessonResources.Commands.Update_resource_Order;
+namespace MentalHealthcare.Application.Courses.LessonResources.Commands.Update_Resource_Order;
 
 public class UpdateResourceOrderCommandHandler(
     ILogger<UpdateResourceOrderCommandHandler> logger,
     ICourseResourcesRepository courseResourcesRepository,
-    IConfiguration configuration
+    IUserContext userContext
 ) : IRequestHandler<UpdateResourceOrderCommand, int>
 {
     public async Task<int> Handle(UpdateResourceOrderCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation($"Handling update resource order for lesson {request.LessonId}");
+        logger.LogInformation("Starting UpdateResourceOrderCommand for Lesson ID: {LessonId}", request.LessonId);
+
+        // Authenticate and validate admin permissions
+        var currentUser = userContext.GetCurrentUser();
+        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
+        {
+            var userDetails = currentUser == null
+                ? "User is null"
+                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
+
+            logger.LogWarning("Unauthorized access attempt to update resource order. User details: {UserDetails}", userDetails);
+            throw new UnauthorizedAccessException("You do not have permission to perform this action.");
+        }
+
+        logger.LogInformation("Admin access granted for user {UserId}", currentUser.Id);
 
         // Fetch existing resources for the lesson
         var resources = await courseResourcesRepository.GetCourseLessonResourcesByCourseIdAsync(request.LessonId);
         if (resources == null || resources.Count == 0)
         {
-            logger.LogWarning($"No resources found for lesson ID {request.LessonId}");
+            logger.LogWarning("No resources found for Lesson ID: {LessonId}", request.LessonId);
             throw new InvalidOperationException($"Lesson {request.LessonId} has no resources.");
         }
+
+        logger.LogInformation("Found {ResourceCount} resources for Lesson ID: {LessonId}", resources.Count, request.LessonId);
 
         // Check for missing orders in the request
         var resourceIds = resources.Select(r => r.CourseLessonResourceId).ToHashSet();
@@ -29,7 +47,7 @@ public class UpdateResourceOrderCommandHandler(
 
         if (!resourceIds.SetEquals(requestResourceIds))
         {
-            logger.LogError("Mismatch between existing resources and provided orders in request.");
+            logger.LogError("Mismatch between existing resources and provided orders in the request.");
             throw new ArgumentException("The request does not contain valid orders for all resources.");
         }
 
@@ -49,7 +67,8 @@ public class UpdateResourceOrderCommandHandler(
             if (resource.ItemOrder != newResourceOrder)
             {
                 logger.LogInformation(
-                    $"Updating order for Resource ID {resource.CourseLessonResourceId}: {resource.ItemOrder} -> {newResourceOrder}"
+                    "Updating order for Resource ID {ResourceId}: {CurrentOrder} -> {NewOrder}",
+                    resource.CourseLessonResourceId, resource.ItemOrder, newResourceOrder
                 );
                 resource.ItemOrder = newResourceOrder;
                 changesMade = true;
@@ -57,7 +76,8 @@ public class UpdateResourceOrderCommandHandler(
             else
             {
                 logger.LogInformation(
-                    $"No change for Resource ID {resource.CourseLessonResourceId}: Current Order = {resource.ItemOrder}"
+                    "No change for Resource ID {ResourceId}: Current Order = {CurrentOrder}",
+                    resource.CourseLessonResourceId, resource.ItemOrder
                 );
             }
         }
@@ -66,13 +86,13 @@ public class UpdateResourceOrderCommandHandler(
         if (changesMade)
         {
             await courseResourcesRepository.UpdateCourseLessonResourcesAsync(resources);
-            logger.LogInformation("Successfully updated resource order for lesson {LessonId}.", request.LessonId);
+            logger.LogInformation("Successfully updated resource order for Lesson ID: {LessonId}", request.LessonId);
         }
         else
         {
-            logger.LogInformation("No changes detected in resource order for lesson {LessonId}.", request.LessonId);
+            logger.LogInformation("No changes detected in resource order for Lesson ID: {LessonId}", request.LessonId);
         }
 
-        return resources.Count;  // Return the count of updated resources (or any other identifier if needed)
+        return resources.Count;  // Return the count of updated resources
     }
 }

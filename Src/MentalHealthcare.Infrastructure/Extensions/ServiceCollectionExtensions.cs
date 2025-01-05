@@ -60,6 +60,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICartRepository, CartRepository>();
         services.AddScoped<IInvoiceRepository, InvoiceRepository>();
         services.AddScoped<ICourseFavouriteRepository, CourseFavouriteRepository>();
+        services.AddScoped<ICourseInteractionsRepository, CourseInteractionsRepository>();
+        services.AddScoped<ICourseReview, CourseReview>();
     }
 
     private static void AddIdentity(this IServiceCollection services)

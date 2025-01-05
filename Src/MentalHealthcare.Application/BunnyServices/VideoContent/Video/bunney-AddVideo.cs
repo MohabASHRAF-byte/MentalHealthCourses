@@ -15,7 +15,7 @@ public static class CreateBunnyVideo
         var apiLibraryKey = bunny.ApiKey;
         var accessKey =bunny.ApiAccessKey;
         httpRequest.AddHeader("accept", "application/json");
-        httpRequest.AddHeader(accessKey, apiLibraryKey);
+        httpRequest.AddHeader("AccessKey", apiLibraryKey);
         httpRequest.AddBody(new
         {
             title = videoName,

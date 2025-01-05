@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using MentalHealthcare.Domain.Constants;
+using MentalHealthcare.Domain.Entities.Courses;
 
 namespace MentalHealthcare.Domain.Entities;
 // Written By Marcelino , Reviewed by Mohab
@@ -11,7 +12,6 @@ public class Category
     [Required]
     [MaxLength(Global.MaxNameLength)]
     public string Name { get; set; } = default!;
-    //todo add max length
     public string? Description { get; set; }
 
 

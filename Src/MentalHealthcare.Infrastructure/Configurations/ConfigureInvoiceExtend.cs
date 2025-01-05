@@ -18,12 +18,18 @@ public static class ConfigureInvoiceExtend
 
             // Relationships
             entity.HasOne(i => i.User)
-                .WithMany() // Assuming no navigation back from SystemUser
-                .HasForeignKey(i => i.UserId)
+                .WithMany()
+                .HasForeignKey(i => i.UserID)
                 .OnDelete(DeleteBehavior.Restrict); // Prevent cycles/multiple cascade paths
 
+            entity.HasOne(i => i.SystemUser)
+                .WithMany()
+                .HasForeignKey(i => i.SystemUserId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cycles/multiple cascade paths
+
+
             entity.HasOne(i => i.Admin)
-                .WithMany() // Assuming no navigation back from Admin
+                .WithMany()
                 .HasForeignKey(i => i.AdminId)
                 .OnDelete(DeleteBehavior.Restrict); // Prevent cycles/multiple cascade paths
 

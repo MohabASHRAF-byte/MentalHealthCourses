@@ -5,7 +5,6 @@ namespace MentalHealthcare.Domain.Repositories;
 public interface IContactUsRepository
 {
     public Task<int> CreateAsync(ContactUsForm contactUsForm);
-    public Task<ContactUsForm> GetContactUsByIdAsync(int id);
     public Task DeleteAsync(List<int> formsId);
     public Task<ContactUsForm> GetFromById(int formId);
 

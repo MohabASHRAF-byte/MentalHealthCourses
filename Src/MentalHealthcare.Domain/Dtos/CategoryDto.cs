@@ -11,6 +11,5 @@ public class CategoryDto
     [Required]
     [MaxLength(Global.MaxNameLength)]
     public string Name { get; set; } = default!;
-    //todo add max length
     public string? Description { get; set; }
 }

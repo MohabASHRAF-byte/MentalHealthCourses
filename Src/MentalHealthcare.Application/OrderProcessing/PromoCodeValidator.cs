@@ -30,7 +30,8 @@ public static class PromoCodeValidator
         }
 
         // Fetch general promo code
-        var generalPromoCode = await generalPromoCodeRepository.GetGeneralPromoCodeByPromoCodeNameAsync(promoCode!);
+        var generalPromoCode = await generalPromoCodeRepository
+            .GetGeneralPromoCodeByPromoCodeNameAsync(promoCode!);
         if (generalPromoCode != null)
         {
             logger.LogInformation("General promo code found: {PromoCode}, Expiry: {ExpireDate}", generalPromoCode.Code,

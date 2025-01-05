@@ -4,7 +4,7 @@ using MentalHealthcare.Domain.Entities;
 
 namespace MentalHealthcare.Application.SystemUsers;
 
-public class UserProfile:Profile
+public class UserProfile:AutoMapper.Profile
 {
     public UserProfile()
     {

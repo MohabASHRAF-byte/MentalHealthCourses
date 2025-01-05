@@ -1,7 +1,6 @@
 using MediatR;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
-using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -11,30 +10,40 @@ public class CreateHelpCenterItemCommandHandler(
     ILogger<CreateHelpCenterItemCommandHandler> logger,
     IHelpCenterRepository helpCenterRepository,
     IUserContext userContext
-    ):IRequestHandler<CreateHelpCenterItemCommand, int>
+) : IRequestHandler<CreateHelpCenterItemCommand, int>
 {
     public async Task<int> Handle(CreateHelpCenterItemCommand request, CancellationToken cancellationToken)
     {
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.IsAuthorized([UserRoles.Admin]))
-        {
-            logger.LogWarning("Unauthorized attempt to add HelpCenter Item by user: {UserId}", currentUser?.Id);
-            throw new ForBidenException("Don't have the permission add HelpCenter Item");
-        }
-        logger.LogInformation("CreateHelpCenterItemCommandHandler for @{n}",request.Name);
+        logger.LogInformation("Handling CreateHelpCenterItemCommand for item: {Name}", request.Name);
+
+        // Authorize user
+        logger.LogInformation("Authorizing user for creating HelpCenter item.");
+        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
+        logger.LogInformation("User {UserId} authorized to create HelpCenter items.", currentUser.Id);
+
+        // Validate HelpCenterItemType
+        logger.LogInformation("Validating HelpCenterItemType: {Type}", request.HelpCenterItemType);
         if (!Enum.IsDefined(typeof(Global.HelpCenterItems), request.HelpCenterItemType))
         {
-            logger.LogWarning("Invalid HelpCenterItemType: @{type}", request.HelpCenterItemType);
-            throw new ArgumentException($"Invalid value for {nameof(request.HelpCenterItemType)}: {request.HelpCenterItemType}");
+            logger.LogWarning("Invalid HelpCenterItemType: {Type}", request.HelpCenterItemType);
+            throw new ArgumentException(
+                $"Invalid value for {nameof(request.HelpCenterItemType)}: {request.HelpCenterItemType}");
         }
+
+        // Create new HelpCenterItem entity
         var term = new Domain.Entities.HelpCenterItem
         {
             Type = request.HelpCenterItemType,
             Name = request.Name,
             Description = request.Description,
         };
+
+        // Persist to repository
+        logger.LogInformation("Adding new HelpCenter item to the repository.");
         var newTermId = await helpCenterRepository.AddAsync(term);
-        logger.LogInformation("CreateHelpCenterItemCommandHandler for @{n} was added with name @{}",newTermId,term.Name);
+        logger.LogInformation("Successfully added HelpCenter item with ID: {Id} and Name: {Name}", newTermId,
+            term.Name);
+
         return newTermId;
     }
 }

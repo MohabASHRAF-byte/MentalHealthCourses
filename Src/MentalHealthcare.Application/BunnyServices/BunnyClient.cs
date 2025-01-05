@@ -2,11 +2,8 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using MentalHealthcare.Application.BunnyServices.Dtos;
-using MentalHealthcare.Application.Videos.Commands;
-using MentalHealthcare.Application.Videos.Commands.CreateVideo;
-using Microsoft.AspNetCore.Authentication;
+using MentalHealthcare.Application.Courses.Lessons.Commands.CreateVideo;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using RestSharp;
 
@@ -24,7 +21,7 @@ public class BunnyClient(
     internal readonly string ApiKey = configuration["BunnyCdn:ApiLibraryKey"]!;
     internal readonly string VideoLibraryId = configuration["BunnyCdn:LibraryId"]!;
     internal readonly string VideoLibraryKey = configuration["BunnyCdn:ApiLibraryKey"]!;
-    internal readonly string ApiAccessKey = configuration["BunnyCdn:AccessKey"]!;
+    internal readonly string ApiAccessKey = configuration["BunnyCdn:ApiAccessKey"]!;
 
     public CreateVideoCommandResponse GenerateSignature(string collectionId, string videoId)
     {
@@ -68,9 +65,9 @@ public class BunnyClient(
         }
 
         var filename = fileName;
-        string hostname = string.IsNullOrEmpty(Region) ? BaseHostname : $"{Region}.{BaseHostname}";
-        string url = $"https://{hostname}/{StorageZoneName}/{folder}/{filename}";
-        string accessUrl = $"https://{HostName}/{folder}/{filename}";
+        var hostname = string.IsNullOrEmpty(Region) ? BaseHostname : $"{Region}.{BaseHostname}";
+        var url = $"https://{hostname}/{StorageZoneName}/{folder}/{filename}";
+        var accessUrl = $"https://{HostName}/{folder}/{filename}";
         HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
         request.Method = "PUT";
         request.ContentType = "image/jpeg";
@@ -112,44 +109,55 @@ public class BunnyClient(
         }
     }
 
+
     public async Task<DeleteFileResponse> DeleteFileAsync(string fileName, string folder = null)
     {
-        string url = $"https://{BaseHostname}/{StorageZoneName}/";
-        if (!string.IsNullOrEmpty(folder))
-        {
-            url += $"{folder}/";
-        }
-
-        url += $"{fileName}";
-
-        var options = new RestClientOptions(url);
-        var client = new RestClient(options);
-        var request = new RestRequest("");
-        request.AddHeader("AccessKey", AccessKey);
         try
         {
-            var response = await client.DeleteAsync(request);
-            if (response.StatusCode == HttpStatusCode.OK)
+            // Build the URL
+            var url = $"https://{BaseHostname}/{StorageZoneName}/";
+            if (!string.IsNullOrEmpty(folder))
             {
-                return new DeleteFileResponse()
+                url += $"{folder.TrimEnd('/')}/"; // Ensure no trailing slash issues
+            }
+            url += $"{fileName}";
+            var storageZoneName = StorageZoneName;
+            var accessKey = AccessKey;
+            
+            
+            // Create the RestClient and Request
+            var options = new RestClientOptions(url);
+            var client = new RestClient(options);
+            var request = new RestRequest(url, Method.Delete); // Explicitly specify Method.Delete
+
+            request.AddHeader("AccessKey", AccessKey);
+
+            // Execute the request
+            var response = await client.ExecuteAsync(request);
+
+            // Check the response
+            if (response.StatusCode == HttpStatusCode.OK) // Bunny API uses 204 for successful deletions
+            {
+                return new DeleteFileResponse
                 {
                     IsSuccessful = true,
                     Message = "File deleted successfully"
                 };
             }
 
-            return new DeleteFileResponse()
+            return new DeleteFileResponse
             {
                 IsSuccessful = false,
-                Message = "Failed to delete file "
+                Message = $"Failed to delete file. Status: {response.StatusCode}, Error: {response.ErrorMessage}"
             };
         }
         catch (Exception e)
         {
-            return new DeleteFileResponse()
+            // Handle exceptions
+            return new DeleteFileResponse
             {
                 IsSuccessful = false,
-                Message = e.Message
+                Message = $"Exception: {e.Message}"
             };
         }
     }
