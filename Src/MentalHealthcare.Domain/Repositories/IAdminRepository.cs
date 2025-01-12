@@ -15,4 +15,6 @@ public interface IAdminRepository
     public Task<bool> DeletePendingAsync(List<string> emails);
     public Task<(int, IEnumerable<PendingAdmins>)> GetAllAsync(string? search, int requestPageNumber, int requestPageSize);
     public Task<Admin> GetAdminByIdentityAsync(string adminId);
+
+
 }

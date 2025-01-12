@@ -6,39 +6,42 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MentalHealthcare.Infrastructure.Seeders;
 
-public class AdminSeeder(
-    MentalHealthDbContext dbContext
-) : IAdminSeeder
+public class AdminSeeder(MentalHealthDbContext dbContext) : IAdminSeeder
 {
     public async Task seed()
     {
+        // Apply any pending migrations
         if ((await dbContext.Database.GetPendingMigrationsAsync()).Any())
         {
             await dbContext.Database.MigrateAsync();
         }
-        return;
 
-        await dbContext.Database.MigrateAsync();
+        // Check if admins already exist to prevent duplicate entries
+        if (await dbContext.Admins.AnyAsync())
+        {
+            return; // Exit if data already seeded
+        }
 
         #region Seed Admins
 
+        // Enable IDENTITY_INSERT for Admins table
         await dbContext.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Admins ON");
-        // Create a PasswordHasher instance
+
+        // Create Admin Users
         var adminIdentity = new User
         {
             Email = "admin@admin.com",
-            NormalizedEmail = "admin@admin.com".ToUpper(),
+            NormalizedEmail = "ADMIN@ADMIN.COM",
             Roles = 1,
             Tenant = Global.ProgramName,
             PhoneNumber = "0111111111111",
             UserName = "admin",
-            PasswordHash = "AQAAAAIAAYagAAAAEKjlm5QQZA9XA8FRFwwh/i57/vjMOj/Zuom12UHxYXW1G71RA8ytLh6CJAK5lBZQHA==",
-            //password = "test2"
+            PasswordHash = new PasswordHasher<User>().HashPassword(null, "test2"), // Secure password
             EmailConfirmed = true,
             LockoutEnabled = false,
             TwoFactorEnabled = false,
             AccessFailedCount = 0,
-            NormalizedUserName = "admin".ToUpper(),
+            NormalizedUserName = "ADMIN",
             PhoneNumberConfirmed = true,
         };
 
@@ -48,28 +51,25 @@ public class AdminSeeder(
             FName = "admin",
             LName = "admin"
         };
-        await dbContext.PendingAdmins.AddAsync(new()
-        {
-            Admin = admin,
-            Email = "wowopa7014@jonespal.com",
-        });
+
+        // Add additional admin if needed
         var adminIdentity1 = new User
         {
             Email = "admin1@admin.com",
-            NormalizedEmail = "admin1@admin.com".ToUpper(),
+            NormalizedEmail = "ADMIN1@ADMIN.COM",
             Roles = 1,
             Tenant = Global.ProgramName,
             PhoneNumber = "022222222222",
             UserName = "admin1",
+            PasswordHash = new PasswordHasher<User>().HashPassword(null, "test2"), // Secure password
             EmailConfirmed = true,
             LockoutEnabled = false,
-            PasswordHash = "AQAAAAIAAYagAAAAEKjlm5QQZA9XA8FRFwwh/i57/vjMOj/Zuom12UHxYXW1G71RA8ytLh6CJAK5lBZQHA==",
-            //password = "test2"
             TwoFactorEnabled = false,
             AccessFailedCount = 0,
-            NormalizedUserName = "admin1".ToUpper(),
+            NormalizedUserName = "ADMIN1",
             PhoneNumberConfirmed = true,
         };
+
         var admin1 = new Admin
         {
             User = adminIdentity1,
@@ -81,129 +81,85 @@ public class AdminSeeder(
         await dbContext.AddAsync(adminIdentity1);
         await dbContext.AddAsync(admin);
         await dbContext.AddAsync(admin1);
+
         await dbContext.SaveChangesAsync();
 
         #endregion
 
-        #region Seed Categories
 
-        var cat1 = new Category()
-        {
-            Name = "Dev",
-            Description = "Development",
-        };
-        var cat2 = new Category
-        {
-            Name = "Think",
-            Description = "Thinking",
-        };
-        await dbContext.AddAsync(cat1);
-        await dbContext.AddAsync(cat2);
-        await dbContext.SaveChangesAsync();
-
-        #endregion
-
-        #region Seed instructor
+        #region Seed Instructors
 
         var instructor1 = new Instructor
         {
             Name = "John Doe",
-            About = "John Doe",
-            AddedBy = admin,
-        };
-        var instructor2 = new Instructor
-        {
-            Name = "John Doe 2",
-            About = "sadf",
+            About = "Expert in development",
             AddedBy = admin
         };
+
+        var instructor2 = new Instructor
+        {
+            Name = "Jane Smith",
+            About = "Creative thinking specialist",
+            AddedBy = admin
+        };
+
+        await dbContext.AddRangeAsync(instructor1, instructor2);
 
         #endregion
 
         #region Seed Courses
 
-        var course = new Course()
+        var categories = await dbContext.Categories.ToListAsync();
+        var course = new Course
         {
             Name = "DSP",
-            Description = "cous",
-            Categories = new List<Category> { cat1, cat2 },
+            Description = "Digital Signal Processing",
+            Categories = categories,
             Instructor = instructor1,
             Price = 100,
-            Rating = 2.4M,
-            EnrollmentsCount = 5,
+            Rating = 4.5M,
+            EnrollmentsCount = 10,
             IsFree = false,
-            ReviewsCount = 2,
-            IsPublic = false,
-            ThumbnailUrl = "fsadfa",
-            CollectionId = "28d97e2c-2561-44a9-bb55-1cb8ed14807a",
+            ReviewsCount = 5,
+            ThumbnailUrl = "https://example.com/dsp-thumbnail.jpg",
+            CollectionId = Guid.NewGuid().ToString()
         };
-        // var Matrials = new List<CourseMateriel>()
-        // {
-        //     new CourseMateriel()
-        //     {
-        //         Admin = admin,
-        //         Description = "mat 1",
-        //         Url = "safsadfasf.com",
-        //         Title = "Mat 1",
-        //         IsVideo = true,
-        //         ItemOrder = 1,
-        //         Course = course
-        //     },
-        //     new()
-        //     {
-        //         Admin = admin,
-        //         Description = "mat 2",
-        //         Url = "safsadfasf.com2",
-        //         Title = "Mat 2",
-        //         IsVideo = true,
-        //         ItemOrder = 2,
-        //         Course = course
-        //
-        //     }
-        // };
-        //
+
+        await dbContext.AddAsync(course);
 
         #endregion
 
-        #region Add Advertisement
+        #region Seed Advertisements
 
-        var ad1 = new Advertisement()
+        var ad1 = new Advertisement
         {
             AdvertisementName = "Advertisement 1",
-            AdvertisementDescription = "Advertisement description",
+            AdvertisementDescription = "An amazing product for developers!",
             IsActive = true,
+            AdvertisementImageUrls = new List<AdvertisementImageUrl>
+            {
+                new() { ImageUrl = "https://example.com/ad1-img1.jpg" },
+                new() { ImageUrl = "https://example.com/ad1-img2.jpg" }
+            }
         };
-        var uploadedImages = new List<AdvertisementImageUrl>
-        {
-            new() { ImageUrl = "www.example1.com", Advertisement = ad1 },
-            new() { ImageUrl = "www.example2.com", Advertisement = ad1 },
-            new() { ImageUrl = "www.example3.com", Advertisement = ad1 },
-        };
-        ad1.AdvertisementImageUrls = uploadedImages;
 
-        var ad2 = new Advertisement()
+        var ad2 = new Advertisement
         {
             AdvertisementName = "Advertisement 2",
-            AdvertisementDescription = "Advertisement description",
+            AdvertisementDescription = "Tools to boost your productivity.",
             IsActive = false,
+            AdvertisementImageUrls = new List<AdvertisementImageUrl>
+            {
+                new() { ImageUrl = "https://example.com/ad2-img1.jpg" },
+                new() { ImageUrl = "https://example.com/ad2-img2.jpg" }
+            }
         };
-        var uploadedImages2 = new List<AdvertisementImageUrl>
-        {
-            new() { ImageUrl = "www.example1.com", Advertisement = ad2 },
-            new() { ImageUrl = "www.example2.com", Advertisement = ad2 },
-            new() { ImageUrl = "www.example3.com", Advertisement = ad2 },
-        };
-        ad2.AdvertisementImageUrls = uploadedImages2;
+
+        await dbContext.AddRangeAsync(ad1, ad2);
 
         #endregion
 
-
-        await dbContext.AddAsync(instructor1);
-        await dbContext.AddAsync(instructor2);
-        // await dbContext.AddRangeAsync(Matrials);
-        await dbContext.AddAsync(course);
-        await dbContext.AddAsync(ad1);
-        await dbContext.AddAsync(ad2);
+        // Save all changes
         await dbContext.SaveChangesAsync();
     }
 }

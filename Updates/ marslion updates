@@ -1,0 +1,5 @@
+https://github.com/Marslino882002/MentalHealthcare
+
+Src/MentalHealthcare.Domain/Repositories/IAdminRepository.cs
+Src/MentalHealthcare.Infrastructure/Repositories.Implementations/AdminRepository.cs
+Src/MentalHealthcare.API/Controllers/AdminController.cs

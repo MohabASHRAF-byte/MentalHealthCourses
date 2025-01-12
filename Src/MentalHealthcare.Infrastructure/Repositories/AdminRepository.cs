@@ -144,4 +144,5 @@ public class AdminRepository(
             throw new ResourceNotFound(nameof(Admin), adminId);
         return admin;
     }
+   
 }

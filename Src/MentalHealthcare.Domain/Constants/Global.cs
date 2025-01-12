@@ -55,4 +55,14 @@ public class Global
     public const string CourseRecoursesPath = "CourseResourses";
     public const int CourseLessonPdfSize = 10;//Mb
     #endregion
+
+    #region Author
+
+    public const string AuthorFolderName = "Author";
+    public const int AuthorNameMaxLength = 50;
+    public const int AuthorAboutMaxLength = 500;
+    public const int AuthorImgSize = 10;
+
+    #endregion
+
 }

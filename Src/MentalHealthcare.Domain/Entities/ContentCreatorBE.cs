@@ -18,6 +18,6 @@ public class ContentCreatorBe
     [MaxLength(Global.UrlMaxLength)] 
     public string? ImageUrl { get; set; }
     public string? About { get; set; }
-
-    public Admin AddedBy { get; set; } = default!;
+    public int? AdminId { get; set; }
+    public Admin? AddedBy { get; set; } = default!;
 }

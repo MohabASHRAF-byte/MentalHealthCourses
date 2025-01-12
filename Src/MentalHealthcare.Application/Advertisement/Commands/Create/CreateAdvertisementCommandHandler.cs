@@ -101,9 +101,8 @@ public class CreateAdvertisementCommandHandler(
             
             if (!response.IsSuccessful || response.Url == null)
             {
-                logger.LogWarning(@"Could not upload advertisement {ad} error msg :{mg}", request.AdvertisementName,
-                    response.Message ?? ""
-                );
+logger.LogWarning(@"Could not upload advertisement {ad} error msg :{mg}", 
+    request.AdvertisementName,response.Message ?? "");
                 continue;
             }
 
