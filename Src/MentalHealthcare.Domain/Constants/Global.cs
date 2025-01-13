@@ -73,4 +73,14 @@ public class Global
     public const int MaxCartItems = 20;
 
     #endregion
+
+
+    #region Article
+
+    public const string ArticleFolderName = "Articles";
+    public const int ArticleTitleMaxLength = 50;
+    public const int ArticleContent = 500;
+    public const int ArticleImgSize = 10;
+
+    #endregion
 }

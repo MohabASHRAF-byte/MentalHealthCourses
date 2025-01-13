@@ -23,6 +23,7 @@ public class MentalHealthDbContext : IdentityDbContext<User>
     public DbSet<SystemUser> SystemUsers { get; set; }
     public DbSet<Logs> Logs { get; set; }
     public DbSet<Article> Articles { get; set; }
+    public DbSet<ArticleImageUrl> ArticleImageUrls { get; set; }
     public DbSet<Meditation> Meditations { get; set; }
     public DbSet<Podcast> Podcasts { get; set; }
     public DbSet<Instructor> Instructors { get; set; }

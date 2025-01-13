@@ -3,6 +3,7 @@ using MentalHealthcare.API.MiddleWares;
 using MentalHealthcare.Application.Extensions;
 using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Infrastructure.Extensions;
+using MentalHealthcare.Infrastructure.Repositories;
 using MentalHealthcare.Infrastructure.Seeders;
 using Serilog;
 
@@ -17,6 +18,8 @@ try
     builder.Services.AddScoped<GlobalErrorHandling>();
     builder.Services.AddScoped<RequestTimeLogging>();
     builder.Services.AddControllers();
+    builder.Services.AddScoped<IArticleRepository , ArticleRepository>();
+
     // builder.Services.AddControllers()
     //     .AddJsonOptions(options =>
     //     {
@@ -24,7 +27,7 @@ try
     //         options.JsonSerializerOptions.PropertyNamingPolicy = null; // Use PascalCase if required
     //     });
 
-// Add CORS services
+    // Add CORS services
     builder.Services.AddCors(options =>
     {
         options.AddPolicy("AllowAll", policy =>
@@ -66,6 +69,8 @@ try
             c.SwaggerEndpoint("/swagger/All/swagger.json", "All API v1"); // Ensure this is included
 
         });
+        app.UseDeveloperExceptionPage();
+
     }
 
     app.Run();
