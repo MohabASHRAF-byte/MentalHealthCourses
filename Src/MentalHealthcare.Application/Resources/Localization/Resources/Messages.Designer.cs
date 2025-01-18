@@ -61,7 +61,7 @@ namespace MentalHealthcare.Application.Resources.Localization.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Permission denied..
         /// </summary>
         internal static string PermissionDenied {
             get {
@@ -70,7 +70,7 @@ namespace MentalHealthcare.Application.Resources.Localization.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Invalid file extension..
         /// </summary>
         internal static string ThumbnailInvalidExtension {
             get {
@@ -79,7 +79,7 @@ namespace MentalHealthcare.Application.Resources.Localization.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to The thumbnail size exceeds the allowed limit..
         /// </summary>
         internal static string ThumbnailInvalidSize {
             get {
@@ -88,7 +88,7 @@ namespace MentalHealthcare.Application.Resources.Localization.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Invalid thumbnail type..
         /// </summary>
         internal static string ThumbnailInvalidType {
             get {
