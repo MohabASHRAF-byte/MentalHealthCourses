@@ -73,4 +73,33 @@ public class Global
     public const int MaxCartItems = 20;
 
     #endregion
+<<<<<<< Updated upstream
+=======
+
+
+    #region Article
+
+    public const string ArticleFolderName = "Articles";
+    public const int ArticleTitleMaxLength = 50;
+    public const int ArticleContent = 500;
+    public const int ArticleImgSize = 10;
+
+    #endregion
+
+
+    #region Instructor
+
+    public const string InstructorFolderName = "Instructors";
+    public const int InstructorNameMaxLength = 50;
+    public const int InstructorAbout = 500;
+    public const int InstructorImgSize = 10;
+
+    #endregion
+
+
+
+
+
+
+>>>>>>> Stashed changes
 }

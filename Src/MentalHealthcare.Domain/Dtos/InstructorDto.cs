@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace MentalHealthcare.Domain.Dtos;
 
 public class InstructorDto

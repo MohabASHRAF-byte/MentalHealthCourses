@@ -125,6 +125,30 @@ public static class ValidationRules
             .WithMessage("Name must not contain HTML or markup.");
     }
 
+
+
+
+    /// <summary> //Added by Marslino.
+    /// Validates that an "About" field is valid: not exceeding 500 characters, not containing HTML, and not empty or null.
+    /// </summary>
+    /// <typeparam name="T">The type of the object being validated.</typeparam>
+    /// <param name="ruleBuilder">The rule builder.</param>
+    /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
+    public static IRuleBuilderOptions<T, string> CustomIsValidAbout<T>(this IRuleBuilder<T, string> ruleBuilder)
+    {
+        return ruleBuilder
+            .NotNull()
+            .NotEmpty()
+            .WithMessage("About must not be empty.")
+            .MaximumLength(500)
+            .WithMessage("About must not exceed 500 characters.")
+            .Must(about => !ContainsHtml(about))
+            .WithMessage("About must not contain HTML or markup.");
+    }
+
+
+
+
     /// <summary>
     /// Validates that a name is either null or a valid value: not exceeding 30 characters, not containing HTML, and not empty if provided.
     /// </summary>

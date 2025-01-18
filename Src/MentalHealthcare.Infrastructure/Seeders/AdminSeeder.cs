@@ -19,6 +19,7 @@ public class AdminSeeder(
         }
         return;
 
+<<<<<<< Updated upstream
         await dbContext.Database.MigrateAsync();
 
         #region Seed Admins
@@ -26,6 +27,13 @@ public class AdminSeeder(
         await dbContext.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Admins ON");
         // Create a PasswordHasher instance
         var adminIdentity = new User
+=======
+
+
+
+        // Seed Admins
+        if (!dbContext.Admins.Any())
+>>>>>>> Stashed changes
         {
             Email = "admin@admin.com",
             NormalizedEmail = "admin@admin.com".ToUpper(),
@@ -73,10 +81,97 @@ public class AdminSeeder(
         };
         var admin1 = new Admin
         {
+<<<<<<< Updated upstream
             User = adminIdentity1,
             FName = "admin1",
             LName = "admin1"
         };
+=======
+            var ads = new List<Advertisement>
+            {
+                new()
+                {
+                    AdvertisementName = "Ad 1",
+                    AdvertisementDescription = "First Ad",
+                    IsActive = true,
+                    AdvertisementImageUrls = new List<AdvertisementImageUrl>
+                    {
+                        new() { ImageUrl = "www.example1.com" },
+                        new() { ImageUrl = "www.example2.com" }
+                    }
+                },
+                new()
+                {
+                    AdvertisementName = "Ad 2",
+                    AdvertisementDescription = "Second Ad",
+                    IsActive = false,
+                    AdvertisementImageUrls = new List<AdvertisementImageUrl>
+                    {
+                        new() { ImageUrl = "www.example3.com" },
+                        new() { ImageUrl = "www.example4.com" }
+                    }
+                }
+            };
+            await dbContext.Advertisements.AddRangeAsync(ads);
+        }
+
+
+
+
+
+
+        //// Seed Instructors
+        //if (!dbContext.Authors.Any())
+        //{
+        //    var admin = await dbContext.Admins.FirstOrDefaultAsync(); // Use existing Admin
+        //    var authors = new List<Author>
+        //    {
+        //        new() { Name = "John Doe", About = "John Doe", AddedBy = admin },
+        //        new() { Name = "Jane Doe", About = "Another Instructor", AddedBy = admin }
+        //    };
+        //    await dbContext.Authors.AddRangeAsync(authors);
+        //}
+
+
+
+
+
+
+
+        //if (!dbContext.Articles.Any())
+        //{
+        //    var articles = new List<Article>{
+        //        new()
+        //        {
+        //            Title = "Ad 1",
+        //            Content = "qwertyuioasdfghzxcvbnasdfghjZxcvbsdfgh",
+        //            AuthorId = 1,
+        //            ArticleImageUrls = new List<ArticleImageUrl>
+        //            {
+        //                new() { ImageUrl = "www.example1.com" },
+        //                new() { ImageUrl = "www.example2.com" }
+        //            } } };
+        //    await dbContext.Articles.AddRangeAsync(articles);
+
+
+        //}
+
+
+
+
+
+        // Seed Authors
+        //if (!dbContext.Authors.Any())
+        //{
+        //    var admin = await dbContext.Admins.FirstOrDefaultAsync(); // Use existing Admin
+        //    var Authors = new List<Author>
+        //    {
+        //        new() { Name = "John Doe", About = "John Doe", AddedBy = admin },
+        //        new() { Name = "Jane Doe", About = "Another Instructor", AddedBy = admin }
+        //    };
+        //    await dbContext.Authors.AddRangeAsync(Authors);
+        //}
+>>>>>>> Stashed changes
 
         await dbContext.AddAsync(adminIdentity);
         await dbContext.AddAsync(adminIdentity1);

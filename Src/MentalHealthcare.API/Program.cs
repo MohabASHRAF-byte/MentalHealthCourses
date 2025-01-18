@@ -10,7 +10,7 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+    // Add services to the container.
     builder.AddPresentation();
     builder.Services.AddApplication(builder.Configuration);
     builder.Services.AddInfrastructure(builder.Configuration);
@@ -40,15 +40,15 @@ try
     var serviceProvider = scope.ServiceProvider.GetRequiredService<IAdminSeeder>();
     await serviceProvider.seed();
 
-// Use middlewares
+    // Use middlewares
     app.UseMiddleware<GlobalErrorHandling>();
     app.UseMiddleware<RequestTimeLogging>();
 
-// Configure the HTTP request pipeline.
+    // Configure the HTTP request pipeline.
     app.UseHttpsRedirection();
     app.UseRouting();
 
-// Use CORS middleware
+    // Use CORS middleware
     app.UseCors("AllowAll");
 
     app.UseAuthentication();
@@ -67,6 +67,8 @@ try
 
         });
     }
+    app.UseDeveloperExceptionPage();
+
 
     app.Run();
 }
