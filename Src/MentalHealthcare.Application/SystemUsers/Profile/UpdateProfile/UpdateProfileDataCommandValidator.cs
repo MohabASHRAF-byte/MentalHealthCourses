@@ -1,26 +1,27 @@
 using FluentValidation;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.validations;
 
 namespace MentalHealthcare.Application.SystemUsers.Profile.UpdateProfile;
 
 public class UpdateProfileDataCommandValidator : AbstractValidator<UpdateProfileDataCommand>
 {
-    public UpdateProfileDataCommandValidator()
+    public UpdateProfileDataCommandValidator(ILocalizationService localizationService)
     {
         // FirstName validation
         RuleFor(x => x.FirstName)
-            .CustomIsValidNullableName();
+            .CustomIsValidNullableName(localizationService);
 
         // LastName validation
         RuleFor(x => x.LastName)
-            .CustomIsValidNullableName();
+            .CustomIsValidNullableName(localizationService);
 
         // PhoneNumber validation
         RuleFor(x => x.PhoneNumber)
-            .CustomIsValidPhoneNumberIfNotNull();
+            .CustomIsValidPhoneNumberIfNotNull(localizationService);
 
         // BirthDate validation
         RuleFor(x => x.BirthDate)
-            .CustomIsValidBirthDateIfNotNull();
+            .CustomIsValidBirthDateIfNotNull(localizationService);
     }
 }

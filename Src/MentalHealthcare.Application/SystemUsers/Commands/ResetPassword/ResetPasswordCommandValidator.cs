@@ -1,11 +1,12 @@
 using FluentValidation;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.validations;
 
 namespace MentalHealthcare.Application.SystemUsers.Commands.ResetPassword;
 
 public class ResetPasswordCommandValidator : AbstractValidator<ResetPasswordCommand>
 {
-    public ResetPasswordCommandValidator()
+    public ResetPasswordCommandValidator(ILocalizationService localizationService)
     {
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage("Email must not be empty.")
@@ -13,6 +14,6 @@ public class ResetPasswordCommandValidator : AbstractValidator<ResetPasswordComm
             .MaximumLength(100).WithMessage("Email must not exceed 100 characters.");
 
         RuleFor(x => x.NewPassword)
-            .CustomIsValidPassword();
+            .CustomIsValidPassword(localizationService);
     }
 }

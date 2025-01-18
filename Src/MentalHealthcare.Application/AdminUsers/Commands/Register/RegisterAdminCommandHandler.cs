@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using MentalHealthcare.Application.Common;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.SystemUsers.Commands.Register;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
@@ -17,19 +18,24 @@ public class RegisterAdminCommandHandler(
     IAdminRepository adminRepository,
     IEmailSender emailSender,
     UserManager<User> userManager,
-    IMapper mapper
+    IMapper mapper,
+    ILocalizationService localizationService
 ) : IRequestHandler<RegisterAdminCommand>
 {
     public async Task Handle(RegisterAdminCommand request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Registering admin user with Email: {Email}", request.Email);
 
-       
-
         if (!await adminRepository.IsPendingExistAsync(request.Email))
         {
             logger.LogWarning("Email {Email} is not registered as a pending admin.", request.Email);
-            throw new ForBidenException($"{request.UserName} can't register with email {request.Email}");
+            throw new ForBidenException(
+                string.Format(
+                    localizationService.GetMessage("AdminNotPending", "{0} can't register with email {1}"),
+                    request.UserName,
+                    request.Email
+                )
+            );
         }
 
         var user = mapper.Map<User>(request);
@@ -51,7 +57,12 @@ public class RegisterAdminCommandHandler(
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to register user {UserName}.", request.UserName);
-            throw;
+            throw new ApplicationException(
+                string.Format(
+                    localizationService.GetMessage("AdminRegistrationFailed", "Failed to register admin user {0}."),
+                    request.UserName
+                )
+            );
         }
 
         await SendConfirmation(user);
@@ -64,13 +75,18 @@ public class RegisterAdminCommandHandler(
         try
         {
             var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
-            await emailSender.SendEmailAsync(user.Email!, "Token to confirm your email", token);
+            await emailSender.SendEmailAsync(user.Email!, localizationService.GetMessage("EmailConfirmationSubject", "Token to confirm your email"), token);
             logger.LogInformation("Confirmation email sent successfully to {Email}.", user.Email);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to send confirmation email to {Email}.", user.Email);
-            throw;
+            throw new ApplicationException(
+                string.Format(
+                    localizationService.GetMessage("EmailConfirmationFailed", "Failed to send confirmation email to {0}."),
+                    user.Email
+                )
+            );
         }
     }
 }

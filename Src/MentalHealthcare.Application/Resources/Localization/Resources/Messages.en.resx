@@ -34,4 +34,157 @@
         <value>The thumbnail must be one of the following types: {0}.
 </value>
     </data>
+    <data name="IconRequired" xml:space="preserve">
+        <value>Icon is required.</value>
+    </data>
+    <data name="IconInvalidType" xml:space="preserve">
+        <value>Icon must be one of the following types: {0}.</value>
+    </data>
+    <data name="IconInvalidSize" xml:space="preserve">
+        <value>Icon size must be less than {0} KB.</value>
+    </data>
+    <data name="PageSizeGreaterThanZero" xml:space="preserve">
+        <value>Page size must be greater than 0.</value>
+    </data>
+    <data name="PageSizeLessThanOrEqualTo" xml:space="preserve">
+        <value>Page size must be {0} or less.</value>
+    </data>
+    <data name="SearchTermNotEmpty" xml:space="preserve">
+        <value>Search term must not be empty if provided.</value>
+    </data>
+    <data name="SearchTermMaxLength" xml:space="preserve">
+        <value>Search term must not exceed {0} characters.</value>
+    </data>
+    <data name="SearchTermNoHtml" xml:space="preserve">
+        <value>Search term must not contain HTML or markup</value>
+    </data>
+    <data name="EmailRequired" xml:space="preserve">
+        <value>Email address must not be empty.</value>
+    </data>
+    <data name="EmailInvalidFormat" xml:space="preserve">
+        <value>Invalid email address format.</value>
+    </data>
+    <data name="EmailMaxLength" xml:space="preserve">
+        <value>Email address must not exceed {0} characters.</value>
+    </data>
+    <data name="EmailNoHtml" xml:space="preserve">
+        <value>Email address must not contain HTML or markup.</value>
+    </data>
+    <data name="NameRequired" xml:space="preserve">
+        <value>Name must not be empty.</value>
+    </data>
+    <data name="NameRequiredIfProvided" xml:space="preserve">
+        <value>Name must not be empty if provided.</value>
+    </data>
+    <data name="NameMaxLength" xml:space="preserve">
+        <value>Name must not exceed {0} characters.</value>
+    </data>
+    <data name="NameNoHtml" xml:space="preserve">
+        <value>Name must not contain HTML or markup.</value>
+    </data>
+    <data name="PhoneRequired" xml:space="preserve">
+        <value>Phone number must not be empty.</value>
+    </data>
+    <data name="PhoneRequiredIfProvided" xml:space="preserve">
+        <value>Phone number must not be empty if provided.</value>
+    </data>
+    <data name="PhoneInvalidFormat" xml:space="preserve">
+        <value>Phone number must contain only digits and be between {0} and {1} characters long.</value>
+    </data>
+    <data name="PhoneNoHtml" xml:space="preserve">
+        <value>Phone number must not contain HTML or markup.</value>
+    </data>
+    <data name="UsernameRequired" xml:space="preserve">
+        <value>Username must not be empty.</value>
+    </data>
+    <data name="UsernameMinLength" xml:space="preserve">
+        <value>Username must be at least {0} characters long.</value>
+    </data>
+    <data name="UsernameMaxLength" xml:space="preserve">
+        <value>Username must not exceed {0} characters.</value>
+    </data>
+    <data name="UsernameNoHtml" xml:space="preserve">
+        <value>Username must not contain HTML or markup.</value>
+    </data>
+    <data name="PasswordRequired" xml:space="preserve">
+        <value>Password must not be empty.</value>
+    </data>
+    <data name="PasswordMinLength" xml:space="preserve">
+        <value>Password must be at least {0} characters long.</value>
+    </data>
+    <data name="PasswordMaxLength" xml:space="preserve">
+        <value>Password must not exceed {0} characters.</value>
+    </data>
+    <data name="PasswordNoHtml" xml:space="preserve">
+        <value>Password must not contain HTML or markup.</value>
+    </data>
+    <data name="PasswordNoCommonSequences" xml:space="preserve">
+        <value>Password must not contain common password sequences.</value>
+    </data>
+    <data name="PasswordLowercase" xml:space="preserve">
+        <value>Password must contain at least one lowercase letter.</value>
+    </data>
+    <data name="PasswordUppercase" xml:space="preserve">
+        <value>Password must contain at least one uppercase letter.</value>
+    </data>
+    <data name="PasswordNumber" xml:space="preserve">
+        <value>Password must contain at least one number.</value>
+    </data>
+    <data name="ValueDigitsOnlyNoHtml" xml:space="preserve">
+        <value>Value must contain only digits and must not contain HTML or markup.</value>
+    </data>
+    <data name="ValueNoHtml" xml:space="preserve">
+        <value>Value must not contain HTML or markup.</value>
+    </data>
+    <data name="ValueRequiredNoHtml" xml:space="preserve">
+        <value>Value must not be empty and must not contain HTML or markup.</value>
+    </data>
+    <data name="BirthDateFuture" xml:space="preserve">
+        <value>Birth date must not be in the future.</value>
+    </data>
+    <data name="BirthDateMaxAge" xml:space="preserve">
+        <value>Birth date must not indicate an age older than {0} years.</value>
+    </data>
+    <data name="PriceNonNegative" xml:space="preserve">
+        <value>Price must be a non-negative value.</value>
+    </data>
+    <data name="PriceNullableNonNegative" xml:space="preserve">
+        <value>Price must be null or a non-negative value.</value>
+    </data>
+    <data name="IdPositive" xml:space="preserve">
+        <value>ID must be a positive integer.</value>
+    </data>
+    <data name="IdNullablePositive" xml:space="preserve">
+        <value>ID must be null or a positive integer.</value>
+    </data>
+    <data name="EmailAlreadyPending" xml:space="preserve">
+        <value>The email {0} is already pending.</value>
+    </data>
+    <data name="EmailAlreadyAdmin" xml:space="preserve">
+        <value>The email {0} is already an admin.</value>
+    </data>
+    <data name="AdminNotPending" xml:space="preserve">
+        <value>{0} can't register with email {1}
+</value>
+    </data>
+    <data name="AdminRegistrationFailed" xml:space="preserve">
+        <value>Failed to register admin user {0}.
+</value>
+    </data>
+    <data name="EmailConfirmationSubject" xml:space="preserve">
+        <value>Token to confirm your email
+</value>
+    </data>
+    <data name="EmailConfirmationFailed" xml:space="preserve">
+        <value>Failed to send confirmation email to {0}.
+</value>
+    </data>
+    <data name="AdminIdentityNotExist" xml:space="preserve">
+        <value>Admin with given identity does not exist.
+</value>
+    </data>
+    <data name="OldEmailNotFound" xml:space="preserve">
+        <value>Old email not found: {0}
+</value>
+    </data>
 </root>

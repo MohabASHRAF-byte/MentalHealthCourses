@@ -1,17 +1,18 @@
 using FluentValidation;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.validations;
 
 namespace MentalHealthcare.Application.Courses.Course.Queries.GetAll;
 
 public class GetAllCoursesQueryValidator : AbstractValidator<GetAllCoursesQuery>
 {
-    public GetAllCoursesQueryValidator()
+    public GetAllCoursesQueryValidator(ILocalizationService localizationService)
     {
         RuleFor(c => c.PageNumber)
-            .CustomValidatePageNumber();
+            .CustomValidatePageNumber(localizationService);
         RuleFor(c => c.PageSize)
-            .CustomValidatePageSize();
+            .CustomValidatePageSize(localizationService);
         RuleFor(c => c.SearchText)
-            .CustomValidateSearchTerm();
+            .CustomValidateSearchTerm(localizationService);
     }
 }

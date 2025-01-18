@@ -1,25 +1,26 @@
 using FluentValidation;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.validations;
 
 namespace MentalHealthcare.Application.Courses.Course.Commands.UpdateCourseCommand;
 
 public class UpdateCourseCommandValidator:AbstractValidator<UpdateCourseCommand>
 {
-    public UpdateCourseCommandValidator()
+    public UpdateCourseCommandValidator(ILocalizationService localizationService)
     {
         RuleFor(x => x.Name)
-            .CustomIsValidNullableName();
+            .CustomIsValidNullableName(localizationService);
         RuleFor(x => x.InstructorId)
-            .CustomValidateNullableId();
+            .CustomValidateNullableId(localizationService);
         RuleForEach(x => x.CategoryId)
-            .CustomValidateId();
+            .CustomValidateId(localizationService);
         RuleFor(x => x.Price)
-            .CustomValidateNullablePrice();
+            .CustomValidateNullablePrice(localizationService);
         
         RuleFor(x => x.Description)
             .Must(description => description == null || description.Length <= 800)
             .WithMessage("Course description must be no more than 800 characters.")
             .When(x => x.Description != null)!
-            .ValidateNoHtmlNotNull();
+            .ValidateNoHtmlNotNull(localizationService);
     }
 }
