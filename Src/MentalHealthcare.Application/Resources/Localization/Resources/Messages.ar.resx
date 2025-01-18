@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="PermissionDenied" xml:space="preserve">
+        <value>غير مسموح لك بتنفيذ هذا الإجراء.</value>
+    </data>
+    <data name="UserNotFound" xml:space="preserve">
+        <value>المستخدم غير موجود.</value>
+    </data>
+    <data name="ThumbnailInvalidSize" xml:space="preserve">
+        <value>يجب ألا يتجاوز حجم الصورة المصغرة {0} ميجابايت.</value>
+    </data>
+    <data name="ThumbnailRequired" xml:space="preserve">
+        <value>يجب إدخال صورة مصغرة.</value>
+    </data>
+    <data name="ThumbnailInvalidType" xml:space="preserve">
+        <value>يجب أن تكون الصورة المصغرة من الأنواع التالية: {0}.
+</value>
+    </data>
+    <data name="ThumbnailInvalidExtension" xml:space="preserve">
+        <value>يجب ان تحتوى الصورة على امتداد .</value>
+    </data>
+</root>

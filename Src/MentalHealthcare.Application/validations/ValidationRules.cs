@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using FluentValidation;
 using Ganss.Xss;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Domain.Constants;
 using Microsoft.AspNetCore.Http;
 
@@ -14,16 +15,37 @@ public static class ValidationRules
     private const long MaxIconFileSize = 10 * 1024; // 100 Kb
 
     public static IRuleBuilderOptions<T, IFormFile> CustomIsValidThumbnail<T>(
-        this IRuleBuilder<T, IFormFile> ruleBuilder)
+        this IRuleBuilder<T, IFormFile> ruleBuilder, ILocalizationService localizationService)
     {
         return ruleBuilder
-            .NotNull()
-            .WithMessage("Thumbnail is required.")
-            .Must(file => AllowedExtensions.Contains(Path.GetExtension(file.FileName).ToLower()))
-            .WithMessage($"Thumbnail must be one of the following types: {string.Join(", ", AllowedExtensions)}.")
-            .Must(file => file.Length > 0 && file.Length <= MaxThumbnailFileSize)
-            .WithMessage($"Thumbnail size must be less than {MaxThumbnailFileSize / (1024 * 1024)} MB.");
+            .Must(files => !string.IsNullOrEmpty(files?.FileName))
+            .WithMessage(localizationService.GetMessage("ThumbnailRequired"))
+            .Must(file =>
+            {
+                var extension = Path.GetExtension(file?.FileName);
+                return !string.IsNullOrEmpty(extension);
+            })
+            .WithMessage(
+                localizationService.GetMessage("ThumbnailInvalidExtension")
+            )
+            .Must(file =>
+            {
+                var extension = Path.GetExtension(file?.FileName)?.ToLower();
+                return AllowedExtensions.Contains(extension);
+            })
+            .WithMessage(
+                string.Format(
+                    localizationService.GetMessage("ThumbnailInvalidType"),
+                    string.Join(", ", AllowedExtensions)
+                ))
+            .Must(file => file?.Length > 0 && file?.Length <= MaxThumbnailFileSize)
+            .WithMessage(
+                string.Format(
+                    localizationService.GetMessage("ThumbnailInvalidSize"),
+                    (MaxThumbnailFileSize / (1024 * 1024))
+                ));
     }
+
 
     public static IRuleBuilderOptions<T, IFormFile>
         CustomIsValidIcon<T>(

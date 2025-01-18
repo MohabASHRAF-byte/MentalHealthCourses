@@ -1,20 +1,24 @@
-// using MentalHealthcare.Application.BunnyServices;
-// using MentalHealthcare.Application.BunnyServices.VideoContent.Video;
-// using Microsoft.AspNetCore.Mvc;
-//
-// namespace MentalHealthcare.API.Controllers;
-//
-// [ApiController]
-// [Route("api/[controller]")]
-// public class FileUploadController(
-//     IConfiguration configuration
-// ) : ControllerBase
-// {
-//     [HttpPost("create")]
-//     public async Task<IActionResult> UploadFileAsync(IFormFile file, string filename, string extension = ".mp3")
-//     {
-//         var Cdn = new BunnyClient(configuration);
-//         var response = await Cdn.UploadFileAsync(file, filename + extension, "Podcast");
-//         return Ok(response);
-//     }
-// }
+using MentalHealthcare.Application.Resources.Localization.Resources;
+using MentalHealthcare.Domain.Constants;
+using Microsoft.AspNetCore.Mvc;
+
+namespace MentalHealthcare.API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+[ApiExplorerSettings(GroupName = Global.DevelopmentVersion)]
+public class FileUploadController(
+    IConfiguration configuration,
+    ILocalizationService localizationService
+) : ControllerBase
+{
+    [HttpGet("message")]
+    public async Task<IActionResult> UploadFileAsync(string key, string lang)
+    {
+        string message = string.Format(
+            localizationService.GetMessage("ThumbnailInvalidSize"),
+            localizationService.TranslateNumber(7384.898m)
+        );
+        return Ok(message);
+    }
+}

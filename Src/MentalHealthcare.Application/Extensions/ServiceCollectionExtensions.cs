@@ -3,9 +3,11 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using MentalHealthcare.Application.Background_Services;
 using MentalHealthcare.Application.BunnyServices;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Application.Utitlites.EmailProvider;
 using MentalHealthcare.Application.Utitlites.Jwt;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
@@ -34,11 +36,13 @@ namespace MentalHealthcare.Application.Extensions
             services.AddSingleton<OtpService>(); // Register it as a service that can be injected
             services.AddScoped<IEmailSender, EmailProvider>();
             services.AddScoped<IJwtToken, JwtToken>();
+            services.AddScoped<ILocalizationService, LocalizationService>();
             services.AddScoped<IUserContext, UserContext>();
             //  
             services.ConfigureAuthentication(configuration);
             //
             services.AddAuthorization(); // Add Authorization globally
+            services.ConfigureLocalization();
         }
 
         private static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
@@ -66,5 +70,12 @@ namespace MentalHealthcare.Application.Extensions
         private static void ConfigureBunney(this IServiceCollection services, IConfiguration configuration)
         {
         }
+
+        private static void ConfigureLocalization(this IServiceCollection services)
+        {
+            services.AddLocalization();
+
+        }
     }
+    
 }

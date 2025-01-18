@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Exceptions;
 using Microsoft.AspNetCore.Http;
@@ -13,18 +14,20 @@ public interface IUserContext
 }
 
 internal class UserContext(
-    IHttpContextAccessor httpContextAccessor
+    IHttpContextAccessor httpContextAccessor,
+    ILocalizationService localizationService
 ) : IUserContext
 {
-    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
     public CurrentUser? GetCurrentUser()
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = httpContextAccessor.HttpContext?.User;
 
         if (user == null)
         {
-            throw new InvalidOperationException("User Context is not present.");
+            throw new InvalidOperationException(
+                localizationService.GetMessage("UserNotFound")
+            );
         }
 
         if (user.Identity == null || !user.Identity.IsAuthenticated)
@@ -75,7 +78,9 @@ internal class UserContext(
         {
             var userId = currentUser?.Id ?? "Anonymous";
             logger.LogWarning("Unauthorized access attempt by user: {UserId}", userId);
-            throw new ForBidenException("You do not have the required permissions to perform this action.");
+            throw new ForBidenException(
+                localizationService.GetMessage("PermissionDenied")
+            );
         }
 
         logger.LogInformation("User {UserId} authorized with roles: {Roles}", currentUser.Id,
