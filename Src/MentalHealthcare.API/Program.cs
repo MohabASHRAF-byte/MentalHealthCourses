@@ -1,3 +1,4 @@
+using System.Globalization;
 using MentalHealthcare.API.Extensions;
 using MentalHealthcare.API.MiddleWares;
 using MentalHealthcare.Application.Extensions;
@@ -39,6 +40,16 @@ try
     var scope = app.Services.CreateScope();
     var serviceProvider = scope.ServiceProvider.GetRequiredService<IAdminSeeder>();
     await serviceProvider.seed();
+//add localization 
+    app.UseRequestLocalization(options =>
+    {
+        var supportedCultures = new[] { "en", "ar" };
+        options.SetDefaultCulture("ar")
+            .AddSupportedCultures(supportedCultures)
+            .AddSupportedUICultures(supportedCultures);
+    });
+    CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("ar");
+    CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("ar");
 
 // Use middlewares
     app.UseMiddleware<GlobalErrorHandling>();
@@ -64,7 +75,6 @@ try
             c.SwaggerEndpoint("/swagger/MobileApp/swagger.json", "Mobile App API v1");
             c.SwaggerEndpoint("/swagger/Development/swagger.json", "Development API v1"); // Ensure this is included
             c.SwaggerEndpoint("/swagger/All/swagger.json", "All API v1"); // Ensure this is included
-
         });
     }
 

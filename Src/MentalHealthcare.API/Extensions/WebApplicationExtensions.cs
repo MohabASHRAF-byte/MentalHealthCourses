@@ -62,19 +62,19 @@ public static class WebApplicationExtensions
             // Include endpoints in respective documents
             c.DocInclusionPredicate((docName, apiDesc) =>
             {
-                if (docName == Global.DashboardVersion && 
+                if (docName == Global.DashboardVersion &&
                     (apiDesc.GroupName == Global.DashboardVersion || apiDesc.GroupName == Global.SharedVersion))
                     return true;
 
-                if (docName == Global.MobileVersion && 
+                if (docName == Global.MobileVersion &&
                     (apiDesc.GroupName == Global.MobileVersion || apiDesc.GroupName == Global.SharedVersion))
                     return true;
 
-                if (docName == Global.DevelopmentVersion && 
-                    apiDesc.GroupName == Global.DevelopmentVersion )
+                if (docName == Global.DevelopmentVersion &&
+                    apiDesc.GroupName == Global.DevelopmentVersion)
                     return true;
-                if (docName == Global.AllVersion && 
-                    apiDesc.GroupName == Global.AllVersion )
+                if (docName == Global.AllVersion &&
+                    apiDesc.GroupName == Global.AllVersion)
                     return true;
 
                 return false;
@@ -87,7 +87,6 @@ public static class WebApplicationExtensions
             configuration
                 .ReadFrom.Configuration(context.Configuration);
         });
-
-
+        
     }
 }
