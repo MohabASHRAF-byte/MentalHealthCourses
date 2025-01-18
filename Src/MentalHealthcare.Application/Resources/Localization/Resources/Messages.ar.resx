@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <root>
     <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
         <xsd:element name="root" msdata:IsDataSet="true">
-            
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="data" maxOccurs="unbounded">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" />
+                            <xsd:attribute name="xml:space" use="optional" default="preserve" />
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:complexType>
         </xsd:element>
     </xsd:schema>
+
     <resheader name="resmimetype">
         <value>text/microsoft-resx</value>
     </resheader>
@@ -18,6 +30,8 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
+    
+    <!-- Resource entries -->
     <data name="PermissionDenied" xml:space="preserve">
         <value>غير مسموح لك بتنفيذ هذا الإجراء.</value>
     </data>
@@ -31,8 +45,7 @@
         <value>يجب إدخال صورة مصغرة.</value>
     </data>
     <data name="ThumbnailInvalidType" xml:space="preserve">
-        <value>يجب أن تكون الصورة المصغرة من الأنواع التالية: {0}.
-</value>
+        <value>يجب أن تكون الصورة المصغرة من الأنواع التالية: {0}.</value>
     </data>
     <data name="ThumbnailInvalidExtension" xml:space="preserve">
         <value>يجب ان تحتوى الصورة على امتداد .</value>

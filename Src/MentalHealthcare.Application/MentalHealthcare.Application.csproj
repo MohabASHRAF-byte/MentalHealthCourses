@@ -50,11 +50,12 @@
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\Localization\Resources\Messages.ar.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Messages.ar.Designer.cs</LastGenOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\Localization\Resources\Messages.en.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Messages.en.Designer.cs</LastGenOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\Localization\Resources\Messages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -77,11 +78,6 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Messages.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Resources\Localization\Resources\Messages.ar.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Messages.ar.resx</DependentUpon>
     </Compile>
     <Compile Update="Resources\Localization\Resources\Messages.en.Designer.cs">
       <DesignTime>True</DesignTime>
