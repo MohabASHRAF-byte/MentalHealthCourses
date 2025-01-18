@@ -18,16 +18,20 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="m" xml:space="preserve">
-        <value>english</value>
+    <data name="PermissionDenied" xml:space="preserve">
+        <value>You are not allowed to perform this action.</value>
     </data>
-    <data name="rita" xml:space="preserve">
-        <value>rita</value>
+    <data name="UserNotFound" xml:space="preserve">
+        <value>The user could not be found.</value>
     </data>
-    <data name="mohab" xml:space="preserve">
-        <value>mohab</value>
+    <data name="ThumbnailInvalidSize" xml:space="preserve">
+        <value>Thumbnail size must be less than {0} MB.</value>
     </data>
-    <data name="mariam" xml:space="preserve">
-        <value>mariam</value>
+    <data name="ThumbnailRequired" xml:space="preserve">
+        <value>A thumbnail is required.</value>
+    </data>
+    <data name="ThumbnailInvalidType" xml:space="preserve">
+        <value>The thumbnail must be one of the following types: {0}.
+</value>
     </data>
 </root>

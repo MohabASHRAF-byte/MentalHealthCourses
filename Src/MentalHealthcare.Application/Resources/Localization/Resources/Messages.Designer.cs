@@ -45,27 +45,39 @@ namespace MentalHealthcare.Application.Resources.Localization.Resources {
             }
         }
         
-        internal static string m {
+        internal static string PermissionDenied {
             get {
-                return ResourceManager.GetString("m", resourceCulture);
+                return ResourceManager.GetString("PermissionDenied", resourceCulture);
             }
         }
         
-        internal static string mohab {
+        internal static string UserNotFound {
             get {
-                return ResourceManager.GetString("mohab", resourceCulture);
+                return ResourceManager.GetString("UserNotFound", resourceCulture);
             }
         }
         
-        internal static string rita {
+        internal static string ThumbnailInvalidSize {
             get {
-                return ResourceManager.GetString("rita", resourceCulture);
+                return ResourceManager.GetString("ThumbnailInvalidSize", resourceCulture);
             }
         }
         
-        internal static string mariam {
+        internal static string ThumbnailRequired {
             get {
-                return ResourceManager.GetString("mariam", resourceCulture);
+                return ResourceManager.GetString("ThumbnailRequired", resourceCulture);
+            }
+        }
+        
+        internal static string ThumbnailInvalidType {
+            get {
+                return ResourceManager.GetString("ThumbnailInvalidType", resourceCulture);
+            }
+        }
+        
+        internal static string ThumbnailInvalidExtension {
+            get {
+                return ResourceManager.GetString("ThumbnailInvalidExtension", resourceCulture);
             }
         }
     }
