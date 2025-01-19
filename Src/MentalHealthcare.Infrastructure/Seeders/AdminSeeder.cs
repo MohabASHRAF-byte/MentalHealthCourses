@@ -13,7 +13,7 @@ public class AdminSeeder(
 {
     public async Task seed()
     {
-        return;
+      //  return;
 
         if ((await dbContext.Database.GetPendingMigrationsAsync()).Any())
         {
