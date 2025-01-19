@@ -9,10 +9,13 @@ namespace MentalHealthcare.Infrastructure.Persistence;
 
 public class MentalHealthDbContext : IdentityDbContext<User>
 {
+
     public MentalHealthDbContext(DbContextOptions<MentalHealthDbContext> options)
         : base(options)
     {
     }
+
+   
 
     #region DbSets of Tables
 

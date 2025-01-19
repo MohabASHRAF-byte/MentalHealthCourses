@@ -4,7 +4,9 @@ using MentalHealthcare.API.MiddleWares;
 using MentalHealthcare.Application.Extensions;
 using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Infrastructure.Extensions;
+using MentalHealthcare.Infrastructure.Persistence;
 using MentalHealthcare.Infrastructure.Seeders;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 try
@@ -12,6 +14,8 @@ try
     var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+    builder.Services.AddDbContext<MentalHealthDbContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
     builder.AddPresentation();
     builder.Services.AddApplication(builder.Configuration);
     builder.Services.AddInfrastructure(builder.Configuration);
@@ -35,7 +39,7 @@ try
                 .AllowAnyHeader();
         });
     });
-
+   
     var app = builder.Build();
     var scope = app.Services.CreateScope();
     var serviceProvider = scope.ServiceProvider.GetRequiredService<IAdminSeeder>();
