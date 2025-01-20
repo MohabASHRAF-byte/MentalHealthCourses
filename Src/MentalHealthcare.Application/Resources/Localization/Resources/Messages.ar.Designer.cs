@@ -80,5 +80,341 @@ namespace MentalHealthcare.Application.Resources.Localization.Resources {
                 return ResourceManager.GetString("ThumbnailInvalidExtension", resourceCulture);
             }
         }
+        
+        internal static string IconRequired {
+            get {
+                return ResourceManager.GetString("IconRequired", resourceCulture);
+            }
+        }
+        
+        internal static string IconInvalidType {
+            get {
+                return ResourceManager.GetString("IconInvalidType", resourceCulture);
+            }
+        }
+        
+        internal static string IconInvalidSize {
+            get {
+                return ResourceManager.GetString("IconInvalidSize", resourceCulture);
+            }
+        }
+        
+        internal static string PageSizeGreaterThanZero {
+            get {
+                return ResourceManager.GetString("PageSizeGreaterThanZero", resourceCulture);
+            }
+        }
+        
+        internal static string PageSizeLessThanOrEqualTo {
+            get {
+                return ResourceManager.GetString("PageSizeLessThanOrEqualTo", resourceCulture);
+            }
+        }
+        
+        internal static string SearchTermNotEmpty {
+            get {
+                return ResourceManager.GetString("SearchTermNotEmpty", resourceCulture);
+            }
+        }
+        
+        internal static string SearchTermMaxLength {
+            get {
+                return ResourceManager.GetString("SearchTermMaxLength", resourceCulture);
+            }
+        }
+        
+        internal static string SearchTermNoHtml {
+            get {
+                return ResourceManager.GetString("SearchTermNoHtml", resourceCulture);
+            }
+        }
+        
+        internal static string EmailInvalidFormat {
+            get {
+                return ResourceManager.GetString("EmailInvalidFormat", resourceCulture);
+            }
+        }
+        
+        internal static string EmailRequired {
+            get {
+                return ResourceManager.GetString("EmailRequired", resourceCulture);
+            }
+        }
+        
+        internal static string EmailMaxLength {
+            get {
+                return ResourceManager.GetString("EmailMaxLength", resourceCulture);
+            }
+        }
+        
+        internal static string EmailNoHtml {
+            get {
+                return ResourceManager.GetString("EmailNoHtml", resourceCulture);
+            }
+        }
+        
+        internal static string NameRequired {
+            get {
+                return ResourceManager.GetString("NameRequired", resourceCulture);
+            }
+        }
+        
+        internal static string NameRequiredIfProvided {
+            get {
+                return ResourceManager.GetString("NameRequiredIfProvided", resourceCulture);
+            }
+        }
+        
+        internal static string NameMaxLength {
+            get {
+                return ResourceManager.GetString("NameMaxLength", resourceCulture);
+            }
+        }
+        
+        internal static string NameNoHtml {
+            get {
+                return ResourceManager.GetString("NameNoHtml", resourceCulture);
+            }
+        }
+        
+        internal static string PhoneRequired {
+            get {
+                return ResourceManager.GetString("PhoneRequired", resourceCulture);
+            }
+        }
+        
+        internal static string PhoneRequiredIfProvided {
+            get {
+                return ResourceManager.GetString("PhoneRequiredIfProvided", resourceCulture);
+            }
+        }
+        
+        internal static string PhoneInvalidFormat {
+            get {
+                return ResourceManager.GetString("PhoneInvalidFormat", resourceCulture);
+            }
+        }
+        
+        internal static string PhoneNoHtml {
+            get {
+                return ResourceManager.GetString("PhoneNoHtml", resourceCulture);
+            }
+        }
+        
+        internal static string UsernameRequired {
+            get {
+                return ResourceManager.GetString("UsernameRequired", resourceCulture);
+            }
+        }
+        
+        internal static string UsernameMinLength {
+            get {
+                return ResourceManager.GetString("UsernameMinLength", resourceCulture);
+            }
+        }
+        
+        internal static string UsernameMaxLength {
+            get {
+                return ResourceManager.GetString("UsernameMaxLength", resourceCulture);
+            }
+        }
+        
+        internal static string UsernameNoHtml {
+            get {
+                return ResourceManager.GetString("UsernameNoHtml", resourceCulture);
+            }
+        }
+        
+        internal static string PasswordRequired {
+            get {
+                return ResourceManager.GetString("PasswordRequired", resourceCulture);
+            }
+        }
+        
+        internal static string PasswordMinLength {
+            get {
+                return ResourceManager.GetString("PasswordMinLength", resourceCulture);
+            }
+        }
+        
+        internal static string PasswordMaxLength {
+            get {
+                return ResourceManager.GetString("PasswordMaxLength", resourceCulture);
+            }
+        }
+        
+        internal static string PasswordNoHtml {
+            get {
+                return ResourceManager.GetString("PasswordNoHtml", resourceCulture);
+            }
+        }
+        
+        internal static string PasswordLowercase {
+            get {
+                return ResourceManager.GetString("PasswordLowercase", resourceCulture);
+            }
+        }
+        
+        internal static string PasswordUppercase {
+            get {
+                return ResourceManager.GetString("PasswordUppercase", resourceCulture);
+            }
+        }
+        
+        internal static string PasswordNoCommonSequences {
+            get {
+                return ResourceManager.GetString("PasswordNoCommonSequences", resourceCulture);
+            }
+        }
+        
+        internal static string PasswordNumber {
+            get {
+                return ResourceManager.GetString("PasswordNumber", resourceCulture);
+            }
+        }
+        
+        internal static string ValueDigitsOnlyNoHtml {
+            get {
+                return ResourceManager.GetString("ValueDigitsOnlyNoHtml", resourceCulture);
+            }
+        }
+        
+        internal static string ValueNoHtml {
+            get {
+                return ResourceManager.GetString("ValueNoHtml", resourceCulture);
+            }
+        }
+        
+        internal static string ValueRequiredNoHtml {
+            get {
+                return ResourceManager.GetString("ValueRequiredNoHtml", resourceCulture);
+            }
+        }
+        
+        internal static string BirthDateMaxAge {
+            get {
+                return ResourceManager.GetString("BirthDateMaxAge", resourceCulture);
+            }
+        }
+        
+        internal static string BirthDateFuture {
+            get {
+                return ResourceManager.GetString("BirthDateFuture", resourceCulture);
+            }
+        }
+        
+        internal static string PriceNullableNonNegative {
+            get {
+                return ResourceManager.GetString("PriceNullableNonNegative", resourceCulture);
+            }
+        }
+        
+        internal static string IdNullablePositive {
+            get {
+                return ResourceManager.GetString("IdNullablePositive", resourceCulture);
+            }
+        }
+        
+        internal static string IdPositive {
+            get {
+                return ResourceManager.GetString("IdPositive", resourceCulture);
+            }
+        }
+        
+        internal static string PriceNonNegative {
+            get {
+                return ResourceManager.GetString("PriceNonNegative", resourceCulture);
+            }
+        }
+        
+        internal static string EmailAlreadyAdmin {
+            get {
+                return ResourceManager.GetString("EmailAlreadyAdmin", resourceCulture);
+            }
+        }
+        
+        internal static string EmailAlreadyPending {
+            get {
+                return ResourceManager.GetString("EmailAlreadyPending", resourceCulture);
+            }
+        }
+        
+        internal static string AdminNotPending {
+            get {
+                return ResourceManager.GetString("AdminNotPending", resourceCulture);
+            }
+        }
+        
+        internal static string AdminRegistrationFailed {
+            get {
+                return ResourceManager.GetString("AdminRegistrationFailed", resourceCulture);
+            }
+        }
+        
+        internal static string EmailConfirmationSubject {
+            get {
+                return ResourceManager.GetString("EmailConfirmationSubject", resourceCulture);
+            }
+        }
+        
+        internal static string EmailConfirmationFailed {
+            get {
+                return ResourceManager.GetString("EmailConfirmationFailed", resourceCulture);
+            }
+        }
+        
+        internal static string OldEmailNotFound {
+            get {
+                return ResourceManager.GetString("OldEmailNotFound", resourceCulture);
+            }
+        }
+        
+        internal static string AdMarkedInactive {
+            get {
+                return ResourceManager.GetString("AdMarkedInactive", resourceCulture);
+            }
+        }
+        
+        internal static string AdCreatedSuccess {
+            get {
+                return ResourceManager.GetString("AdCreatedSuccess", resourceCulture);
+            }
+        }
+        
+        internal static string ImageSizeExceedsLimit {
+            get {
+                return ResourceManager.GetString("ImageSizeExceedsLimit", resourceCulture);
+            }
+        }
+        
+        internal static string AdNotFound {
+            get {
+                return ResourceManager.GetString("AdNotFound", resourceCulture);
+            }
+        }
+        
+        internal static string AdNameLength {
+            get {
+                return ResourceManager.GetString("AdNameLength", resourceCulture);
+            }
+        }
+        
+        internal static string AdMustHaveImage {
+            get {
+                return ResourceManager.GetString("AdMustHaveImage", resourceCulture);
+            }
+        }
+        
+        internal static string AdDescriptionLength {
+            get {
+                return ResourceManager.GetString("AdDescriptionLength", resourceCulture);
+            }
+        }
+        
+        internal static string AdminIdentityNotExist {
+            get {
+                return ResourceManager.GetString("AdminIdentityNotExist", resourceCulture);
+            }
+        }
     }
 }

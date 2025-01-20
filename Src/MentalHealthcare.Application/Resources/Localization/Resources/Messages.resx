@@ -1,33 +1,201 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>2.0</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<data name="PermissionDenied" xml:space="preserve">
-    <value>Permission denied.</value>
-  </data>
-	<data name="UserNotFound" xml:space="preserve">
-    <value>المستخدم غير موجود.</value>
-  </data>
-	<data name="ThumbnailInvalidSize" xml:space="preserve">
-    <value>The thumbnail size exceeds the allowed limit.</value>
-  </data>
-	<data name="ThumbnailRequired" xml:space="preserve">
-    <value>يجب إدخال صورة مصغرة.</value>
-  </data>
-	<data name="ThumbnailInvalidType" xml:space="preserve">
-    <value>Invalid thumbnail type.</value>
-  </data>
-	<data name="ThumbnailInvalidExtension" xml:space="preserve">
-    <value>Invalid file extension.</value>
-  </data>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="PermissionDenied" xml:space="preserve">
+        <value />
+    </data>
+    <data name="UserNotFound" xml:space="preserve">
+        <value>المستخدم غير موجود.</value>
+    </data>
+    <data name="ThumbnailInvalidSize" xml:space="preserve">
+        <value />
+    </data>
+    <data name="ThumbnailRequired" xml:space="preserve">
+        <value>يجب إدخال صورة مصغرة.</value>
+    </data>
+    <data name="ThumbnailInvalidType" xml:space="preserve">
+        <value />
+    </data>
+    <data name="ThumbnailInvalidExtension" xml:space="preserve">
+        <value />
+    </data>
+    <data name="IconRequired" xml:space="preserve">
+        <value />
+    </data>
+    <data name="IconInvalidType" xml:space="preserve">
+        <value />
+    </data>
+    <data name="IconInvalidSize" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PageSizeGreaterThanZero" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PageSizeLessThanOrEqualTo" xml:space="preserve">
+        <value />
+    </data>
+    <data name="SearchTermNotEmpty" xml:space="preserve">
+        <value />
+    </data>
+    <data name="SearchTermMaxLength" xml:space="preserve">
+        <value />
+    </data>
+    <data name="SearchTermNoHtml" xml:space="preserve">
+        <value />
+    </data>
+    <data name="EmailRequired" xml:space="preserve">
+        <value />
+    </data>
+    <data name="EmailInvalidFormat" xml:space="preserve">
+        <value />
+    </data>
+    <data name="EmailMaxLength" xml:space="preserve">
+        <value />
+    </data>
+    <data name="EmailNoHtml" xml:space="preserve">
+        <value />
+    </data>
+    <data name="NameRequired" xml:space="preserve">
+        <value />
+    </data>
+    <data name="NameRequiredIfProvided" xml:space="preserve">
+        <value />
+    </data>
+    <data name="NameMaxLength" xml:space="preserve">
+        <value />
+    </data>
+    <data name="NameNoHtml" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PhoneRequired" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PhoneRequiredIfProvided" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PhoneInvalidFormat" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PhoneNoHtml" xml:space="preserve">
+        <value />
+    </data>
+    <data name="UsernameRequired" xml:space="preserve">
+        <value />
+    </data>
+    <data name="UsernameMinLength" xml:space="preserve">
+        <value />
+    </data>
+    <data name="UsernameMaxLength" xml:space="preserve">
+        <value />
+    </data>
+    <data name="UsernameNoHtml" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PasswordRequired" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PasswordMinLength" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PasswordMaxLength" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PasswordNoHtml" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PasswordNoCommonSequences" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PasswordLowercase" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PasswordUppercase" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PasswordNumber" xml:space="preserve">
+        <value />
+    </data>
+    <data name="ValueDigitsOnlyNoHtml" xml:space="preserve">
+        <value />
+    </data>
+    <data name="ValueNoHtml" xml:space="preserve">
+        <value />
+    </data>
+    <data name="ValueRequiredNoHtml" xml:space="preserve">
+        <value />
+    </data>
+    <data name="BirthDateFuture" xml:space="preserve">
+        <value />
+    </data>
+    <data name="BirthDateMaxAge" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PriceNonNegative" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PriceNullableNonNegative" xml:space="preserve">
+        <value />
+    </data>
+    <data name="IdPositive" xml:space="preserve">
+        <value />
+    </data>
+    <data name="IdNullablePositive" xml:space="preserve">
+        <value />
+    </data>
+    <data name="EmailAlreadyPending" xml:space="preserve">
+        <value />
+    </data>
+    <data name="EmailAlreadyAdmin" xml:space="preserve">
+        <value />
+    </data>
+    <data name="AdminNotPending" xml:space="preserve">
+        <value />
+    </data>
+    <data name="AdminRegistrationFailed" xml:space="preserve">
+        <value />
+    </data>
+    <data name="EmailConfirmationSubject" xml:space="preserve">
+        <value />
+    </data>
+    <data name="EmailConfirmationFailed" xml:space="preserve">
+        <value />
+    </data>
+    <data name="AdminIdentityNotExist" xml:space="preserve">
+        <value />
+    </data>
+    <data name="OldEmailNotFound" xml:space="preserve">
+        <value />
+    </data>
+    <data name="AdNotFound" xml:space="preserve">
+        <value />
+    </data>
+    <data name="ImageSizeExceedsLimit" xml:space="preserve">
+        <value />
+    </data>
+    <data name="AdNameLength" xml:space="preserve">
+        <value />
+    </data>
+    <data name="AdDescriptionLength" xml:space="preserve">
+        <value />
+    </data>
+    <data name="AdMustHaveImage" xml:space="preserve">
+        <value />
+    </data>
 </root>
+

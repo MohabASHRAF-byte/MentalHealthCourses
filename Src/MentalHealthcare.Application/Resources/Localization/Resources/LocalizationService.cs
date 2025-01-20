@@ -14,7 +14,7 @@ public class LocalizationService : ILocalizationService
         _stringLocalizer = factory.Create(type);
     }
 
-    public string GetMessage(string key, string lang = "ar", string defaultMessage = "")
+    public string GetMessage(string key, string defaultMessage = "", string lang = "ar")
     {
         // Set the current culture to Arabic (ar)
         CultureInfo.CurrentUICulture = new CultureInfo(lang);
@@ -22,8 +22,10 @@ public class LocalizationService : ILocalizationService
         return localizedString.ResourceNotFound ? defaultMessage : localizedString.Value;
     }
 
-    public string TranslateNumber(decimal input)
+    public string TranslateNumber(decimal input, string lang="ar")
     {
+        if (lang != "ar")
+            return input.ToString();
         string[] arabicDigits = { "٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩" };
         var result = new StringBuilder();
 

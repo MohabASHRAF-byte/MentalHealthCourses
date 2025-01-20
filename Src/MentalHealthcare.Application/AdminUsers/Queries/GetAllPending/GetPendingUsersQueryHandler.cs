@@ -58,27 +58,25 @@ public class GetPendingUsersQueryHandler(
     public async Task<PageResult<PendingUsersDto>> Handle(GetPendingUsersQuery request,
         CancellationToken cancellationToken)
     {
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            logger.LogWarning("Unauthorized attempt to delete from cart by user: {UserId}", currentUser?.Id);
-            throw new ForBidenException("You do not have permission to delete items from the cart.");
-        }
+        userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
 
-        logger.LogInformation("Retrieving all pending users with search text: {SearchText}, page number: {PageNumber}, page size: {PageSize}", 
+
+        logger.LogInformation(
+            "Retrieving all pending users with search text: {SearchText}, page number: {PageNumber}, page size: {PageSize}",
             request.SearchText, request.PageNumber, request.PageSize);
-        
+
         var pendingUsers = await adminRepository.GetAllAsync(request.SearchText, request.PageNumber, request.PageSize);
-        
+
         logger.LogInformation("Retrieved {Count} pending users.", pendingUsers.Item1);
-        
+
         var usersDtos = mapper.Map<IEnumerable<PendingUsersDto>>(pendingUsers.Item2);
         var count = pendingUsers.Item1;
-        
+
         var ret = new PageResult<PendingUsersDto>(usersDtos, count, request.PageSize, request.PageNumber);
-        
-        logger.LogInformation("Returning a page result with {UserCount} users on page {PageNumber}.", usersDtos.Count(), request.PageNumber);
-        
+
+        logger.LogInformation("Returning a page result with {UserCount} users on page {PageNumber}.", usersDtos.Count(),
+            request.PageNumber);
+
         return ret;
     }
 }
