@@ -71,6 +71,17 @@ public static class ValidationRules
                 ));
     }
 
+    public static IRuleBuilderOptions<T, string> CustomIsValidAbout<T>(this IRuleBuilder<T, string> ruleBuilder)
+    {
+        return ruleBuilder
+            .NotNull()
+            .NotEmpty()
+            .WithMessage("About must not be empty.")
+            .MaximumLength(500) // Example limit for About field
+            .WithMessage("About must not exceed 500 characters.")
+            .Must(about => !ContainsHtml(about)) // Example of disallowing HTML
+            .WithMessage("About must not contain HTML or markup.");
+    }
 
     /// <summary>
     /// Validates that a page size is valid based on dynamic limits.

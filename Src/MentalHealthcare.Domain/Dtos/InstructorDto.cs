@@ -6,4 +6,5 @@ public class InstructorDto
     public string Name { get; set; } = default!;
     public string? About { get; set; }
     public string? ImageUrl { get; set; }
+    
 }

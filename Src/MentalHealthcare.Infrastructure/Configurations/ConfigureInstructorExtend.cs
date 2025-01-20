@@ -14,6 +14,18 @@ public static class ConfigureInstructorExtend
             // Configure auto-generated identity for InstructorId
             entity.Property(i => i.InstructorId).UseIdentityColumn(1, 1);
 
+
+
+            modelBuilder.Entity<Instructor>()
+                .HasOne(i => i.AddedBy)
+                .WithMany()
+                .HasForeignKey(i => i.AddedByAdminId)
+                .OnDelete(DeleteBehavior.Restrict); // Or appropriate delete behavior
+
+
+
+
+
             // An instructor can have many courses
             entity.HasMany(i => i.Courses)
                 .WithOne(c => c.Instructor)  // One instructor for each course

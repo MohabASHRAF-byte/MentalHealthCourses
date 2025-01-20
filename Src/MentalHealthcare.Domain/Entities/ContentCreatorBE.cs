@@ -18,6 +18,7 @@ public class ContentCreatorBe
     [MaxLength(Global.UrlMaxLength)] 
     public string? ImageUrl { get; set; }
     public string? About { get; set; }
+    public int AddedByAdminId { get; set; } // Foreign key
 
     public Admin AddedBy { get; set; } = default!;
 }
