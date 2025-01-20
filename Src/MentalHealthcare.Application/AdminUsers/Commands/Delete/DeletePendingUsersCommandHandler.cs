@@ -51,13 +51,8 @@ public class DeletePendingUsersCommandHandler(
     public async Task Handle(DeletePendingUsersCommand request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Retrieving the current user from the context.");
-        var currentUser = userContext.GetCurrentUser();
-        
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            logger.LogWarning("Unauthorized attempt to delete pending users by user: {UserId}", currentUser?.Id);
-            throw new ForBidenException("Don't have the permission to delete pending users.");
-        }
+        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.Admin ], logger);
+
 
         logger.LogInformation("Deleting pending users: {@PendingUsers} by {@}", request.PendingUsers,currentUser.Id);
         await adminRepository.DeletePendingAsync(request.PendingUsers);

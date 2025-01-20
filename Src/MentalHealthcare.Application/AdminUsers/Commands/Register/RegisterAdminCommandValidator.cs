@@ -1,25 +1,26 @@
 using FluentValidation;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.validations;
 
 namespace MentalHealthcare.Application.AdminUsers.Commands.Register;
 
 public class RegisterAdminCommandValidator : AbstractValidator<RegisterAdminCommand>
 {
-    public RegisterAdminCommandValidator()
+    public RegisterAdminCommandValidator(ILocalizationService localizationService)
     {
 
         RuleFor(x => x.FirstName)
-            .CustomIsValidName();
+            .CustomIsValidName(localizationService);
         RuleFor(x => x.LastName)
-            .CustomIsValidName();
+            .CustomIsValidName(localizationService);
         RuleFor(x => x.Email)
-            .CustomIsValidEmail();
+            .CustomIsValidEmail(localizationService);
         RuleFor(x => x.PhoneNumber)
-            .CustomIsValidPhoneNumber();
+            .CustomIsValidPhoneNumber(localizationService);
         RuleFor(x => x.UserName)
-            .CustomIsValidUsername();
+            .CustomIsValidUsername(localizationService);
         RuleFor(x => x.Password)
-            .CustomIsValidPassword()
+            .CustomIsValidPassword(localizationService)
             .Must((model, password) =>
                 !ValidationRules.ContainsPersonalInformation(password, model.FirstName, model.LastName,
                     model.UserName)

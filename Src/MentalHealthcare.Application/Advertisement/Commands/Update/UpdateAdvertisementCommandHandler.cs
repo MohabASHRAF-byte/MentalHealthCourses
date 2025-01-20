@@ -1,5 +1,6 @@
 using MediatR;
 using MentalHealthcare.Application.BunnyServices;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
@@ -15,7 +16,8 @@ public class UpdateAdvertisementCommandHandler(
     ILogger<UpdateAdvertisementCommandHandler> logger,
     IAdvertisementRepository advertisementRepository,
     IConfiguration configuration,
-    IUserContext userContext
+    IUserContext userContext,
+    ILocalizationService localizationService
 ) : IRequestHandler<UpdateAdvertisementCommand, int>
 {
     public async Task<int> Handle(UpdateAdvertisementCommand request, CancellationToken cancellationToken)
@@ -43,9 +45,15 @@ public class UpdateAdvertisementCommandHandler(
 
         if (advertisement == null)
         {
-            logger.LogError("Advertisement with ID {AdId} not found.", request.AdvertisementId);
-            throw new KeyNotFoundException($"Advertisement with ID {request.AdvertisementId} not found.");
+            logger.LogWarning("Advertisement with ID: {AdId} not found.", request.AdvertisementId);
+            throw new KeyNotFoundException(
+                string.Format(
+                    localizationService.GetMessage("AdNotFound", "Advertisement with ID {0} not found."),
+                    localizationService.TranslateNumber(request.AdvertisementId ?? 0m)
+                )
+            );
         }
+
 
         // Update advertisement details
         logger.LogInformation("Updating details for Advertisement ID: {AdId}.", request.AdvertisementId);
@@ -64,7 +72,8 @@ public class UpdateAdvertisementCommandHandler(
         // Check for at least one image
         if (!advertisement.AdvertisementImageUrls.Any())
         {
-            logger.LogWarning("No images found for Advertisement ID: {AdId}. Marking as inactive.", request.AdvertisementId);
+            logger.LogWarning("No images found for Advertisement ID: {AdId}. Marking as inactive.",
+                request.AdvertisementId);
             advertisement.IsActive = false;
         }
 
@@ -83,30 +92,41 @@ public class UpdateAdvertisementCommandHandler(
             var imageSizeInMb = image.Length / (1 << 20);
             if (imageSizeInMb > Global.AdvertisementImgSize)
             {
-                logger.LogWarning("Attempted to upload an image exceeding the allowed size: {ImageSize} MB.", imageSizeInMb);
-                throw new Exception($"Image size cannot exceed {Global.AdvertisementImgSize} MB.");
+                logger.LogWarning("Attempted to upload an image exceeding the allowed size: {ImageSize} MB.",
+                    imageSizeInMb);
+                throw new Exception(
+                    string.Format(
+                        localizationService.GetMessage("ImageSizeExceedsLimit", "Image size cannot exceed {0} MB."),
+                        localizationService.TranslateNumber(Global.AdvertisementImgSize)
+                    )
+                );
             }
         }
     }
 
-    private void UpdateAdvertisementDetails(ref Domain.Entities.Advertisement advertisement, UpdateAdvertisementCommand request)
+
+    private void UpdateAdvertisementDetails(ref Domain.Entities.Advertisement advertisement,
+        UpdateAdvertisementCommand request)
     {
         if (request.IsActive.HasValue)
         {
             advertisement.IsActive = request.IsActive.Value;
-            logger.LogInformation("Updated IsActive for Advertisement ID: {AdId} to {IsActive}.", advertisement.AdvertisementId, request.IsActive.Value);
+            logger.LogInformation("Updated IsActive for Advertisement ID: {AdId} to {IsActive}.",
+                advertisement.AdvertisementId, request.IsActive.Value);
         }
 
         if (!request.AdvertisementName.IsNullOrEmpty())
         {
             advertisement.AdvertisementName = request.AdvertisementName!;
-            logger.LogInformation("Updated AdvertisementName for Advertisement ID: {AdId} to {AdName}.", advertisement.AdvertisementId, request.AdvertisementName);
+            logger.LogInformation("Updated AdvertisementName for Advertisement ID: {AdId} to {AdName}.",
+                advertisement.AdvertisementId, request.AdvertisementName);
         }
 
         if (!request.AdvertisementDescription.IsNullOrEmpty())
         {
             advertisement.AdvertisementDescription = request.AdvertisementDescription!;
-            logger.LogInformation("Updated AdvertisementDescription for Advertisement ID: {AdId}.", advertisement.AdvertisementId);
+            logger.LogInformation("Updated AdvertisementDescription for Advertisement ID: {AdId}.",
+                advertisement.AdvertisementId);
         }
     }
 
@@ -127,7 +147,8 @@ public class UpdateAdvertisementCommandHandler(
                     continue;
                 }
 
-                logger.LogInformation("Deleting image: {ImgName} for Advertisement ID: {AdId}.", imageName, advertisement.AdvertisementId);
+                logger.LogInformation("Deleting image: {ImgName} for Advertisement ID: {AdId}.", imageName,
+                    advertisement.AdvertisementId);
                 bunnyClient.DeleteFileAsync(imageName, Global.AdvertisementFolderName).Wait();
             }
 
@@ -136,7 +157,8 @@ public class UpdateAdvertisementCommandHandler(
         }
         else
         {
-            logger.LogWarning("No image URLs provided for Advertisement ID: {AdId}. Removing all existing images.", advertisement.AdvertisementId);
+            logger.LogWarning("No image URLs provided for Advertisement ID: {AdId}. Removing all existing images.",
+                advertisement.AdvertisementId);
             advertisement.AdvertisementImageUrls = new List<AdvertisementImageUrl>();
         }
     }
@@ -154,11 +176,13 @@ public class UpdateAdvertisementCommandHandler(
 
             if (!response.IsSuccessful || response.Url == null)
             {
-                logger.LogWarning("Failed to upload image for Advertisement ID: {AdId}. Error: {Message}", advertisement.AdvertisementId, response.Message ?? "Unknown error");
+                logger.LogWarning("Failed to upload image for Advertisement ID: {AdId}. Error: {Message}",
+                    advertisement.AdvertisementId, response.Message ?? "Unknown error");
                 continue;
             }
 
-            logger.LogInformation("Successfully uploaded image for Advertisement ID: {AdId}. URL: {Url}", advertisement.AdvertisementId, response.Url);
+            logger.LogInformation("Successfully uploaded image for Advertisement ID: {AdId}. URL: {Url}",
+                advertisement.AdvertisementId, response.Url);
             advertisement.AdvertisementImageUrls.Add(new AdvertisementImageUrl
             {
                 ImageUrl = response.Url,

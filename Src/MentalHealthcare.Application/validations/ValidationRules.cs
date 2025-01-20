@@ -42,226 +42,355 @@ public static class ValidationRules
             .WithMessage(
                 string.Format(
                     localizationService.GetMessage("ThumbnailInvalidSize"),
-                    (MaxThumbnailFileSize / (1024 * 1024))
+                    localizationService.TranslateNumber(MaxThumbnailFileSize / (1024 * 1024))
                 ));
     }
 
 
-    public static IRuleBuilderOptions<T, IFormFile>
-        CustomIsValidIcon<T>(
-            this IRuleBuilder<T, IFormFile> ruleBuilder)
+    public static IRuleBuilderOptions<T, IFormFile> CustomIsValidIcon<T>(
+        this IRuleBuilder<T, IFormFile> ruleBuilder, ILocalizationService localizationService)
     {
         return ruleBuilder
             .NotNull()
-            .WithMessage("Icon is required.")
-            .Must(file => AllowedExtensions.Contains(Path.GetExtension(file.FileName).ToLower()))
-            .WithMessage($"Icon must be one of the following types: {string.Join(", ", AllowedExtensions)}.")
-            .Must(file => file.Length > 0 && file.Length <= MaxIconFileSize)
-            .WithMessage($"Icon size must be less than {MaxIconFileSize / (1024)} KB.");
+            .WithMessage(localizationService.GetMessage("IconRequired"))
+            .Must(file =>
+            {
+                var extension = Path.GetExtension(file?.FileName)?.ToLower();
+                return AllowedExtensions.Contains(extension);
+            })
+            .WithMessage(
+                string.Format(
+                    localizationService.GetMessage("IconInvalidType"),
+                    string.Join(", ", AllowedExtensions)
+                ))
+            .Must(file => file?.Length > 0 && file?.Length <= MaxIconFileSize)
+            .WithMessage(
+                string.Format(
+                    localizationService.GetMessage("IconInvalidSize"),
+                    localizationService.TranslateNumber(MaxIconFileSize / 1024)
+                ));
     }
 
 
     /// <summary>
-    /// Validates that a page size is valid.
+    /// Validates that a page size is valid based on dynamic limits.
     /// </summary>
     /// <typeparam name="T">The type of the object being validated.</typeparam>
     /// <param name="ruleBuilder">The rule builder.</param>
+    /// <param name="localizationService">The localization service for messages.</param>
+    /// <param name="minLimit">The minimum allowed page size.</param>
+    /// <param name="maxLimit">The maximum allowed page size.</param>
     /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
     public static IRuleBuilderOptions<T, int> CustomValidatePageSize<T>(
-        this IRuleBuilder<T, int> ruleBuilder)
+        this IRuleBuilder<T, int> ruleBuilder,
+        ILocalizationService localizationService
+    )
     {
         return ruleBuilder
-            .GreaterThan(0).WithMessage("Page size must be greater than 0.")
-            .LessThanOrEqualTo(30).WithMessage("Page size must be 30 or less.");
+            .GreaterThan(0)
+            .WithMessage(
+                string.Format(
+                    localizationService.GetMessage("PageSizeGreaterThan", "Page size must be greater than {0}."),
+                    localizationService.TranslateNumber(0)
+                ))
+            .LessThanOrEqualTo(30)
+            .WithMessage(
+                string.Format(
+                    localizationService.GetMessage("PageSizeLessThanOrEqualTo", "Page size must be {0} or less."),
+                    localizationService.TranslateNumber(30)
+                ));
     }
 
+
     /// <summary>
-    /// Validates that a page number is valid.
+    /// Validates that a page number is valid based on dynamic limits.
     /// </summary>
     /// <typeparam name="T">The type of the object being validated.</typeparam>
     /// <param name="ruleBuilder">The rule builder.</param>
+    /// <param name="localizationService">The localization service for messages.</param>
+    /// <param name="minPageNumber">The minimum allowed page number.</param>
     /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
     public static IRuleBuilderOptions<T, int> CustomValidatePageNumber<T>(
-        this IRuleBuilder<T, int> ruleBuilder)
+        this IRuleBuilder<T, int> ruleBuilder,
+        ILocalizationService localizationService,
+        int minPageNumber = 1)
     {
         return ruleBuilder
-            .GreaterThan(0).WithMessage("Page number must be greater than 0.");
+            .GreaterThanOrEqualTo(minPageNumber)
+            .WithMessage(
+                string.Format(
+                    localizationService.GetMessage("PageNumberGreaterThanOrEqualTo",
+                        "Page number must be {0} or greater."),
+                    localizationService.TranslateNumber(minPageNumber)
+                ));
     }
+
 
     /// <summary>
     /// Validates that a search term is valid if it is not null.
     /// </summary>
     /// <typeparam name="T">The type of the object being validated.</typeparam>
     /// <param name="ruleBuilder">The rule builder.</param>
+    /// <param name="localizationService">The localization service for messages.</param>
+    /// <param name="maxLength">The maximum allowed length for the search term.</param>
     /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
     public static IRuleBuilderOptions<T, string?> CustomValidateSearchTerm<T>(
-        this IRuleBuilder<T, string?> ruleBuilder)
+        this IRuleBuilder<T, string?> ruleBuilder,
+        ILocalizationService localizationService,
+        int maxLength = 50)
     {
         return ruleBuilder
             .Must(term => term == null || !string.IsNullOrWhiteSpace(term))
-            .WithMessage("Search term must not be empty if provided.")
-            .Must(term => term == null || term.Length <= 50)
-            .WithMessage("Search term must not exceed 50 characters.")
+            .WithMessage(localizationService.GetMessage("SearchTermNotEmpty",
+                "Search term must not be empty if provided."))
+            .Must(term => term == null || term.Length <= maxLength)
+            .WithMessage(
+                string.Format(
+                    localizationService.GetMessage("SearchTermMaxLength",
+                        "Search term must not exceed {0} characters."),
+                    localizationService.TranslateNumber(maxLength)
+                ))
             .Must(term => term == null || !ContainsHtml(term))
-            .WithMessage("Search term must not contain HTML or markup.");
+            .WithMessage(localizationService.GetMessage("SearchTermNoHtml",
+                "Search term must not contain HTML or markup."));
     }
 
-
     /// <summary>
-    /// Validates that a string is a valid email address with a maximum length of 100 characters,
+    /// Validates that a string is a valid email address with a configurable maximum length,
     /// does not contain HTML or markup language, and is not empty.
     /// </summary>
     /// <typeparam name="T">The type of the object being validated.</typeparam>
     /// <param name="ruleBuilder">The rule builder.</param>
+    /// <param name="localizationService">The localization service for messages.</param>
+    /// <param name="maxLength">The maximum allowed length for the email address.</param>
     /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, string> CustomIsValidEmail<T>(this IRuleBuilder<T, string> ruleBuilder)
+    public static IRuleBuilderOptions<T, string> CustomIsValidEmail<T>(
+        this IRuleBuilder<T, string> ruleBuilder,
+        ILocalizationService localizationService,
+        int maxLength = 100)
     {
         return ruleBuilder
             .NotNull()
+            .WithMessage(localizationService.GetMessage("EmailRequired", "Email address must not be empty."))
             .NotEmpty()
-            .WithMessage("Email address must not be empty.")
+            .WithMessage(localizationService.GetMessage("EmailRequired", "Email address must not be empty."))
             .EmailAddress()
-            .WithMessage("Invalid email address format.")
-            .MaximumLength(100)
-            .WithMessage("Email address must not exceed 100 characters.")
+            .WithMessage(localizationService.GetMessage("EmailInvalidFormat", "Invalid email address format."))
+            .MaximumLength(maxLength)
+            .WithMessage(
+                string.Format(
+                    localizationService.GetMessage("EmailMaxLength", "Email address must not exceed {0} characters."),
+                    localizationService.TranslateNumber(maxLength)
+                ))
             .Must(value => !ContainsHtml(value))
-            .WithMessage("Email address must not contain HTML or markup.");
+            .WithMessage(
+                localizationService.GetMessage("EmailNoHtml", "Email address must not contain HTML or markup."));
     }
 
-
     /// <summary>
-    /// Validates that a name is valid: not exceeding 30 characters, not containing HTML, and not empty or null.
+    /// Validates that a name is valid: not exceeding a configurable maximum length, not containing HTML, and not empty or null.
     /// </summary>
     /// <typeparam name="T">The type of the object being validated.</typeparam>
     /// <param name="ruleBuilder">The rule builder.</param>
+    /// <param name="localizationService">The localization service for messages.</param>
+    /// <param name="maxLength">The maximum allowed length for the name.</param>
     /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, string> CustomIsValidName<T>(this IRuleBuilder<T, string> ruleBuilder)
+    public static IRuleBuilderOptions<T, string> CustomIsValidName<T>(
+        this IRuleBuilder<T, string> ruleBuilder,
+        ILocalizationService localizationService,
+        int maxLength = 30)
     {
         return ruleBuilder
             .NotNull()
+            .WithMessage(localizationService.GetMessage("NameRequired", "Name must not be empty."))
             .NotEmpty()
-            .WithMessage("Name must not be empty.")
-            .MaximumLength(30)
-            .WithMessage("Name must not exceed 30 characters.")
+            .WithMessage(localizationService.GetMessage("NameRequired", "Name must not be empty."))
+            .MaximumLength(maxLength)
+            .WithMessage(
+                string.Format(
+                    localizationService.GetMessage("NameMaxLength", "Name must not exceed {0} characters."),
+                    localizationService.TranslateNumber(maxLength)
+                ))
             .Must(name => !ContainsHtml(name))
-            .WithMessage("Name must not contain HTML or markup.");
+            .WithMessage(localizationService.GetMessage("NameNoHtml", "Name must not contain HTML or markup."));
     }
 
     /// <summary>
-    /// Validates that a name is either null or a valid value: not exceeding 30 characters, not containing HTML, and not empty if provided.
+    /// Validates that a name is either null or a valid value: not exceeding a configurable maximum length, not containing HTML, and not empty if provided.
     /// </summary>
     /// <typeparam name="T">The type of the object being validated.</typeparam>
     /// <param name="ruleBuilder">The rule builder.</param>
+    /// <param name="localizationService">The localization service for messages.</param>
+    /// <param name="maxLength">The maximum allowed length for the name.</param>
     /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, string?>
-        CustomIsValidNullableName<T>(this IRuleBuilder<T, string?> ruleBuilder)
+    public static IRuleBuilderOptions<T, string?> CustomIsValidNullableName<T>(
+        this IRuleBuilder<T, string?> ruleBuilder,
+        ILocalizationService localizationService,
+        int maxLength = 30)
     {
         return ruleBuilder
             .Must(name => name == null || !string.IsNullOrWhiteSpace(name))
-            .WithMessage("Name must not be empty if provided.")
-            .Must(name => name == null || name.Length <= 30)
-            .WithMessage("Name must not exceed 30 characters.")
+            .WithMessage(
+                localizationService.GetMessage("NameRequiredIfProvided", "Name must not be empty if provided."))
+            .Must(name => name == null || name.Length <= maxLength)
+            .WithMessage(
+                string.Format(
+                    localizationService.GetMessage("NameMaxLength", "Name must not exceed {0} characters."),
+                    localizationService.TranslateNumber(maxLength)
+                ))
             .Must(name => name == null || !ContainsHtml(name))
-            .WithMessage("Name must not contain HTML or markup.");
+            .WithMessage(localizationService.GetMessage("NameNoHtml", "Name must not contain HTML or markup."));
     }
 
-
-    /// <summary>
-    /// Validates that a phone number is valid: contains only digits, has a length between 7 and 15, and does not contain HTML.
+    /// Validates that a phone number is valid: contains only digits, has a length between configurable minimum and maximum values, and does not contain HTML.
     /// </summary>
     /// <typeparam name="T">The type of the object being validated.</typeparam>
     /// <param name="ruleBuilder">The rule builder.</param>
+    /// <param name="localizationService">The localization service for messages.</param>
+    /// <param name="minLength">The minimum allowed length for the phone number.</param>
+    /// <param name="maxLength">The maximum allowed length for the phone number.</param>
     /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, string>
-        CustomIsValidPhoneNumber<T>(this IRuleBuilder<T, string> ruleBuilder)
+    public static IRuleBuilderOptions<T, string> CustomIsValidPhoneNumber<T>(
+        this IRuleBuilder<T, string> ruleBuilder,
+        ILocalizationService localizationService,
+        int minLength = 7,
+        int maxLength = 15)
     {
         return ruleBuilder
             .NotNull()
+            .WithMessage(localizationService.GetMessage("PhoneRequired", "Phone number must not be empty."))
             .NotEmpty()
-            .WithMessage("Phone number must not be empty.")
-            .Matches("^\\d{7,15}$")
-            .WithMessage("Phone number must contain only digits and be between 7 and 15 characters long.")
+            .WithMessage(localizationService.GetMessage("PhoneRequired", "Phone number must not be empty."))
+            .Matches($"^\\d{{{minLength},{maxLength}}}$")
+            .WithMessage(
+                string.Format(
+                    localizationService.GetMessage("PhoneInvalidFormat",
+                        "Phone number must contain only digits and be between {0} and {1} characters long."),
+                    localizationService.TranslateNumber(minLength),
+                    localizationService.TranslateNumber(maxLength)
+                ))
             .Must(phone => !ContainsHtml(phone))
-            .WithMessage("Phone number must not contain HTML or markup.");
+            .WithMessage(localizationService.GetMessage("PhoneNoHtml",
+                "Phone number must not contain HTML or markup."));
     }
 
     /// <summary>
-    /// if the phone is provied and not null
-    /// Validates that a phone number is valid: contains only digits, has a length between 7 and 15, and does not contain HTML.
+    /// Validates that a phone number is valid if provided: contains only digits, has a length between configurable minimum and maximum values, and does not contain HTML.
     /// </summary>
     /// <typeparam name="T">The type of the object being validated.</typeparam>
     /// <param name="ruleBuilder">The rule builder.</param>
+    /// <param name="localizationService">The localization service for messages.</param>
+    /// <param name="minLength">The minimum allowed length for the phone number.</param>
+    /// <param name="maxLength">The maximum allowed length for the phone number.</param>
     /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, string?>
-        CustomIsValidPhoneNumberIfNotNull<T>(this IRuleBuilder<T, string?> ruleBuilder)
+    public static IRuleBuilderOptions<T, string?> CustomIsValidPhoneNumberIfNotNull<T>(
+        this IRuleBuilder<T, string?> ruleBuilder,
+        ILocalizationService localizationService,
+        int minLength = 7,
+        int maxLength = 15)
     {
         return ruleBuilder
             .Must(phone => phone == null || !string.IsNullOrWhiteSpace(phone))
-            .WithMessage("Phone number must not be empty if provided.")
-            .Must(phone => phone == null || phone.All(char.IsDigit))
-            .WithMessage("Phone number must contain only digits.")
-            .Must(phone => phone == null || (phone.Length >= 7 && phone.Length <= 15))
-            .WithMessage("Phone number must be between 7 and 15 characters long.")
+            .WithMessage(localizationService.GetMessage("PhoneRequiredIfProvided",
+                "Phone number must not be empty if provided."))
+            .Must(phone => phone == null || Regex.IsMatch(phone, $"^\\d{{{minLength},{maxLength}}}$"))
+            .WithMessage(
+                string.Format(
+                    localizationService.GetMessage("PhoneInvalidFormat",
+                        "Phone number must contain only digits and be between {0} and {1} characters long."),
+                    localizationService.TranslateNumber(minLength),
+                    localizationService.TranslateNumber(maxLength)
+                ))
             .Must(phone => phone == null || !ContainsHtml(phone))
-            .WithMessage("Phone number must not contain HTML or markup.");
+            .WithMessage(localizationService.GetMessage("PhoneNoHtml",
+                "Phone number must not contain HTML or markup."));
     }
 
+
     /// <summary>
-    /// Validates that a username or password is valid: not containing common sequences, not exceeding 50 characters, and not containing HTML.
+    /// Validates that a username is valid: not exceeding a configurable maximum length, not containing HTML, and not empty or null.
     /// </summary>
     /// <typeparam name="T">The type of the object being validated.</typeparam>
     /// <param name="ruleBuilder">The rule builder.</param>
+    /// <param name="localizationService">The localization service for messages.</param>
+    /// <param name="minLength">The minimum allowed length for the username.</param>
+    /// <param name="maxLength">The maximum allowed length for the username.</param>
     /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    /// <summary>
-    /// Validates that a username is valid: not exceeding 50 characters, not containing HTML, and not empty or null.
-    /// </summary>
-    /// <typeparam name="T">The type of the object being validated.</typeparam>
-    /// <param name="ruleBuilder">The rule builder.</param>
-    /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, string>
-        CustomIsValidUsername<T>(this IRuleBuilder<T, string> ruleBuilder)
+    public static IRuleBuilderOptions<T, string> CustomIsValidUsername<T>(
+        this IRuleBuilder<T, string> ruleBuilder,
+        ILocalizationService localizationService,
+        int minLength = 3,
+        int maxLength = 50)
     {
         return ruleBuilder
             .NotEmpty()
-            .WithMessage("Username must not be empty.")
-            .MinimumLength(3)
-            .WithMessage("Username must be at least 5 characters long.")
-            .MaximumLength(50)
-            .WithMessage("Username must not exceed 50 characters.")
+            .WithMessage(localizationService.GetMessage("UsernameRequired", "Username must not be empty."))
+            .MinimumLength(minLength)
+            .WithMessage(
+                string.Format(
+                    localizationService.GetMessage("UsernameMinLength",
+                        "Username must be at least {0} characters long."),
+                    localizationService.TranslateNumber(minLength)
+                ))
+            .MaximumLength(maxLength)
+            .WithMessage(
+                string.Format(
+                    localizationService.GetMessage("UsernameMaxLength", "Username must not exceed {0} characters."),
+                    localizationService.TranslateNumber(maxLength)
+                ))
             .Must(value => !ContainsHtml(value))
-            .WithMessage("Username must not contain HTML or markup.");
+            .WithMessage(localizationService.GetMessage("UsernameNoHtml", "Username must not contain HTML or markup."));
     }
 
+
     /// <summary>
-    /// Validates that a password is valid: must contain at least one uppercase letter, one lowercase letter, one number, not contain common sequences, have a minimum length of 7, not exceed 50 characters, not be empty, and not contain first name, last name, or username.
+    /// Validates that a password is valid: must contain at least one uppercase letter, one lowercase letter, one number, 
+    /// not contain common sequences, have a configurable minimum and maximum length, not be empty, and not contain HTML.
     /// </summary>
     /// <typeparam name="T">The type of the object being validated.</typeparam>
     /// <param name="ruleBuilder">The rule builder.</param>
-    /// <param name="firstName">The first name to check against.</param>
-    /// <param name="lastName">The last name to check against.</param>
-    /// <param name="username">The username to check against.</param>
+    /// <param name="localizationService">The localization service for messages.</param>
+    /// <param name="minLength">The minimum allowed length for the password.</param>
+    /// <param name="maxLength">The maximum allowed length for the password.</param>
     /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, string> CustomIsValidPassword<T>
-        (this IRuleBuilder<T, string> ruleBuilder)
+    public static IRuleBuilderOptions<T, string> CustomIsValidPassword<T>(
+        this IRuleBuilder<T, string> ruleBuilder,
+        ILocalizationService localizationService,
+        int minLength = 7,
+        int maxLength = 50)
     {
         return ruleBuilder
             .NotEmpty()
-            .WithMessage("Password must not be empty.")
-            .MinimumLength(7)
-            .WithMessage("Password must be at least 7 characters long.")
-            .MaximumLength(50)
-            .WithMessage("Password must not exceed 50 characters.")
+            .WithMessage(localizationService.GetMessage("PasswordRequired", "Password must not be empty."))
+            .MinimumLength(minLength)
+            .WithMessage(
+                string.Format(
+                    localizationService.GetMessage("PasswordMinLength",
+                        "Password must be at least {0} characters long."),
+                    localizationService.TranslateNumber(minLength)
+                ))
+            .MaximumLength(maxLength)
+            .WithMessage(
+                string.Format(
+                    localizationService.GetMessage("PasswordMaxLength", "Password must not exceed {0} characters."),
+                    localizationService.TranslateNumber(maxLength)
+                ))
             .Must(value => !ContainsHtml(value))
-            .WithMessage("Password must not contain HTML or markup.")
+            .WithMessage(localizationService.GetMessage("PasswordNoHtml", "Password must not contain HTML or markup."))
             .Must(value => !ContainsCommonSequences(value))
-            .WithMessage("Password must not contain common password sequences.")
+            .WithMessage(localizationService.GetMessage("PasswordNoCommonSequences",
+                "Password must not contain common password sequences."))
             .Matches("(?=.*[a-z])")
-            .WithMessage("Password must contain at least one lowercase letter.")
+            .WithMessage(localizationService.GetMessage("PasswordLowercase",
+                "Password must contain at least one lowercase letter."))
             .Matches("(?=.*[A-Z])")
-            .WithMessage("Password must contain at least one uppercase letter.")
+            .WithMessage(localizationService.GetMessage("PasswordUppercase",
+                "Password must contain at least one uppercase letter."))
             .Matches("(?=.*\\d)")
-            .WithMessage("Password must contain at least one number.");
+            .WithMessage(localizationService.GetMessage("PasswordNumber",
+                "Password must contain at least one number."));
     }
+
 
     /// <summary>
     /// Checks if a string contains common password sequences.
@@ -293,138 +422,169 @@ public static class ValidationRules
                !string.IsNullOrEmpty(username) && lowerInput.Contains(username.ToLower());
     }
 
-    /// <summary>
-    /// Validates that a string contains only digits and does not contain HTML if it is not null.
-    /// </summary>
-    /// <typeparam name="T">The type of the object being validated.</typeparam>
-    /// <param name="ruleBuilder">The rule builder.</param>
-    /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, string?> ValidateDigitsOnlyIfNotNull<T>(
-        this IRuleBuilder<T, string?> ruleBuilder)
-    {
-        return ruleBuilder
-            .Must(value => string.IsNullOrEmpty(value) || (Regex.IsMatch(value, "^\\d+$") && !ContainsHtml(value)))
-            .WithMessage("Value must contain only digits and must not contain HTML or markup.");
-    }
+/// <summary>
+/// Validates that a string contains only digits and does not contain HTML if it is not null.
+/// </summary>
+/// <typeparam name="T">The type of the object being validated.</typeparam>
+/// <param name="ruleBuilder">The rule builder.</param>
+/// <param name="localizationService">The localization service for messages.</param>
+/// <returns>An IRuleBuilderOptions object for further configuration.</returns>
+public static IRuleBuilderOptions<T, string?> ValidateDigitsOnlyIfNotNull<T>(
+    this IRuleBuilder<T, string?> ruleBuilder, 
+    ILocalizationService localizationService)
+{
+    return ruleBuilder
+        .Must(value => string.IsNullOrEmpty(value) || (Regex.IsMatch(value, "^\\d+$") && !ContainsHtml(value)))
+        .WithMessage(localizationService.GetMessage("ValueDigitsOnlyNoHtml", "Value must contain only digits and must not contain HTML or markup."));
+}
 
-    /// <summary>
-    /// Validates that a string does not contain HTML if it is not null.
-    /// </summary>
-    /// <typeparam name="T">The type of the object being validated.</typeparam>
-    /// <param name="ruleBuilder">The rule builder.</param>
-    /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, string?>
-        ValidateNoHtmlIfNotNull<T>(
-            this IRuleBuilder<T, string?> ruleBuilder)
-    {
-        return ruleBuilder
-            .Must(value => string.IsNullOrEmpty(value) || !ContainsHtml(value))
-            .WithMessage("Value must not contain HTML or markup.");
-    }
+/// <summary>
+/// Validates that a string does not contain HTML if it is not null.
+/// </summary>
+/// <typeparam name="T">The type of the object being validated.</typeparam>
+/// <param name="ruleBuilder">The rule builder.</param>
+/// <param name="localizationService">The localization service for messages.</param>
+/// <returns>An IRuleBuilderOptions object for further configuration.</returns>
+public static IRuleBuilderOptions<T, string?> ValidateNoHtmlIfNotNull<T>(
+    this IRuleBuilder<T, string?> ruleBuilder, 
+    ILocalizationService localizationService)
+{
+    return ruleBuilder
+        .Must(value => string.IsNullOrEmpty(value) || !ContainsHtml(value))
+        .WithMessage(localizationService.GetMessage("ValueNoHtml", "Value must not contain HTML or markup."));
+}
 
-    /// <summary>
-    /// Validates that a string does not contain HTML if it is not null.
-    /// </summary>
-    /// <typeparam name="T">The type of the object being validated.</typeparam>
-    /// <param name="ruleBuilder">The rule builder.</param>
-    /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, string>
-        ValidateNoHtmlNotNull<T>(
-            this IRuleBuilder<T, string> ruleBuilder)
-    {
-        return ruleBuilder
-            .Must(value => !string.IsNullOrEmpty(value) && !ContainsHtml(value))
-            .WithMessage("Value must not contain HTML or markup.");
-    }
+/// <summary>
+/// Validates that a string does not contain HTML and is not empty or null.
+/// </summary>
+/// <typeparam name="T">The type of the object being validated.</typeparam>
+/// <param name="ruleBuilder">The rule builder.</param>
+/// <param name="localizationService">The localization service for messages.</param>
+/// <returns>An IRuleBuilderOptions object for further configuration.</returns>
+public static IRuleBuilderOptions<T, string> ValidateNoHtmlNotNull<T>(
+    this IRuleBuilder<T, string> ruleBuilder, 
+    ILocalizationService localizationService)
+{
+    return ruleBuilder
+        .Must(value => !string.IsNullOrEmpty(value) && !ContainsHtml(value))
+        .WithMessage(localizationService.GetMessage("ValueRequiredNoHtml", "Value must not be empty and must not contain HTML or markup."));
+}
 
-    /// <summary>
-    /// Validates that a provided birth date is valid: not null, not in the future, and within a reasonable range (e.g., person is not older than 150 years).
-    /// </summary>
-    /// <typeparam name="T">The type of the object being validated.</typeparam>
-    /// <param name="ruleBuilder">The rule builder.</param>
-    /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, DateOnly>
-        CustomIsValidBirthDate<T>(this IRuleBuilder<T, DateOnly> ruleBuilder)
-    {
-        return ruleBuilder
-            .Must(date => date <= DateOnly.FromDateTime(DateTime.UtcNow))
-            .WithMessage("Birth date must not be in the future.")
-            .Must(date => date >= DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-150)))
-            .WithMessage("Birth date must not indicate an age older than 150 years.");
-    }
 
-    /// <summary>
-    /// Validates that a provided birth date is valid if not null: not in the future, and within a reasonable range (e.g., person is not older than 150 years).
-    /// </summary>
-    /// <typeparam name="T">The type of the object being validated.</typeparam>
-    /// <param name="ruleBuilder">The rule builder.</param>
-    /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, DateOnly?>
-        CustomIsValidBirthDateIfNotNull<T>(this IRuleBuilder<T, DateOnly?> ruleBuilder)
-    {
-        return ruleBuilder
-            .Must(date => date == null || date <= DateOnly.FromDateTime(DateTime.UtcNow))
-            .WithMessage("Birth date must not be in the future.")
-            .Must(date => date == null || date >= DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-150)))
-            .WithMessage("Birth date must not indicate an age older than 150 years.");
-    }
 
-    /// <summary>
-    /// Validates that a price is valid: must be null or a non-negative value.
-    /// </summary>
-    /// <typeparam name="T">The type of the object being validated.</typeparam>
-    /// <param name="ruleBuilder">The rule builder.</param>
-    /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, decimal>
-        CustomValidatePrice<T>(this IRuleBuilder<T, decimal> ruleBuilder)
-    {
-        return ruleBuilder
-            .Must(price => price >= 0)
-            .WithMessage("Price must be null or a non-negative value.");
-    }
 
-    /// <summary>
-    /// Validates that a price is valid: must be null or a non-negative value.
-    /// </summary>
-    /// <typeparam name="T">The type of the object being validated.</typeparam>
-    /// <param name="ruleBuilder">The rule builder.</param>
-    /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, decimal?>
-        CustomValidateNullablePrice<T>(this IRuleBuilder<T, decimal?> ruleBuilder)
-    {
-        return ruleBuilder
-            .Must(price => price == null || price >= 0)
-            .WithMessage("Price must be null or a non-negative value.");
-    }
+/// <summary>
+/// Validates that a provided birth date is valid: not null, not in the future, and within a reasonable range (e.g., person is not older than the specified maximum age).
+/// </summary>
+/// <typeparam name="T">The type of the object being validated.</typeparam>
+/// <param name="ruleBuilder">The rule builder.</param>
+/// <param name="localizationService">The localization service for messages.</param>
+/// <param name="maxAge">The maximum allowed age in years (default is 150).</param>
+/// <returns>An IRuleBuilderOptions object for further configuration.</returns>
+public static IRuleBuilderOptions<T, DateOnly> CustomIsValidBirthDate<T>(
+    this IRuleBuilder<T, DateOnly> ruleBuilder,
+    ILocalizationService localizationService,
+    int maxAge = 150)
+{
+    return ruleBuilder
+        .Must(date => date <= DateOnly.FromDateTime(DateTime.UtcNow))
+        .WithMessage(localizationService.GetMessage("BirthDateFuture", "Birth date must not be in the future."))
+        .Must(date => date >= DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-maxAge)))
+        .WithMessage(
+            string.Format(
+                localizationService.GetMessage("BirthDateMaxAge", "Birth date must not indicate an age older than {0} years."),
+                localizationService.TranslateNumber(maxAge)
+            ));
+}
 
-    /// <summary>
-    /// Validates that an ID is valid: must be a positive integer.
-    /// </summary>
-    /// <typeparam name="T">The type of the object being validated.</typeparam>
-    /// <param name="ruleBuilder">The rule builder.</param>
-    /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, int> CustomValidateId<T>(
-        this IRuleBuilder<T, int> ruleBuilder)
-    {
-        return ruleBuilder
-            .GreaterThan(0)
-            .WithMessage("ID must be a positive integer.");
-    }
+/// <summary>
+/// Validates that a provided birth date is valid if not null: not in the future, and within a reasonable range (e.g., person is not older than the specified maximum age).
+/// </summary>
+/// <typeparam name="T">The type of the object being validated.</typeparam>
+/// <param name="ruleBuilder">The rule builder.</param>
+/// <param name="localizationService">The localization service for messages.</param>
+/// <param name="maxAge">The maximum allowed age in years (default is 150).</param>
+/// <returns>An IRuleBuilderOptions object for further configuration.</returns>
+public static IRuleBuilderOptions<T, DateOnly?> CustomIsValidBirthDateIfNotNull<T>(
+    this IRuleBuilder<T, DateOnly?> ruleBuilder,
+    ILocalizationService localizationService,
+    int maxAge = 150)
+{
+    return ruleBuilder
+        .Must(date => date == null || date <= DateOnly.FromDateTime(DateTime.UtcNow))
+        .WithMessage(localizationService.GetMessage("BirthDateFuture", "Birth date must not be in the future."))
+        .Must(date => date == null || date >= DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-maxAge)))
+        .WithMessage(
+            string.Format(
+                localizationService.GetMessage("BirthDateMaxAge", "Birth date must not indicate an age older than {0} years."),
+                localizationService.TranslateNumber(maxAge)
+            ));
+}
 
-    /// <summary>
-    /// Validates that an ID is valid if not null: must be a positive integer.
-    /// </summary>
-    /// <typeparam name="T">The type of the object being validated.</typeparam>
-    /// <param name="ruleBuilder">The rule builder.</param>
-    /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
-    public static IRuleBuilderOptions<T, int?> CustomValidateNullableId<T>(
-        this IRuleBuilder<T, int?> ruleBuilder)
-    {
-        return ruleBuilder
-            .Must(id => id == null || id > 0)
-            .WithMessage("ID must be null or a positive integer.");
-    }
 
+/// <summary>
+/// Validates that a price is valid: must be a non-negative value.
+/// </summary>
+/// <typeparam name="T">The type of the object being validated.</typeparam>
+/// <param name="ruleBuilder">The rule builder.</param>
+/// <param name="localizationService">The localization service for messages.</param>
+/// <returns>An IRuleBuilderOptions object for further configuration.</returns>
+public static IRuleBuilderOptions<T, decimal> CustomValidatePrice<T>(
+    this IRuleBuilder<T, decimal> ruleBuilder,
+    ILocalizationService localizationService)
+{
+    return ruleBuilder
+        .Must(price => price >= 0)
+        .WithMessage(localizationService.GetMessage("PriceNonNegative", "Price must be a non-negative value."));
+}
+
+/// <summary>
+/// Validates that a price is valid: must be null or a non-negative value.
+/// </summary>
+/// <typeparam name="T">The type of the object being validated.</typeparam>
+/// <param name="ruleBuilder">The rule builder.</param>
+/// <param name="localizationService">The localization service for messages.</param>
+/// <returns>An IRuleBuilderOptions object for further configuration.</returns>
+public static IRuleBuilderOptions<T, decimal?> CustomValidateNullablePrice<T>(
+    this IRuleBuilder<T, decimal?> ruleBuilder,
+    ILocalizationService localizationService)
+{
+    return ruleBuilder
+        .Must(price => price == null || price >= 0)
+        .WithMessage(localizationService.GetMessage("PriceNullableNonNegative", "Price must be null or a non-negative value."));
+}
+
+/// <summary>
+/// Validates that an ID is valid: must be a positive integer.
+/// </summary>
+/// <typeparam name="T">The type of the object being validated.</typeparam>
+/// <param name="ruleBuilder">The rule builder.</param>
+/// <param name="localizationService">The localization service for messages.</param>
+/// <returns>An IRuleBuilderOptions object for further configuration.</returns>
+public static IRuleBuilderOptions<T, int> CustomValidateId<T>(
+    this IRuleBuilder<T, int> ruleBuilder,
+    ILocalizationService localizationService)
+{
+    return ruleBuilder
+        .GreaterThan(0)
+        .WithMessage(localizationService.GetMessage("IdPositive", "ID must be a positive integer."));
+}
+
+/// <summary>
+/// Validates that an ID is valid if not null: must be a positive integer.
+/// </summary>
+/// <typeparam name="T">The type of the object being validated.</typeparam>
+/// <param name="ruleBuilder">The rule builder.</param>
+/// <param name="localizationService">The localization service for messages.</param>
+/// <returns>An IRuleBuilderOptions object for further configuration.</returns>
+public static IRuleBuilderOptions<T, int?> CustomValidateNullableId<T>(
+    this IRuleBuilder<T, int?> ruleBuilder,
+    ILocalizationService localizationService)
+{
+    return ruleBuilder
+        .Must(id => id == null || id > 0)
+        .WithMessage(localizationService.GetMessage("IdNullablePositive", "ID must be null or a positive integer."));
+}
     /// <summary>
     /// Checks if a string contains HTML or markup language.
     /// </summary>
