@@ -73,4 +73,15 @@ public class Global
     public const int MaxCartItems = 20;
 
     #endregion
+    
+    
+    #region Instructor
+
+    public const string InstructorFolderName = "Instructors";
+    public const int InstructorNameMaxLength = 50;
+    public const int InstructorAboutMaxLength = 500;
+    public const int InstructorImgSize = 10;
+
+    #endregion
+    
 }

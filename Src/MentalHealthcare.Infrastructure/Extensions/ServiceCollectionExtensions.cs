@@ -62,6 +62,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICourseFavouriteRepository, CourseFavouriteRepository>();
         services.AddScoped<ICourseInteractionsRepository, CourseInteractionsRepository>();
         services.AddScoped<ICourseReview, CourseReview>();
+        services.AddScoped<IInstructorRepository, InstructorRepository>();
+
     }
 
     private static void AddIdentity(this IServiceCollection services)

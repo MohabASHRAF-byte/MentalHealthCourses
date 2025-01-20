@@ -69,6 +69,7 @@ try
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
+    app.UseDeveloperExceptionPage();
 
     if (app.Environment.IsDevelopment())
     {
