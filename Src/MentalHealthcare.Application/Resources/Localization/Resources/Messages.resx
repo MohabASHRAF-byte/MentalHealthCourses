@@ -183,4 +183,19 @@
     <data name="OldEmailNotFound" xml:space="preserve">
         <value />
     </data>
+    <data name="AdNotFound" xml:space="preserve">
+        <value />
+    </data>
+    <data name="ImageSizeExceedsLimit" xml:space="preserve">
+        <value />
+    </data>
+    <data name="AdNameLength" xml:space="preserve">
+        <value />
+    </data>
+    <data name="AdDescriptionLength" xml:space="preserve">
+        <value />
+    </data>
+    <data name="AdMustHaveImage" xml:space="preserve">
+        <value />
+    </data>
 </root>

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <root>
-    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
         <xsd:element name="root" msdata:IsDataSet="true">
-            
+
         </xsd:element>
     </xsd:schema>
     <resheader name="resmimetype">
@@ -13,10 +14,14 @@
         <value>1.3</value>
     </resheader>
     <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
     </resheader>
     <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
     </resheader>
     <data name="PermissionDenied" xml:space="preserve">
         <value>غير مسموح لك بتنفيذ هذا الإجراء.</value>
@@ -186,5 +191,29 @@
     <data name="OldEmailNotFound" xml:space="preserve">
         <value>البريد الإلكتروني القديم غير موجود: {0}
 </value>
+    </data>
+    <data name="AdMarkedInactive" xml:space="preserve">
+  <value>لم يتم تحميل أي صور لإعلان بمعرف {0}. يتم تحديده كغير نشط.</value>
+</data>
+    <data name="AdCreatedSuccess" xml:space="preserve">
+  <value>تم إنشاء الإعلان بمعرف {0} بنجاح مع {1} صور.</value>
+</data>
+    <data name="ImageSizeExceedsLimit" xml:space="preserve">
+  <value>لا يمكن أن يكون حجم الصورة أكبر من {0} ميجابايت.</value>
+</data>
+    <data name="AdNotFound" xml:space="preserve">
+        <value>الإعلان ذو الرقم {0} غير موجود.</value>
+    </data>
+    <data name="AdNameLength" xml:space="preserve">
+        <value>يجب أن يتراوح طول اسم الإعلان بين {0} و {1}</value>
+    </data>
+    <data name="AdMustHaveImage" xml:space="preserve">
+        <value>يجب أن يحتوي الإعلان على صورة واحدة على الأقل.</value>
+    </data>
+    <data name="AdDescriptionLength" xml:space="preserve">
+        <value>يجب أن يتراوح طول وصف الإعلان بين {0} و {1} حرفًا.</value>
+    </data>
+    <data name="AdminIdentityNotExist" xml:space="preserve">
+        <value>المسؤول ذو الهوية المحددة غير موجود.</value>
     </data>
 </root>

@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using MentalHealthcare.Application.BunnyServices;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
@@ -16,9 +17,12 @@ public class CreateAdvertisementCommandHandler(
     IAdvertisementRepository adRepository,
     IConfiguration configuration,
     IMapper mapper,
-    IUserContext userContext
+    IUserContext userContext,
+    ILocalizationService localizationService
 ) : IRequestHandler<CreateAdvertisementCommand, int>
 {
+    // Inside CreateAdvertisementCommandHandler class
+
     public async Task<int> Handle(CreateAdvertisementCommand request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Handling CreateAdvertisementCommand for Advertisement: {AdName}",
@@ -69,13 +73,23 @@ public class CreateAdvertisementCommandHandler(
         {
             logger.LogWarning("No images were successfully uploaded for Advertisement ID: {AdId}. Marking as inactive.",
                 newAd.AdvertisementId);
-            newAd.IsActive = false;
+
+            var inactiveMessage = localizationService.GetMessage(
+                "AdMarkedInactive",
+                "No images were successfully uploaded for Advertisement ID: {0}. Marking as inactive."
+            );
+            throw new InvalidOperationException(string.Format(inactiveMessage, newAd.AdvertisementId));
         }
 
         await adRepository.UpdateAdvertisementAsync(newAd);
 
-        logger.LogInformation("Advertisement ID: {AdId} created successfully with {ImageCount} images.",
-            newAd.AdvertisementId, newAd.AdvertisementImageUrls.Count);
+        var successMessage = localizationService.GetMessage(
+            "AdCreatedSuccess",
+            "Advertisement ID: {0} created successfully with {1} images."
+        );
+
+        logger.LogInformation(successMessage, newAd.AdvertisementId, newAd.AdvertisementImageUrls.Count);
+
         return newAd.AdvertisementId;
     }
 
@@ -91,9 +105,15 @@ public class CreateAdvertisementCommandHandler(
             var imgSizeInMb = img.Length / (1 << 20); // Convert bytes to MB
             if (imgSizeInMb > Global.AdvertisementImgSize)
             {
+                var validationErrorMessage = localizationService.GetMessage(
+                    "ImageSizeExceedsLimit",
+                    "Image size cannot be greater than {0} MB."
+                );
+
                 logger.LogWarning("Image size validation failed. Image size: {SizeInMb} MB, Allowed size: {MaxSize} MB",
                     imgSizeInMb, Global.AdvertisementImgSize);
-                throw new ArgumentException($"Image size cannot be greater than {Global.AdvertisementImgSize} MB");
+
+                throw new ArgumentException(string.Format(validationErrorMessage, Global.AdvertisementImgSize));
             }
         }
     }

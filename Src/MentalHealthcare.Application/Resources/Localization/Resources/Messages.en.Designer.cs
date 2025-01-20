@@ -368,5 +368,47 @@ namespace MentalHealthcare.Application.Resources.Localization.Resources {
                 return ResourceManager.GetString("OldEmailNotFound", resourceCulture);
             }
         }
+        
+        internal static string AdMarkedInactive {
+            get {
+                return ResourceManager.GetString("AdMarkedInactive", resourceCulture);
+            }
+        }
+        
+        internal static string AdCreatedSuccess {
+            get {
+                return ResourceManager.GetString("AdCreatedSuccess", resourceCulture);
+            }
+        }
+        
+        internal static string ImageSizeExceedsLimit {
+            get {
+                return ResourceManager.GetString("ImageSizeExceedsLimit", resourceCulture);
+            }
+        }
+        
+        internal static string AdNotFound {
+            get {
+                return ResourceManager.GetString("AdNotFound", resourceCulture);
+            }
+        }
+        
+        internal static string AdNameLength {
+            get {
+                return ResourceManager.GetString("AdNameLength", resourceCulture);
+            }
+        }
+        
+        internal static string AdDescriptionLength {
+            get {
+                return ResourceManager.GetString("AdDescriptionLength", resourceCulture);
+            }
+        }
+        
+        internal static string AdMustHaveImage {
+            get {
+                return ResourceManager.GetString("AdMustHaveImage", resourceCulture);
+            }
+        }
     }
 }
