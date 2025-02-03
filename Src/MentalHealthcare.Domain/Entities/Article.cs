@@ -14,12 +14,12 @@ namespace MentalHealthcare.Domain.Entities;
 public class Article : MaterialBe
 {
     public int ArticleId { get; set; }
-    
+    public List<ArticleImageUrl> ArticleImageUrls { get; set; } = [];
+
     public int AuthorId { get; set; } // Foreign Key property
     public Author Author { get; set; } = default!;
-    
+
     public string Content { get; set; } = default!;
-    
-    [MaxLength(Global.UrlMaxLength)] 
-    public string PhotoUrl { get; set; } = default!;
+
+    public int LastUploadImgCnt { get; set; } = 0;
 }

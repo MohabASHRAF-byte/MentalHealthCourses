@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using AngleSharp.Dom;
 using MentalHealthcare.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,15 +35,29 @@ namespace MentalHealthcare.Infrastructure.Configurations
                 entity.Property(a => a.CreatedDate)
                     .IsRequired()
                     .HasAnnotation("DataType", DataType.DateTime)
-                    .HasDefaultValueSql("GETDATE()"); 
+                    .HasDefaultValueSql("GETDATE()");
 
-                // Configure relationships
-                // Configure UploadedBy (Admin) relationship
+
+
+
+
+
+
                 // Configure Author relationship (Cascade delete for Article)
                 entity.HasOne(a => a.Author) // Relationship to Author
                     .WithMany(au => au.Articles) // One-to-many relationship
                     .HasForeignKey(a => a.AuthorId) // Foreign key property
                     .OnDelete(DeleteBehavior.Cascade); // Cascade delete when Author is deleted
+
+
+
+
+                entity.HasMany(a => a.ArticleImageUrls)
+             .WithOne(ai => ai.Article)
+             .HasForeignKey(ai => ai.ArticleId);
+
+
+
 
                 // You can configure other relationships as needed
             });

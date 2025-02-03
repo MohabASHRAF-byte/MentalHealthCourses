@@ -13,6 +13,10 @@ public class AdminSeeder(
 {
     public async Task seed()
     {
+        
+        
+        
+        
        return;
 
         if ((await dbContext.Database.GetPendingMigrationsAsync()).Any())
@@ -198,7 +202,7 @@ public class AdminSeeder(
 
         #endregion
 
-
+       
         await dbContext.AddAsync(instructor1);
         await dbContext.AddAsync(instructor2);
         // await dbContext.AddRangeAsync(Matrials);

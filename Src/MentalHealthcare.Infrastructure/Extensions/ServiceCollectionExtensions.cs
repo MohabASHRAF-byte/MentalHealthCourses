@@ -63,6 +63,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICourseInteractionsRepository, CourseInteractionsRepository>();
         services.AddScoped<ICourseReview, CourseReview>();
         services.AddScoped<IInstructorRepository, InstructorRepository>();
+        services.AddScoped<IArticleRepository, ArticleRepository>();
+
 
     }
 
