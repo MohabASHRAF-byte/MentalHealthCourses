@@ -6,8 +6,7 @@ using Microsoft.ApplicationInsights.Extensibility.Implementation;
 
 namespace MentalHealthcare.API.MiddleWares;
 
-public class 
-    GlobalErrorHandling(
+public class GlobalErrorHandling(
     ILogger<GlobalErrorHandling> logger
 ) : IMiddleware
 {

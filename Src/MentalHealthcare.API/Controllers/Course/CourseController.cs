@@ -67,7 +67,8 @@ public class CourseController(IMediator mediator) : ControllerBase
     {
         var query = new GetCourseByIdQuery { Id = courseId };
         var result = await mediator.Send(query);
-        return Ok(result);
+        var operationResult = OperationResult<CourseDto>.SuccessResult(result);
+        return Ok(operationResult);
     }
 
     /// <summary>

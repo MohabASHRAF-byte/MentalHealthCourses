@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 
 namespace MentalHealthcare.Application.Instructors.Commands.Create
 {
@@ -12,12 +13,12 @@ namespace MentalHealthcare.Application.Instructors.Commands.Create
     {
 
 
-        public CreateInstructorCommandValidator()
+        public CreateInstructorCommandValidator(ILocalizationService localizationService)
         {
 
 
             RuleFor(x => x.Name)
-                .CustomIsValidName();
+                .CustomIsValidName(localizationService);
 
 
             RuleFor(x => x.Name)

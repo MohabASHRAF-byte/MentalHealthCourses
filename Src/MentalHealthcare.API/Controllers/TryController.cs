@@ -15,10 +15,8 @@ public class FileUploadController(
     [HttpGet("message")]
     public async Task<IActionResult> UploadFileAsync(string key, string lang)
     {
-        string message = string.Format(
-            localizationService.GetMessage("ThumbnailInvalidSize"),
-            localizationService.TranslateNumber(7384.898m)
-        );
-        return Ok(message);
+        var gfh = 900;
+        throw new Exception("dfd");
+        return Ok("sdfadf");
     }
 }

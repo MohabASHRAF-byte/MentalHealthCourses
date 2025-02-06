@@ -1,6 +1,7 @@
 {
   "profiles": {
     "http": {
+      "launchBrowser": false,
       "commandName": "Project",
       "launchUrl": "swagger",
       "environmentVariables": {

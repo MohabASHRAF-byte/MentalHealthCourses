@@ -19,7 +19,7 @@ public class UploadPdfLessonCommandHandler(
     ICourseLessonRepository courseLessonRepository,
     IConfiguration configuration,
     IUserContext userContext
-    ) : IRequestHandler<UploadPdfLessonCommand, int>
+) : IRequestHandler<UploadPdfLessonCommand, int>
 {
     public async Task<int> Handle(UploadPdfLessonCommand request, CancellationToken cancellationToken)
     {
@@ -48,12 +48,12 @@ public class UploadPdfLessonCommandHandler(
         logger.LogInformation("Initializing new CourseLesson entity for PDF upload.");
         var lesson = new CourseLesson
         {
-            AdminId = currentUser.AdminId!.Value, 
+            AdminId = currentUser.AdminId!.Value,
             LessonName = request.PdfName,
             ContentType = ContentType.Pdf,
             courseId = request.CourseId,
             CourseSectionId = request.SectionId,
-            Url = string.Empty ,// URL will be updated after uploading the file.
+            Url = string.Empty, // URL will be updated after uploading the file.
             OrderOnCourse = 1000000,
             LessonLengthInSeconds = request.LessonLengthInSeconds,
         };
