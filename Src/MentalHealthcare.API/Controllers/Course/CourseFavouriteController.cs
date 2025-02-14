@@ -47,7 +47,8 @@ public class CourseFavouriteController(
             CourseId = courseId,
         };
         var result = await mediator.Send(command);
-        return Ok(result);
+        var op = OperationResult<PageResult<SystemUser>>.SuccessResult(result);
+        return Ok(op);
     }
 
     [HttpGet]
@@ -58,6 +59,7 @@ public class CourseFavouriteController(
     public async Task<IActionResult> GetFavouriteCourses([FromQuery] GetFavouriteCoursesQuery query)
     {
         var result = await mediator.Send(query);
-        return Ok(result);
+        var op = OperationResult<PageResult<CourseViewDto>>.SuccessResult(result);
+        return Ok(op);
     }
 }

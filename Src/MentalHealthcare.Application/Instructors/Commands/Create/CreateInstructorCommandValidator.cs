@@ -17,12 +17,12 @@ namespace MentalHealthcare.Application.Instructors.Commands.Create
         {
 
 
-            RuleFor(x => x.Name)
-                .CustomIsValidName(localizationService);
+            // RuleFor(x => x.Name)
+            //     .CustomIsValidName(localizationService);
 
 
-            RuleFor(x => x.Name)
-                .CustomIsValidAbout();
+            // RuleFor(x => x.Name)
+            //     .CustomIsValidAbout();
 
 
 

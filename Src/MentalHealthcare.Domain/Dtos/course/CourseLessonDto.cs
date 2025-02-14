@@ -16,5 +16,6 @@ public class CourseLessonDto
     public int views { get; set; } = 0;
     public string Url { get; set; } = string.Empty;
     public int LessonLengthInSeconds { get; set; } = 0;
+    
     public ContentType ContentType { set; get; }
 }

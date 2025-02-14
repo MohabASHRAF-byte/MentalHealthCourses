@@ -30,7 +30,12 @@ public class ContactUsController(
     public async Task<IActionResult> Post(SubmitContactUsCommand command)
     {
         var result = await mediator.Send(command);
-        return CreatedAtAction(nameof(GetFormId), new { formId = result }, null);
+        var op = OperationResult<object>
+            .SuccessResult(new
+            {
+                ContactUsId = result
+            });
+        return Ok(op);
     }
 
     [HttpDelete]
@@ -56,7 +61,9 @@ public class ContactUsController(
     {
         var query = new GetContactFormByIdQuery { Id = formId };
         var result = await mediator.Send(query);
-        return Ok(result);
+        var op = OperationResult<ContactUsForm>
+            .SuccessResult(result);
+        return Ok(op);
     }
 
     [HttpGet]
@@ -69,7 +76,9 @@ public class ContactUsController(
     public async Task<IActionResult> GetForms([FromQuery] GetAllContactFormsQuery query)
     {
         var result = await mediator.Send(query);
-        return Ok(result);
+        var op =  OperationResult<PageResult<ContactUsForm>>
+            .SuccessResult(result);
+        return Ok(op);
     }
 
     [HttpPut]

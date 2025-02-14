@@ -1,5 +1,6 @@
 using MediatR;
 using MentalHealthcare.API.Docs;
+using MentalHealthcare.Application.Common;
 using MentalHealthcare.Application.Courses.LessonResources.Commands.Delete_Resource;
 using MentalHealthcare.Application.Courses.LessonResources.Commands.Update_resource_Order;
 using MentalHealthcare.Application.Courses.LessonResources.Commands.Update_Resource;
@@ -7,6 +8,7 @@ using MentalHealthcare.Application.Courses.LessonResources.Commands.Upload_Resou
 using MentalHealthcare.Application.Courses.LessonResources.Queries.Get_By_id;
 using MentalHealthcare.Application.Courses.LessonResources.Queries.GetAll_Resources;
 using MentalHealthcare.Domain.Constants;
+using MentalHealthcare.Domain.Dtos.course;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -34,7 +36,9 @@ public class CoursesResourceController(IMediator mediator) : ControllerBase
             LessonId = lessonId,
         };
         var result = await mediator.Send(query);
-        return Ok(result);
+        var op = OperationResult<List<CourseResourceDto> >
+            .SuccessResult(result);
+        return Ok(op);
     }
 
     // 2. Get a specific resource by its ID
@@ -53,7 +57,9 @@ public class CoursesResourceController(IMediator mediator) : ControllerBase
             ResourceId = resourceId
         };
         var result = await mediator.Send(query);
-        return Ok(result);
+        var op = OperationResult<CourseResourceDto>
+                 .SuccessResult(result);
+        return Ok(op);
     }
 
     // 3. Upload a new resource to the lesson
@@ -71,7 +77,12 @@ public class CoursesResourceController(IMediator mediator) : ControllerBase
         command.SectionId = sectionId;
         command.LessonId = lessonId;
         var result = await mediator.Send(command);
-        return Ok(result);
+        var op = OperationResult<object>
+            .SuccessResult(new
+            {
+                lessonId = result
+            });
+        return Ok(op);
     }
 
     // 4. Update an existing resource
@@ -87,8 +98,8 @@ public class CoursesResourceController(IMediator mediator) : ControllerBase
         command.SectionId = sectionId;
         command.LessonId = lessonId;
         command.ResourceId = resourceId;
-        var result = await mediator.Send(command);
-        return Ok(result);
+        await mediator.Send(command);
+        return NoContent();
     }
 
     // 5. Update the order of resources
@@ -102,8 +113,8 @@ public class CoursesResourceController(IMediator mediator) : ControllerBase
         command.CourseId = courseId;
         command.SectionId = sectionId;
         command.LessonId = lessonId;
-        var result = await mediator.Send(command);
-        return Ok(result);
+        await mediator.Send(command);
+        return NoContent();
     }
 
     // 6. Delete an existing resource from the lesson

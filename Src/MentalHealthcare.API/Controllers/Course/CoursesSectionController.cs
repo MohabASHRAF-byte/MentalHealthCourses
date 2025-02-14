@@ -1,6 +1,7 @@
 using System.Net;
 using MediatR;
 using MentalHealthcare.API.Docs;
+using MentalHealthcare.Application.Common;
 using MentalHealthcare.Application.Courses.Sections.Commands.Add_Section;
 using MentalHealthcare.Application.Courses.Sections.Commands.Remove_Section;
 using MentalHealthcare.Application.Courses.Sections.Commands.Update_order;
@@ -8,6 +9,7 @@ using MentalHealthcare.Application.Courses.Sections.Commands.Update_Section;
 using MentalHealthcare.Application.Courses.Sections.Queries.Get_All;
 using MentalHealthcare.Application.Courses.Sections.Queries.Get_By_Id;
 using MentalHealthcare.Domain.Constants;
+using MentalHealthcare.Domain.Dtos.course;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -33,7 +35,12 @@ public class CoursesSectionController(
     {
         command.CourseId = courseId;
         var result = await mediator.Send(command);
-        return CreatedAtAction(nameof(GetSectionById), new { courseId, sectionId = result }, result);
+        var op = OperationResult<object>
+            .SuccessResult(new
+            {
+                secctionId = result,
+            });
+        return Ok(op);
     }
 
     [Authorize(AuthenticationSchemes = "Bearer")]
@@ -72,7 +79,6 @@ public class CoursesSectionController(
         Description = "Updates the order of sections within the specified course."
     )]
     [Authorize(AuthenticationSchemes = "Bearer")]
-
     public async Task<IActionResult> ChangeSectionOrder([FromRoute] int courseId,
         [FromBody] UpdateSectionsOrderCommand command)
     {
@@ -87,7 +93,6 @@ public class CoursesSectionController(
         Description = "Fetches details of a specific section from the course."
     )]
     [Authorize(AuthenticationSchemes = "Bearer")]
-
     public async Task<IActionResult> GetSectionById([FromRoute] int courseId, [FromRoute] int sectionId)
     {
         var query = new GetSectionByIdCommand()
@@ -97,7 +102,9 @@ public class CoursesSectionController(
         };
 
         var result = await mediator.Send(query);
-        return Ok(result);
+        var op = OperationResult<CourseSectionDto>
+            .SuccessResult(result);
+        return Ok(op);
     }
 
     [HttpGet]
@@ -106,11 +113,12 @@ public class CoursesSectionController(
         Description = "Fetches all sections within the specified course."
     )]
     [Authorize(AuthenticationSchemes = "Bearer")]
-
     public async Task<IActionResult> GetSections([FromRoute] int courseId, [FromQuery] GetAllCourseSectionsQuery query)
     {
         query.courseId = courseId;
         var result = await mediator.Send(query);
-        return Ok(result);
+        var op = OperationResult<IEnumerable<CourseSectionViewDto>>
+            .SuccessResult(result);
+        return Ok(op);
     }
 }

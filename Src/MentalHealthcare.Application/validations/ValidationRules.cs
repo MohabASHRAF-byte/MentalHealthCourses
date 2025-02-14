@@ -227,7 +227,8 @@ public static class ValidationRules
     }
 
     /// <summary>
-    /// Validates that a name is either null or a valid value: not exceeding a configurable maximum length, not containing HTML, and not empty if provided.
+    /// Validates that a name is either null or a valid value: not exceeding a configurable maximum length, 
+    /// not containing HTML, and not empty if provided.
     /// </summary>
     /// <typeparam name="T">The type of the object being validated.</typeparam>
     /// <param name="ruleBuilder">The rule builder.</param>
@@ -240,11 +241,8 @@ public static class ValidationRules
         int maxLength = 30)
     {
         return ruleBuilder
-            .Must(name => name == null || !string.IsNullOrWhiteSpace(name))
-            .WithMessage(
-                localizationService.GetMessage("NameRequiredIfProvided", "Name must not be empty if provided."))
             .Must(name => name == null || name.Length <= maxLength)
-            .WithMessage(
+            .WithMessage(name => 
                 string.Format(
                     localizationService.GetMessage("NameMaxLength", "Name must not exceed {0} characters."),
                     localizationService.TranslateNumber(maxLength)

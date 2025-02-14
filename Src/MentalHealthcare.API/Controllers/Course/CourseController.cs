@@ -34,6 +34,12 @@ public class CourseController(IMediator mediator) : ControllerBase
     )
     {
         var result = await mediator.Send(command);
+        var op = OperationResult<object>
+            .SuccessResult(new
+            {
+                courseId = result
+            });
+        return Ok(op);
         return CreatedAtAction(nameof(CreateCourse), new { id = result }, new { courseId = result });
 
     }

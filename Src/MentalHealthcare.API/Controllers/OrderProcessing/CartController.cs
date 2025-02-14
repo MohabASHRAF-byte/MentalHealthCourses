@@ -1,5 +1,6 @@
 using MediatR;
 using MentalHealthcare.API.Docs;
+using MentalHealthcare.Application.Common;
 using MentalHealthcare.Application.OrderProcessing.Cart.Commands.Add_to_Cart;
 using MentalHealthcare.Application.OrderProcessing.Cart.Commands.Clear_Cart;
 using MentalHealthcare.Application.OrderProcessing.Cart.Commands.Delete_from_cart;
@@ -16,7 +17,6 @@ namespace MentalHealthcare.API.Controllers.OrderProcessing;
 [Route("api/cart")]
 [ApiExplorerSettings(GroupName = Global.MobileVersion)]
 [Authorize(AuthenticationSchemes = "Bearer")]
-
 public class CartController(
     IMediator mediator
 ) : ControllerBase
@@ -28,8 +28,8 @@ public class CartController(
     [SwaggerOperation(Summary = "Add to Cart", Description = OrderProcessingDocs.AddToCartDescription)]
     public async Task<IActionResult> AddToCart(AddToCartCommand command)
     {
-        var id = await mediator.Send(command);
-        return Created($"/api/cart/items/{id}", new { id });
+        await mediator.Send(command);
+        return NoContent();
     }
 
     /// <summary>
@@ -41,7 +41,9 @@ public class CartController(
     public async Task<IActionResult> GetCartItems([FromQuery] GetCartItemsQuery query)
     {
         var result = await mediator.Send(query);
-        return Ok(result);
+        var op = OperationResult<CartDto>
+            .SuccessResult(result);
+        return Ok(op);
     }
 
     /// <summary>
@@ -56,7 +58,7 @@ public class CartController(
             CourseId = itemId
         };
         await mediator.Send(command);
-        return Ok();
+        return NoContent();
     }
 
     /// <summary>
@@ -67,6 +69,6 @@ public class CartController(
     public async Task<IActionResult> ClearCart()
     {
         await mediator.Send(new ClearCartItemsCommand());
-        return Ok();
+        return NoContent();
     }
 }

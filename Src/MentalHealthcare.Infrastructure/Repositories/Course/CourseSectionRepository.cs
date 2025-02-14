@@ -5,6 +5,7 @@ using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
 using MentalHealthcare.Infrastructure.Persistence;
 using MentalHealthcare.Infrastructure.scripts;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace MentalHealthcare.Infrastructure.Repositories.Course;
@@ -15,21 +16,44 @@ public class CourseSectionRepository(
 {
     public async Task IsSectionExistAndUpdatableAsync(int courseId, int sectionId)
     {
+        // Check if the section exists
         var exists = await dbContext.CourseSections
             .AsNoTracking()
             .AnyAsync(c => c.CourseSectionId == sectionId);
-        
+
         if (!exists)
         {
             throw new ResourceNotFound(nameof(CourseSection), sectionId.ToString());
         }
-        var updatable = await dbContext.CourseProgresses
-            .AnyAsync(progress =>progress.CourseId == courseId );
-        if (updatable)
+
+        // Check if the course has any students in progress
+        var hasStudents = await dbContext.CourseProgresses
+            .AnyAsync(progress => progress.CourseId == courseId);
+
+        if (hasStudents)
         {
-            throw new Exception("You can't update the section if course have already students please try to insert in the last section ");
+            // Get the max order of all sections in the course
+            var maxOrder = await dbContext.CourseSections
+                .Where(c => c.CourseId == courseId)
+                .MaxAsync(c => c.Order);
+
+            // Get the order of the current section
+            var sectionOrder = await dbContext.CourseSections
+                .Where(c => c.CourseSectionId == sectionId)
+                .Select(c => c.Order)
+                .FirstOrDefaultAsync();
+
+            // Allow updating only if this is the last section
+            if (sectionOrder != maxOrder)
+            {
+                throw new BadHttpRequestException(
+                    "You can't update this section because the course already has students. " +
+                    "Please try inserting it as the last section."
+                );
+            }
         }
     }
+
 
 
     public async Task<int> AddCourseSection(CourseSection courseSection)

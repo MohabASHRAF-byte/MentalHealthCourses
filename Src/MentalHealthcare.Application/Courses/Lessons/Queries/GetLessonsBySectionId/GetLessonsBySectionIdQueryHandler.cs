@@ -39,7 +39,7 @@ public class GetLessonsBySectionIdQueryHandler(
         // Retrieve lessons from the repository
         var lessons = await lessonRepository.GetCourseLessonsDto(request.CourseId, request.CourseSectionId);
 
-        if (lessons == null || lessons.Count == 0)
+        if (lessons == null )
         {
             logger.LogWarning("No lessons found for course ID {CourseId} and section ID {SectionId}.", request.CourseId, request.CourseSectionId);
             throw new ResourceNotFound("course",$"{request.CourseId}.");

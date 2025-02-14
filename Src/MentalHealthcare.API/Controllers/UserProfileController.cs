@@ -1,5 +1,6 @@
 using MediatR;
 using MentalHealthcare.API.Docs;
+using MentalHealthcare.Application.Common;
 using MentalHealthcare.Application.SystemUsers.Profile.GetUserProfileData;
 using MentalHealthcare.Application.SystemUsers.Profile.UpdateProfile;
 using MentalHealthcare.Domain.Constants;
@@ -37,6 +38,8 @@ public class UserProfileController(
     {
         var query = new GetUserProfileDataQuery();
         var result = await mediator.Send(query);
-        return Ok(result);
+        var op = OperationResult<UserProfileDto>
+            .SuccessResult(result);
+        return Ok(op);
     }
 }

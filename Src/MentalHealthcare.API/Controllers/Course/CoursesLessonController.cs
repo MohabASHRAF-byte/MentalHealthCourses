@@ -1,4 +1,5 @@
 using MediatR;
+using MentalHealthcare.Application.Common;
 using MentalHealthcare.Application.Courses.Lessons.Commands.ConfirmUpload;
 using MentalHealthcare.Application.Courses.Lessons.Commands.CreateVideo;
 using MentalHealthcare.Application.Courses.Lessons.Commands.RemoveLesson;
@@ -30,7 +31,9 @@ public class LessonsController(IMediator mediator) : ControllerBase
         command.CourseId = courseId;
         command.CourseSectionId = sectionId;
         var result = await mediator.Send(command);
-        return Ok(result);
+        var op = OperationResult<CreateVideoCommandResponse>
+            .SuccessResult(result);
+        return Ok(op);
     }
 
     [HttpPost("video/confirm")]
@@ -42,12 +45,12 @@ public class LessonsController(IMediator mediator) : ControllerBase
         command.CourseId = courseId;
         command.SectionId = sectionId;
         var result = await mediator.Send(command);
-        return CreatedAtAction(nameof(GetLesson), new
-        {
-            courseId,
-            sectionId,
-            lessonId = result
-        }, null);
+        var op = OperationResult<object>
+            .SuccessResult(new
+            {
+                lessonId = result
+            });
+        return Ok(op);
     }
 
     [HttpPost("pdf")]
@@ -60,12 +63,12 @@ public class LessonsController(IMediator mediator) : ControllerBase
         command.CourseId = courseId;
         command.SectionId = sectionId;
         var result = await mediator.Send(command);
-        return CreatedAtAction(nameof(GetLesson), new
-        {
-            courseId,
-            sectionId,
-            lessonId = result
-        }, null);
+        var op = OperationResult<object>
+            .SuccessResult(new
+            {
+                lessonId = result
+            });
+        return Ok(op);
     }
 
     [HttpPatch("{lessonId}")]
@@ -78,9 +81,8 @@ public class LessonsController(IMediator mediator) : ControllerBase
         command.CourseId = courseId;
         command.SectionId = sectionId;
         command.LessonId = lessonId;
-        var result = await mediator.Send(command);
-
-        return Ok(result);
+        await mediator.Send(command);
+        return NoContent();
     }
 
     [HttpPatch("order")]
@@ -124,7 +126,9 @@ public class LessonsController(IMediator mediator) : ControllerBase
             CourseSectionId = sectionId,
         };
         var result = await mediator.Send(command);
-        return Ok(result);
+        var op = OperationResult<List<CourseLessonViewDto> >
+                 .SuccessResult(result);
+        return Ok(op);
     }
 
     [HttpGet("{lessonId}")]
@@ -141,6 +145,8 @@ public class LessonsController(IMediator mediator) : ControllerBase
             LessonId = lessonId
         };
         var result = await mediator.Send(command);
-        return Ok(result);
+        var op = OperationResult<CourseLessonDto>
+                 .SuccessResult(result);
+        return Ok(op);
     }
 }

@@ -57,7 +57,8 @@ public class GlobalErrorHandling(
             context.Response.ContentType = "application/json";
 
             await context.Response.WriteAsJsonAsync(ret);
-        }catch (InvalidOtp ex)
+        }
+        catch (InvalidOtp ex)
         {
             logger.LogError(ex, "otp is invalid");
             context.Response.StatusCode = 400;
@@ -66,6 +67,16 @@ public class GlobalErrorHandling(
             context.Response.ContentType = "application/json";
 
             await context.Response.WriteAsJsonAsync(ret);
+        }
+        catch (BadHttpRequestException ex)
+        {
+            logger.LogError(ex, "BadHttpRequest: {Message}", ex.Message);
+            context.Response.StatusCode = 400;
+            var ret = OperationResult<string>.Failure("Bad Request", statusCode: StateCode.BadRequest);
+            ret.Errors.Add(ex.Message);
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsJsonAsync(ret);
+
         }
         catch (Exception ex)
         {

@@ -35,7 +35,12 @@ public class AdvertisementController(
     public async Task<IActionResult> CreateAdvertisement([FromForm] CreateAdvertisementCommand command)
     {
         var advertisementId = await mediator.Send(command);
-        return CreatedAtAction(nameof(GetAdvertisementById), new { advertisementId = advertisementId }, null);
+        var op = OperationResult<object>
+            .SuccessResult(new
+            {
+                advertisementId = advertisementId
+            });
+        return Ok(op);
     }
     [SwaggerOperation(Summary="Get all Advertisements",
         Description = AdvertisementControllerDocs.GetAllDescription)]
@@ -44,7 +49,9 @@ public class AdvertisementController(
     public async Task<IActionResult> GetAllAdvertisements([FromQuery]GetAllAdvertisementsQuery query)
     {
         var advertisements = await mediator.Send(query);
-        return Ok(advertisements);
+        var op = OperationResult<PageResult<AdvertisementDto> >
+            .SuccessResult(advertisements);
+        return Ok(op);
     }
     [SwaggerOperation(Summary = "Get the add detailed with it's id",
         Description = AdvertisementControllerDocs.GetByIdDescription
@@ -59,7 +66,9 @@ public class AdvertisementController(
             AdvertisementId = advertisementId
         };
         var advertisement = await mediator.Send(query);
-        return Ok(advertisement);
+        var op = OperationResult<AdvertisementDto>
+            .SuccessResult(advertisement);
+        return Ok(op);
     }
 
     [HttpDelete("{advertisementId}")]
@@ -82,6 +91,8 @@ public class AdvertisementController(
     {
         command.AdvertisementId = advertisementId;
         var advertisement = await mediator.Send(command);
-        return CreatedAtAction(nameof(GetAdvertisementById), new { advertisementId = advertisement }, null);
+        var op = OperationResult<object>
+            .SuccessResult(new { advertisementId = advertisement });
+        return Ok(op);
     }
 }

@@ -112,6 +112,8 @@ public class CourseInteractionsRepository(
         {
             CourseLessonId = lesson.CourseLessonId,
             LessonName = lesson.LessonName,
+            Url = lesson.Url,
+            LessonLengthInSeconds = lesson.LessonLengthInSeconds,
             CourseLessonResources = lesson.CourseLessonResources?
                 .Select(resource => new CourseResourceDto
                 {

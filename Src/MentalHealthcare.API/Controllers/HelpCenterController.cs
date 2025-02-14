@@ -1,10 +1,12 @@
 using MediatR;
 using MentalHealthcare.API.Docs;
+using MentalHealthcare.Application.Common;
 using MentalHealthcare.Application.HelpCenterItem.Commands.Create;
 using MentalHealthcare.Application.HelpCenterItem.Commands.Delete;
 using MentalHealthcare.Application.HelpCenterItem.Commands.Update;
 using MentalHealthcare.Application.HelpCenterItem.Queries;
 using MentalHealthcare.Domain.Constants;
+using MentalHealthcare.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -65,7 +67,9 @@ public class HelpCenterController(
     public async Task<IActionResult> GetTerm([FromQuery] GetHelpCenterItemQuery query)
     {
         var terms = await mediator.Send(query);
-        return Ok(terms);
+        var op = OperationResult<List<HelpCenterItem>>
+            .SuccessResult(terms);
+        return Ok(op);
     }
 
     /// <summary>

@@ -1,5 +1,6 @@
 using MediatR;
 using MentalHealthcare.API.Docs;
+using MentalHealthcare.Application.Common;
 using MentalHealthcare.Application.Courses.Course_Interactions.Commands.Complete_Lesson;
 using MentalHealthcare.Application.Courses.Course_Interactions.Commands.Enroll_Course;
 using MentalHealthcare.Application.Courses.Course_Interactions.Queries.GetLesson;
@@ -77,7 +78,9 @@ public class CourseInteractionsController(
             LessonId = lessonId
         };
         var result = await mediator.Send(query);
-        return Ok(result);
+        var op = OperationResult<CourseLessonDto>
+            .SuccessResult(result);
+        return Ok(op);
     }
 
     /// <summary>
@@ -92,6 +95,8 @@ public class CourseInteractionsController(
     public async Task<IActionResult> GetActiveCourses([FromQuery] GetMyCoursesQuery query)
     {
         var result = await mediator.Send(query);
-        return Ok(result);
+        var op = OperationResult<PageResult<CourseActivityDto>>
+            .SuccessResult(result);
+        return Ok(op);
     }
 }

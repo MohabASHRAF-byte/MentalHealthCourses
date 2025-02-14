@@ -29,7 +29,12 @@ public class CourseReviewController(
     {
         command.CourseId = courseId;
         var res = await mediator.Send(command);
-        return Ok(res);
+        var op = OperationResult<object>
+            .SuccessResult(new
+            {
+                courseReviewId = res,
+            });
+        return Ok(op);
     }
 
     [HttpGet("{courseId}/reviews")]
@@ -45,7 +50,9 @@ public class CourseReviewController(
     {
         query.CourseId = courseId;
         var res = await mediator.Send(query);
-        return Ok(res);
+        var op = OperationResult<PageResult<UserReviewDto>>
+            .SuccessResult(res);
+        return Ok(op);
     }
 
     [HttpGet("{courseId}/reviews/{reviewId}")]
@@ -65,7 +72,9 @@ public class CourseReviewController(
             ReviewId = reviewId
         };
         var res = await mediator.Send(query);
-        return Ok(res);
+        var op = OperationResult<UserReviewDto>
+                 .SuccessResult(res);
+        return Ok(op);
     }
 
     [HttpPut("{courseId}/reviews/{reviewId}")]

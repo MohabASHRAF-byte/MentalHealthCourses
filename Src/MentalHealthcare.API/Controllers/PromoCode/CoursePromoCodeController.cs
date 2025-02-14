@@ -45,7 +45,9 @@ public class CoursePromoCodeController(
         {
             CoursePromoCodeId = coursePromoCodeId
         });
-        return Ok(query);
+        var op = OperationResult<CoursePromoCodeDto>
+            .SuccessResult(query);
+        return Ok(op);
     }
 
     [HttpGet("{courseId}/promocodes")]
@@ -59,7 +61,9 @@ public class CoursePromoCodeController(
     {
         query.CourseId = courseId;
         var queryResult = await mediator.Send(query);
-        return Ok(queryResult);
+        var op = OperationResult<PageResult<CoursePromoCodeDto>>
+            .SuccessResult(queryResult);
+        return Ok(op);
     }
 
     [HttpPut("{courseId}/promocode/{promoCodeId}")]

@@ -18,7 +18,6 @@ namespace MentalHealthcare.API.Controllers.PromoCode;
 [Route("api/promocode")]
 [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
 [Authorize(AuthenticationSchemes = "Bearer")]
-
 public class GeneralPromoCodeController(
     IMediator mediator
 ) : ControllerBase
@@ -31,7 +30,13 @@ public class GeneralPromoCodeController(
     public async Task<ActionResult> Create(AddGeneralPromoCodeCommand command)
     {
         var id = await mediator.Send(command);
-        return CreatedAtAction(nameof(Get), new { generalPromoCodeId = id }, null);
+        var op = OperationResult<object>
+            .SuccessResult(new
+            {
+                GeneralPromoCode = id
+            });
+        return Ok(op);
+        
     }
 
     /// <summary>
@@ -45,7 +50,9 @@ public class GeneralPromoCodeController(
         {
             PromoCodeId = generalPromoCodeId
         });
-        return Ok(query);
+        var op = OperationResult<GeneralPromoCodeDto>
+            .SuccessResult(query);
+        return Ok(op);
     }
 
     /// <summary>
@@ -53,11 +60,14 @@ public class GeneralPromoCodeController(
     /// </summary>
     [HttpGet]
     [ProducesResponseType(typeof(PageResult<GeneralPromoCodeDto>), 200)]
-    [SwaggerOperation(Summary = "Retrieve all promo codes.", Description = PromoCodesDocs.GetGeneralPromoCodesDescription)]
+    [SwaggerOperation(Summary = "Retrieve all promo codes.",
+        Description = PromoCodesDocs.GetGeneralPromoCodesDescription)]
     public async Task<ActionResult> Get([FromQuery] GetAllGeneralPromoCodeQuery query)
     {
         var queryResult = await mediator.Send(query);
-        return Ok(queryResult);
+        var op = OperationResult<PageResult<GeneralPromoCodeDto>>
+            .SuccessResult(queryResult);
+        return Ok(op);
     }
 
     /// <summary>
@@ -80,7 +90,8 @@ public class GeneralPromoCodeController(
     /// </summary>
     [HttpPut("{promoCodeId}")]
     [SwaggerOperation(Summary = "Update a promo code by ID.")]
-    public async Task<IActionResult> Update([FromRoute] int promoCodeId, [FromBody] UpdateGeneralPromoCodeCommand updateGeneralPromoCodeCommand)
+    public async Task<IActionResult> Update([FromRoute] int promoCodeId,
+        [FromBody] UpdateGeneralPromoCodeCommand updateGeneralPromoCodeCommand)
     {
         updateGeneralPromoCodeCommand.GeneralPromoCodeId = promoCodeId;
         await mediator.Send(updateGeneralPromoCodeCommand);
