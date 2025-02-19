@@ -4,6 +4,7 @@ using MentalHealthcare.Application.Courses.LessonResources.Queries.Get_By_id;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos.course;
+using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
 using Microsoft.Extensions.Logging;
 
@@ -21,18 +22,7 @@ public class GetResourceByIdQueryHandler(
         logger.LogInformation("Starting GetResourceByIdQuery for Resource ID: {ResourceId}", request.ResourceId);
 
         // Authenticate and validate admin permissions
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            var userDetails = currentUser == null
-                ? "User is null"
-                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
-
-            logger.LogWarning("Unauthorized access attempt to fetch resource. User details: {UserDetails}", userDetails);
-            throw new UnauthorizedAccessException("You do not have permission to access this resource.");
-        }
-
-        logger.LogInformation("Admin access granted for user {UserId}", currentUser.Id);
+        userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
 
         // Fetch the resource
         logger.LogInformation("Fetching resource with ID: {ResourceId}", request.ResourceId);
@@ -41,7 +31,10 @@ public class GetResourceByIdQueryHandler(
         if (resource == null)
         {
             logger.LogWarning("Resource with ID {ResourceId} not found.", request.ResourceId);
-            throw new KeyNotFoundException($"Resource with ID {request.ResourceId} not found.");
+            throw new ResourceNotFound(
+                "Resource",
+                "مورد",
+                request.ResourceId.ToString());
         }
 
         logger.LogInformation("Successfully fetched resource with ID: {ResourceId}", request.ResourceId);

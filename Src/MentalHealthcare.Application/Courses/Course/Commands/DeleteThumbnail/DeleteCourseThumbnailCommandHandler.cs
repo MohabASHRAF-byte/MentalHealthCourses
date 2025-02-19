@@ -20,25 +20,13 @@ public class DeleteCourseThumbnailCommandHandler(
     {
         logger.LogInformation("Handling DeleteCourseThumbnailCommand for CourseId: {CourseId}", request.CourseId);
 
-        // Retrieve current user and validate permissions
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            logger.LogWarning(
-                "Unauthorized access attempt to delete a thumbnail. User information: {UserDetails}",
-                currentUser == null
-                    ? "User is null"
-                    : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}"
-            );
-            throw new ForBidenException("You do not have permission to delete a thumbnail for this course.");
-        }
-
+        userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
         logger.LogInformation("Retrieving course details for CourseId: {CourseId}", request.CourseId);
         var course = await courseRepository.GetMinimalCourseByIdAsync(request.CourseId);
         if (course == null)
         {
             logger.LogError("Course with ID {CourseId} not found.", request.CourseId);
-            throw new ResourceNotFound("Course", request.CourseId.ToString());
+            throw new ResourceNotFound(nameof(course), "دورة تدريبية", request.CourseId.ToString());
         }
 
         if (string.IsNullOrEmpty(course.ThumbnailName))

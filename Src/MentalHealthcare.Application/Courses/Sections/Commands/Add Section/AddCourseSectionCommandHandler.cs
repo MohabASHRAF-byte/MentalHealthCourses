@@ -22,16 +22,7 @@ public class AddCourseSectionCommandHandler(
         logger.LogInformation("Start handling AddCourseSectionCommand for CourseId: {CourseId}", request.CourseId);
 
         // Retrieve current user and validate permissions
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            var userDetails = currentUser == null
-                ? "User is null"
-                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
-
-            logger.LogWarning("Unauthorized access attempt to add a course section. User details: {UserDetails}", userDetails);
-            throw new ForBidenException("You do not have permission to add a section to this course.");
-        }
+        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
 
         logger.LogInformation("User {UserId} authorized to add course section.", currentUser.Id);
 
@@ -39,20 +30,24 @@ public class AddCourseSectionCommandHandler(
         var newCourseSection = mapper.Map<CourseSection>(request);
         newCourseSection.Name = request.Name;
 
-        logger.LogInformation("Mapped new section: {SectionName} for course {CourseId}", newCourseSection.Name, request.CourseId);
+        logger.LogInformation("Mapped new section: {SectionName} for course {CourseId}", newCourseSection.Name,
+            request.CourseId);
 
         try
         {
             await sectionRepository.AddCourseSection(newCourseSection);
-            logger.LogInformation("Successfully added section: {SectionName} for course {CourseId}", newCourseSection.Name, request.CourseId);
+            logger.LogInformation("Successfully added section: {SectionName} for course {CourseId}",
+                newCourseSection.Name, request.CourseId);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An error occurred while adding section: {SectionName} for course {CourseId}", newCourseSection.Name, request.CourseId);
+            logger.LogError(ex, "An error occurred while adding section: {SectionName} for course {CourseId}",
+                newCourseSection.Name, request.CourseId);
             throw;
         }
 
-        logger.LogInformation("Returning CourseSectionId: {SectionId} for the newly added section.", newCourseSection.CourseSectionId);
+        logger.LogInformation("Returning CourseSectionId: {SectionId} for the newly added section.",
+            newCourseSection.CourseSectionId);
         return newCourseSection.CourseSectionId;
     }
 }

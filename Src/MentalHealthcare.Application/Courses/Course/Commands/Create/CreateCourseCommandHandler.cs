@@ -2,10 +2,12 @@ using AutoMapper;
 using MediatR;
 using MentalHealthcare.Application.BunnyServices;
 using MentalHealthcare.Application.BunnyServices.VideoContent.Collection.Add;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -19,7 +21,8 @@ public class CreateCourseCommandHandler(
     IMapper mapper,
     ICourseRepository courseRepository,
     IConfiguration configuration,
-    IUserContext userContext
+    IUserContext userContext,
+    ILocalizationService localizationService
 ) : IRequestHandler<CreateCourseCommand, CreateCourseCommandResponse>
 {
     /// <summary>
@@ -35,17 +38,8 @@ public class CreateCourseCommandHandler(
         logger.LogInformation("Starting course creation process for: {CourseName}", request.Name);
 
         // Retrieve the current user
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            logger.LogWarning(
-                "Unauthorized access attempt to create a course. User information: {UserDetails}",
-                currentUser == null
-                    ? "User is null"
-                    : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}"
-            );
-            throw new ForBidenException("You do not have permission to create a course.");
-        }
+        userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
+
 
         logger.LogInformation("Uploading thumbnail for course: {CourseName}", request.Name);
         var bunny = new BunnyClient(configuration);
@@ -55,7 +49,9 @@ public class CreateCourseCommandHandler(
         if (collectionId == null)
         {
             logger.LogError("Failed to create video folder for course: {CourseName}", request.Name);
-            throw new TryAgain("Failed to create video folder. Please try again.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("FailedToCreateVideoFolder", "Failed to create video folder. Please try again.")
+            );
         }
 
         logger.LogInformation("Video folder created successfully with ID: {CollectionId}", collectionId);

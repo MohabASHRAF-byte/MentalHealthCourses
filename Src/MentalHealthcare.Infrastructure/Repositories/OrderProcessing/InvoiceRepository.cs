@@ -1,4 +1,5 @@
 using MentalHealthcare.Application.OrderProcessing;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos.course;
 using MentalHealthcare.Domain.Dtos.OrderProcessing;
@@ -7,12 +8,14 @@ using MentalHealthcare.Domain.Entities.OrderProcessing;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.OrderProcessing;
 using MentalHealthcare.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace MentalHealthcare.Infrastructure.Repositories.OrderProcessing;
 
 public class InvoiceRepository(
-    MentalHealthDbContext dbContext
+    MentalHealthDbContext dbContext,
+    ILocalizationService localizationService
 ) : IInvoiceRepository
 {
     public async Task AddAsync(Invoice invoice)
@@ -25,7 +28,9 @@ public class InvoiceRepository(
     {
         if (id <= 0)
         {
-            throw new ArgumentException("Invoice ID must be greater than 0.", nameof(id));
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("InvoiceIdMustBeGreaterThanZero")
+            );
         }
 
         // Query invoice and project directly into InvoiceDto
@@ -64,7 +69,11 @@ public class InvoiceRepository(
 
         if (invoiceDto == null)
         {
-            throw new ResourceNotFound(nameof(Invoice), id.ToString());
+            throw new ResourceNotFound(
+                "Invoice",
+                "فاتورة",
+                id.ToString()
+            );
         }
 
         return invoiceDto;
@@ -182,12 +191,16 @@ public class InvoiceRepository(
 
             if (invoice == null)
             {
-                throw new ArgumentException("Invoice not found.", nameof(invoiceId));
+                throw new BadHttpRequestException(
+                    localizationService.GetMessage("InvoiceNotFound")
+                );
             }
 
             if (invoice.OrderStatus != OrderStatus.Pending)
             {
-                throw new ArgumentException($"Invoice is not in Pending State", nameof(invoiceId));
+                throw new BadHttpRequestException(
+                    localizationService.GetMessage("InvoiceNotPending")
+                );
             }
 
             // Check and update courses
@@ -198,7 +211,12 @@ public class InvoiceRepository(
             var invalidCourseIds = passedCourseIds.Except(courseIdsInInvoice).ToList();
             if (invalidCourseIds.Any())
             {
-                throw new ArgumentException($"Invalid course IDs provided: {string.Join(", ", invalidCourseIds)}");
+                throw new BadHttpRequestException(
+                    string.Format(
+                        localizationService.GetMessage("InvalidCourseIdsProvided"),
+                        string.Join(", ", invalidCourseIds)
+                    )
+                );
             }
 
             // Remove courses not in the passed list
@@ -245,7 +263,12 @@ public class InvoiceRepository(
                     ).FirstOrDefaultAsync();
                 if (existingCourseProgress != null)
                 {
-                    throw new ArgumentException($"User already has course with ID: {course.CourseId}");
+                    throw new BadHttpRequestException(
+                        string.Format(
+                            localizationService.GetMessage("UserAlreadyHasCourse"),
+                            course.CourseId
+                        )
+                    );
                 }
 
                 var courseProgress = new CourseProgress
@@ -278,13 +301,17 @@ public class InvoiceRepository(
 
         if (invoice == null)
         {
-            throw new ArgumentException("Invoice not found.", nameof(invoiceId));
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("InvoiceNotFound")
+            );
         }
 
         // Check if the provided status is a valid enum value
         if (!Enum.IsDefined(typeof(OrderStatus), status))
         {
-            throw new ArgumentException("Invalid order status provided.", nameof(status));
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("InvalidOrderStatus")
+            );
         }
 
         // Handle state transitions
@@ -297,8 +324,9 @@ public class InvoiceRepository(
                 }
                 else
                 {
-                    throw new InvalidOperationException(
-                        "Can only change to 'Expired' if the current status is 'Pending'.");
+                    throw new BadHttpRequestException(
+                        localizationService.GetMessage("CanOnlyChangeToExpired", "Can only change to 'Expired' if the current status is 'Pending'.")
+                    );
                 }
 
                 break;
@@ -310,8 +338,12 @@ public class InvoiceRepository(
                 }
                 else
                 {
-                    throw new InvalidOperationException(
-                        "Can only change to 'Pending' if the current status is 'Expired' or 'Cancelled'.");
+                    throw new BadHttpRequestException(
+                        localizationService.GetMessage(
+                            "CanOnlyChangeToPending",
+                            "Can only change to 'Pending' if the current status is 'Expired' or 'Cancelled'."
+                        )
+                    );
                 }
 
                 break;
@@ -323,14 +355,23 @@ public class InvoiceRepository(
                 }
                 else
                 {
-                    throw new InvalidOperationException(
-                        "Can only change to 'Cancelled' if the current status is 'Pending'.");
+                    throw new BadHttpRequestException(
+                        localizationService.GetMessage(
+                            "CanOnlyChangeToCancelled",
+                            "Can only change to 'Cancelled' if the current status is 'Pending'."
+                        )
+                    );
                 }
 
                 break;
 
             default:
-                throw new InvalidOperationException($"Changing to status '{status}' is not allowed.");
+                throw new BadHttpRequestException(
+                    string.Format(
+                        localizationService.GetMessage("StatusChangeNotAllowed", "Changing to status '{0}' is not allowed."),
+                        status
+                    )
+                );
         }
 
         await dbContext.SaveChangesAsync();

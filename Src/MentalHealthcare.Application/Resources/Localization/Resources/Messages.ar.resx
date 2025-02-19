@@ -216,4 +216,255 @@
     <data name="AdminIdentityNotExist" xml:space="preserve">
         <value>المسؤول ذو الهوية المحددة غير موجود.</value>
     </data>
+    <data name="NoCartFound" xml:space="preserve">
+        <value>لا يوجد سلة لهذا المستخدم.</value>
+    </data>
+    <data name="CourseSectionsUpdateBlocked" xml:space="preserve">
+        <value>لا يمكن تحديث أقسام الدورة لأن المستخدمين قد انضموا إلى الدورة.</value>
+    </data>
+    <data name="InvalidHelpCenterItemType" xml:space="preserve">
+        <value>قيمة غير صالحة لـ {0}: {1}</value>
+    </data>
+    <data name="InvalidOrdersForSections" xml:space="preserve">
+        <value>الطلب لا يحتوي على ترتيبات صالحة لجميع الأقسام.</value>
+    </data>
+    <data name="LessonNotFound" xml:space="preserve">
+        <value> لم يتم العثور على الدرس.</value>
+    </data>
+    <data name="InvalidOrderForLessons" xml:space="preserve">
+        <value> الطلب لا يحتوي على ترتيب صالح لجميع الدروس.</value>
+    </data>
+    <data name="OrderValuesMustBeSequential" xml:space="preserve">
+        <value> يجب أن تكون قيم الترتيب متسلسلة من ١ إلى العدد الإجمالي للدروس.</value>
+    </data>
+    <data name="SectionHasNoLessons" xml:space="preserve">
+        <value> القسم {0} في الدورة {1} لا يحتوي على دروس.</value>
+    </data>
+    <data name="OrderUpdateBlockedStudentsJoined" xml:space="preserve">
+        <value> لا يمكنك تحديث هذا الترتيب لأن الطلاب قد انضموا.</value>
+    </data>
+    <data name="PermissionDeniedUpdateLessonsOrder" xml:space="preserve">
+        <value>ليس لديك الصلاحية لتحديث ترتيب الدروس.</value>
+    </data>
+    <data name="InvalidItemType" xml:space="preserve">
+        <value> قيمة غير صالحة لـ {0}: {1}</value>
+    </data>
+    <data name="InvalidExpireDateFormat" xml:space="preserve">
+        <value>تنسيق تاريخ غير صالح لتاريخ انتهاء غير صالح.</value>
+    </data>
+    <data name="InvoiceNotFound" xml:space="preserve">
+        <value>لم يتم العثور على الفاتورة.</value>
+    </data>
+    <data name="ExpireDateMustBeFuture" xml:space="preserve">
+        <value>يجب أن يكون تاريخ الانتهاء في المستقبل.</value>
+    </data>
+    <data name="CourseIdsMustBeUnique" xml:space="preserve">
+        <value>يجب أن تكون جميع معرفات الدورات المقدمة فريدة.</value>
+    </data>
+    <data name="FileTooLarge" xml:space="preserve">
+        <value>الملف {0} كبير جدًا.</value>
+    </data>
+    <data name="CourseNotFree" xml:space="preserve">
+        <value> الدورة ليست مجانية.</value>
+    </data>
+    <data name="CourseAlreadyOwned" xml:space="preserve">
+        <value> الدورة مملوكة بالفعل.</value>
+    </data>
+    <data name="CartMaxCapacityReached" xml:space="preserve">
+        <value>وصلت السلة إلى الحد الأقصى لعدد العناصر.</value>
+    </data>
+    <data name="AlreadyJoinedCourse" xml:space="preserve">
+        <value>لقد انضممت بالفعل إلى الدورة.</value>
+    </data>
+    <data name="CourseNotFound" xml:space="preserve">
+        <value>الدورة غير موجودة.</value>
+    </data>
+    <data name="InvalidOrdersForResources" xml:space="preserve">
+        <value>الطلب لا يحتوي على ترتيبات صالحة لجميع الموارد.</value>
+    </data>
+    <data name="CourseNotInCart" xml:space="preserve">
+        <value>الدورة ليست في سلتك.</value>
+    </data>
+    <data name="CartIsEmpty" xml:space="preserve">
+        <value>السلة فارغة.</value>
+    </data>
+    <data name="InvoiceIdMustBeGreaterThanZero" xml:space="preserve">
+        <value>يجب أن يكون معرف الفاتورة أكبر من 0.</value>
+    </data>
+    <data name="InvalidLessonIdOrNotInCourse" xml:space="preserve">
+        <value> معرف الدرس غير صالح أو أن الدرس لا ينتمي إلى الدورة المحددة.</value>
+    </data>
+    <data name="UserNotEnrolledInCourse" xml:space="preserve">
+        <value>المستخدم غير مسجل في هذه الدورة.</value>
+    </data>
+    <data name="CourseCompletionRequiredForReview" xml:space="preserve">
+        <value>يجب عليك إكمال ما لا يقل عن {0}% من الدورة لتتمكن من ترك مراجعة.</value>
+    </data>
+    <data name="CourseAlreadyInCart" xml:space="preserve">
+        <value>الدورة موجودة بالفعل في سلتك.</value>
+    </data>
+    <data name="InvoiceNotPending" xml:space="preserve">
+        <value> الفاتورة ليست في حالة الانتظار.</value>
+    </data>
+    <data name="PromoCodeNameRequired" xml:space="preserve">
+        <value>لا يمكن أن يكون اسم رمز الخصم فارغًا أو غير موجود.
+</value>
+    </data>
+    <data name="ReviewsLimitReached" xml:space="preserve">
+        <value> تم الوصول إلى الحد الأقصى للمراجعات. احذف بعض المراجعات قبل إضافة مراجعة جديدة.</value>
+    </data>
+    <data name="InvalidOrderStatus" xml:space="preserve">
+        <value>تم تقديم حالة طلب غير صالحة.</value>
+    </data>
+    <data name="CompletePreviousLessonFirst" xml:space="preserve">
+        <value> أكمل الدرس السابق قبل المتابعة.</value>
+    </data>
+    <data name="UserAlreadyHasCourse" xml:space="preserve">
+        <value>المستخدم لديه بالفعل دورة : {0}.</value>
+    </data>
+    <data name="InvalidCourseIdsProvided" xml:space="preserve">
+        <value>تم تقديم معرفات دورات غير صالحة: {0}.</value>
+    </data>
+    <data name="UnknownContentType" xml:space="preserve">
+        <value>نوع المحتوى غير معروف: {1}.</value>
+    </data>
+    <data name="CourseIconMissing" xml:space="preserve">
+        <value>الدورة بالمعرف {0} ليس لديها أيقونة لهذه الدورة.</value>
+    </data>
+    <data name="UnspecifiedError" xml:space="preserve">
+        <value> حدث خطأ غير محدد.</value>
+    </data>
+    <data name="PdfUploadFailed" xml:space="preserve">
+        <value>فشل في رفع ملف PDF. حاول مرة أخرى.</value>
+    </data>
+    <data name="VideoDeletionFailed" xml:space="preserve">
+        <value>فشل حذف الفيديو. حاول مرة أخرى.</value>
+    </data>
+    <data name="FileUploadError" xml:space="preserve">
+        <value>خطأ في رفع الملف: {0}. التفاصيل: {1}.</value>
+    </data>
+    <data name="PendingUploadNotFound" xml:space="preserve">
+        <value>لم يتم العثور على الرفع المعلق.</value>
+    </data>
+    <data name="CourseSectionDeletionError" xml:space="preserve">
+        <value>حدث خطأ أثناء حذف قسم الدورة.</value>
+    </data>
+    <data name="ImageUploadFailed" xml:space="preserve">
+        <value>فشل في رفع الصورة الجديدة.</value>
+    </data>
+    <data name="VideoCreationUnexpectedError" xml:space="preserve">
+        <value>حدث خطأ غير متوقع أثناء إنشاء الفيديو.</value>
+    </data>
+    <data name="OldImageDeletionError" xml:space="preserve">
+        <value> حدث خطأ أثناء حذف الصورة القديمة.</value>
+    </data>
+    <data name="CourseLessonsUpdateError" xml:space="preserve">
+        <value>حدث خطأ أثناء تحديث دروس الدورة.</value>
+    </data>
+    <data name="CoursePromoCodeAlreadyExists" xml:space="preserve">
+        <value>رمز الخصم للدورة موجود بالفعل للدورة المحددة.</value>
+    </data>
+    <data name="ResourceDeletionFailed" xml:space="preserve">
+        <value>فشل في حذف المورد. يرجى المحاولة مرة أخرى.</value>
+    </data>
+    <data name="UnexpectedRole" xml:space="preserve">
+        <value>دور غير متوقع. الوصول مرفوض.
+</value>
+    </data>
+    <data name="DeleteReviewNotAllowed" xml:space="preserve">
+        <value>أنت غير مسموح لك بحذف هذا التقييم.
+</value>
+    </data>
+    <data name="ProfileDataNotFound" xml:space="preserve">
+        <value>بيانات الملف الشخصي غير موجودة.
+</value>
+    </data>
+    <data name="UsernameAlreadyTaken" xml:space="preserve">
+        <value>اسم المستخدم مُستخدم بالفعل.
+</value>
+    </data>
+    <data name="EmailAlreadyTaken" xml:space="preserve">
+        <value>البريد الإلكتروني مُستخدم بالفعل.
+</value>
+    </data>
+    <data name="EmailNotRegisteredAsAdmin" xml:space="preserve">
+        <value>البريد الإلكتروني غير مسجل كمدير.
+</value>
+    </data>
+    <data name="UserCreationFailed" xml:space="preserve">
+        <value>فشل إنشاء المستخدم. يرجى المحاولة مرة أخرى.
+</value>
+    </data>
+    <data name="LessonNotInCourse" xml:space="preserve">
+        <value>هذا الدرس لا ينتمي إلى هذه الدورة.
+</value>
+    </data>
+    <data name="NotEnrolledInCourse" xml:space="preserve">
+        <value>أنت غير مسجل في هذه الدورة.
+</value>
+    </data>
+    <data name="WatchPreviousLessonsFirst" xml:space="preserve">
+        <value>يجب عليك مشاهدة الدروس السابقة أولاً.
+</value>
+    </data>
+    <data name="FailedToUploadIcon" xml:space="preserve">
+        <value>فشل في رفع الأيقونة. يرجى المحاولة مرة أخرى.
+</value>
+    </data>
+    <data name="TryAgain" xml:space="preserve">
+        <value>يرجى المحاولة مرة أخرى.
+</value>
+    </data>
+    <data name="FailedToCreateVideoFolder" xml:space="preserve">
+        <value>فشل في إنشاء مجلد الفيديو. يرجى المحاولة مرة أخرى.
+</value>
+    </data>
+    <data name="SectionShouldBeEmptyToDelete" xml:space="preserve">
+        <value>يجب أن يكون القسم فارغًا للحذف.
+</value>
+    </data>
+    <data name="FailedToUploadImage" xml:space="preserve">
+        <value>فشل في رفع الصورة. يرجى المحاولة مرة أخرى.
+</value>
+    </data>
+    <data name="FailedToDeleteIcon" xml:space="preserve">
+        <value>فشل في حذف الأيقونة. يرجى المحاولة مرة أخرى.
+</value>
+    </data>
+    <data name="ErrorRemovingLesson" xml:space="preserve">
+        <value>حدث خطأ أثناء إزالة الدرس.
+</value>
+    </data>
+    <data name="ErrorAddingCourseLesson" xml:space="preserve">
+        <value>حدث خطأ أثناء إضافة درس الدورة.
+</value>
+    </data>
+    <data name="LessonNoResourcesToUpdate" xml:space="preserve">
+        <value>الدرس {0} لا يحتوي على موارد للتحديث.
+</value>
+    </data>
+    <data name="ErrorUpdatingCourseSections" xml:space="preserve">
+        <value>حدث خطأ أثناء تحديث أقسام الدورة.
+</value>
+    </data>
+    <data name="CanOnlyChangeToExpired" xml:space="preserve">
+        <value>يمكنك التغيير إلى "منتهية" فقط إذا كان الوضع الحالي "معلق".
+</value>
+    </data>
+    <data name="LessonHasNoResources" xml:space="preserve">
+        <value>الدرس {0} لا يحتوي على أي موارد.
+</value>
+    </data>
+    <data name="CanOnlyChangeToPending" xml:space="preserve">
+        <value>يمكنك التغيير إلى "معلق" فقط إذا كان الوضع الحالي "منتهي" أو "ملغي".
+</value>
+    </data>
+    <data name="CanOnlyChangeToCancelled" xml:space="preserve">
+        <value>يمكنك التغيير إلى "ملغي" فقط إذا كان الوضع الحالي "معلق".
+</value>
+    </data>
+    <data name="StatusChangeNotAllowed" xml:space="preserve">
+        <value>تغيير الحالة إلى '{0}' غير مسموح به.
+</value>
+    </data>
 </root>

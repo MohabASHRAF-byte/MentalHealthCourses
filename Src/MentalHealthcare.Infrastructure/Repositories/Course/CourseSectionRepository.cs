@@ -1,4 +1,5 @@
 using MentalHealthcare.Application.Courses.Sections.Commands.Update_order;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Domain.Dtos.course;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
@@ -11,7 +12,8 @@ using Microsoft.EntityFrameworkCore;
 namespace MentalHealthcare.Infrastructure.Repositories.Course;
 
 public class CourseSectionRepository(
-    MentalHealthDbContext dbContext
+    MentalHealthDbContext dbContext,
+    ILocalizationService localizationService
 ) : ICourseSectionRepository
 {
     public async Task IsSectionExistAndUpdatableAsync(int courseId, int sectionId)
@@ -23,7 +25,11 @@ public class CourseSectionRepository(
 
         if (!exists)
         {
-            throw new ResourceNotFound(nameof(CourseSection), sectionId.ToString());
+            throw new ResourceNotFound(
+                "Course Section", // English type name
+                "قسم دورة تدريبية", // Alternative Arabic translation
+                sectionId.ToString()
+            );
         }
 
         // Check if the course has any students in progress
@@ -53,7 +59,6 @@ public class CourseSectionRepository(
             }
         }
     }
-
 
 
     public async Task<int> AddCourseSection(CourseSection courseSection)
@@ -87,12 +92,20 @@ public class CourseSectionRepository(
             .AnyAsync(cps => cps.CourseId == courseId);
         if (isAnyOneJoined)
         {
-            throw new ArgumentException("Course sections cannot be updated as users have joined the course.");
+            
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("CourseSectionsUpdateBlocked")
+            );
         }
 
         if (sections == null || sections.Count == 0)
         {
-            throw new InvalidOperationException($"Course {courseId} has no sections.");
+            throw new BadHttpRequestException(
+                string.Format(
+                    localizationService.GetMessage("CourseHasNoSections", "Course {0} has no sections."),
+                    courseId
+                )
+            );
         }
 
         // Validate order input
@@ -100,13 +113,17 @@ public class CourseSectionRepository(
         var requestSectionIds = orders.Select(o => o.SectionId).ToHashSet();
         if (!sectionIds.SetEquals(requestSectionIds))
         {
-            throw new ArgumentException("The request does not contain valid orders for all sections.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("InvalidOrdersForSections")
+            );
         }
 
         var orderValues = orders.Select(o => o.Order).OrderBy(o => o).ToList();
         if (!orderValues.SequenceEqual(Enumerable.Range(1, sections.Count)))
         {
-            throw new ArgumentException("Order values must be sequential from 1 to the total number of sections.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("OrderValuesMustBeSequential")
+            );
         }
 
         // Begin transaction
@@ -141,7 +158,10 @@ public class CourseSectionRepository(
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            throw new InvalidOperationException("Error updating course sections.", ex);
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("ErrorUpdatingCourseSections", "Error updating course sections."),
+                ex
+            );
         }
     }
 
@@ -159,7 +179,11 @@ public class CourseSectionRepository(
                 .FirstOrDefaultAsync();
             if (section == null)
             {
-                throw new ResourceNotFound(nameof(CourseSection), sectionId.ToString());
+                throw new ResourceNotFound(
+                    "Course Section", // English type name
+                    "قسم دورة تدريبية", // Alternative Arabic translation
+                    sectionId.ToString()
+                );
             }
 
             // Check if the section is empty
@@ -167,7 +191,9 @@ public class CourseSectionRepository(
                 .AnyAsync(cl => cl.CourseSectionId == sectionId);
             if (!isSectionEmpty)
             {
-                throw new TryAgain("Section should be empty to delete.");
+                throw new BadHttpRequestException(
+                    localizationService.GetMessage("SectionShouldBeEmptyToDelete", "Section should be empty to delete.")
+                );
             }
 
             // Fetch all sections for the course
@@ -195,7 +221,10 @@ public class CourseSectionRepository(
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            throw new Exception("An error occurred while deleting the course section.", ex);
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("CourseSectionDeletionError"),
+                ex
+            );
         }
     }
 
@@ -215,7 +244,11 @@ public class CourseSectionRepository(
             );
         if (courseSection == null)
         {
-            throw new ResourceNotFound(nameof(CourseSection), sectionId.ToString());
+            throw new ResourceNotFound(
+                "Course Section", // English type name
+                "قسم دورة تدريبية", // Alternative Arabic translation
+                sectionId.ToString()
+            );
         }
 
         foreach (var lesson in courseSection.Lessons)
@@ -233,12 +266,16 @@ public class CourseSectionRepository(
     {
         var courseSection = await dbContext.CourseSections
             .AsNoTracking()
-            .Include(cs => cs.Lessons.OrderBy(l=>l.Order))
+            .Include(cs => cs.Lessons.OrderBy(l => l.Order))
             .ThenInclude(l => l.CourseLessonResources)
             .FirstOrDefaultAsync(c => c.CourseSectionId == id);
         if (courseSection == null)
         {
-            throw new ResourceNotFound(nameof(CourseSection), id.ToString());
+            throw new ResourceNotFound(
+                "Course Section", // English type name
+                "قسم دورة تدريبية", // Alternative Arabic translation
+                id.ToString()
+            );
         }
 
         foreach (var lesson in courseSection.Lessons)

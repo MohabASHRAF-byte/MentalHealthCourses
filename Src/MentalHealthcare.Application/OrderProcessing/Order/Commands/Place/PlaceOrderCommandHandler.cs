@@ -2,11 +2,13 @@ using AutoMapper;
 using MediatR;
 using MentalHealthcare.Application.OrderProcessing.Cart.Commands.Clear_Cart;
 using MentalHealthcare.Application.OrderProcessing.Cart.Queries.GetCartItems;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities.OrderProcessing;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.OrderProcessing;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace MentalHealthcare.Application.OrderProcessing.Order.Commands.Place;
@@ -16,7 +18,8 @@ public class PlaceOrderCommandHandler(
     IMapper mapper,
     IMediator mediator,
     IUserContext userContext,
-    IInvoiceRepository invoiceRepository
+    IInvoiceRepository invoiceRepository,
+    ILocalizationService localizationService
 ) : IRequestHandler<PlaceOrderCommand, int>
 {
     public async Task<int> Handle(PlaceOrderCommand request, CancellationToken cancellationToken)
@@ -24,14 +27,10 @@ public class PlaceOrderCommandHandler(
         logger.LogInformation("Start handling PlaceOrderCommand for user: {UserId}", userContext.GetCurrentUser()?.Id);
 
         // Validate user context
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.User))
-        {
-            logger.LogWarning("Unauthorized attempt to place an order by user: {UserId}", currentUser?.Id);
-            throw new ForBidenException("You do not have permission to place an order.");
-        }
+        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.User], logger);
 
-        logger.LogInformation("Fetching cart items for user: {UserId} with promo code: {PromoCode}", currentUser.Id, request.PromoCode);
+        logger.LogInformation("Fetching cart items for user: {UserId} with promo code: {PromoCode}", currentUser.Id,
+            request.PromoCode);
 
         // Fetch cart items
         var getCartQuery = new GetCartItemsQuery()
@@ -42,8 +41,11 @@ public class PlaceOrderCommandHandler(
         if (cart.NumberOfItems < 1)
         {
             logger.LogInformation("the Cart items count is less than 1.");
-            throw new ArgumentException("The cart is empty.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("CartIsEmpty")
+            );
         }
+
         logger.LogInformation("Mapping cart to invoice for user: {UserId}", currentUser.Id);
 
         // Map cart to invoice
@@ -52,8 +54,8 @@ public class PlaceOrderCommandHandler(
         invoice.OrderDate = DateTime.UtcNow;
         invoice.UserID = currentUser.Id!;
         invoice.SystemUserId = currentUser.SysUserId!.Value;
-        invoice.Notes = request.Notes??"";
-        invoice.PromoCode = request.PromoCode??"";
+        invoice.Notes = request.Notes ?? "";
+        invoice.PromoCode = request.PromoCode ?? "";
         logger.LogInformation("Saving invoice to database for user: {UserId}", currentUser.Id);
 
         // Save invoice

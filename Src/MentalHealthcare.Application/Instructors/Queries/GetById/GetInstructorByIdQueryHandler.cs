@@ -25,34 +25,12 @@ namespace MentalHealthcare.Application.Instructors.Queries.GetById
     {
         public async Task<InstructorDto> Handle(GetInstructorByIdQuery request, CancellationToken cancellationToken)
         {
-
-
-
             logger.LogInformation($"GetInstructorByIdQueryHandler invoked.");
             logger.LogInformation($"GetInstructorByIdQueryHandler. Request: {request.instructorid}");
-            var currentUser = userContext.GetCurrentUser();
-            if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-            {
-                logger.LogWarning("Unauthorized attempt to get Instructor by user: {UserId}", currentUser?.Id);
-                throw new ForBidenException("Don't have the permission to get Instructor");
-            }
-
-
-
-
+            userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
             var ins = await insRepo.GetInstructorByIdAsync(request.instructorid);
             var insDto = mapper.Map<InstructorDto>(ins);
             return insDto;
-
-
-
-
-
-
-
-
-
-
         }
     }
 }

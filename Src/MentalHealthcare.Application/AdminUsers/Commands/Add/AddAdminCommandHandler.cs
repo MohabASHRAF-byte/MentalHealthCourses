@@ -5,6 +5,7 @@ using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace MentalHealthcare.Application.AdminUsers.Commands.Add;
@@ -33,7 +34,7 @@ public class AddAdminCommandHandler(
         if (await adminRepository.IsPendingExistAsync(request.Email))
         {
             logger.LogWarning("Pending admin user already exists with Email: {Email}", request.Email);
-            throw new AlreadyExist(
+            throw new BadHttpRequestException(
                 string.Format(
                     localizationService.GetMessage("EmailAlreadyPending", "The email {0} is already pending."),
                     request.Email
@@ -44,7 +45,7 @@ public class AddAdminCommandHandler(
         if (await adminRepository.IsExistAsync(request.Email))
         {
             logger.LogWarning("Admin user already exists with Email: {Email}", request.Email);
-            throw new AlreadyExist(
+            throw new BadHttpRequestException(
                 string.Format(
                     localizationService.GetMessage("EmailAlreadyAdmin", "The email {0} is already an admin."),
                     request.Email

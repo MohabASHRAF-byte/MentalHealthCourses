@@ -3,6 +3,7 @@ using MediatR;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos.PromoCode;
+using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.PromoCode;
 using Microsoft.Extensions.Logging;
 
@@ -32,7 +33,10 @@ public class GetCoursePromoCodeQueryHandler(
         if (coursePromoCode == null)
         {
             logger.LogWarning("Promo code with ID: {PromoCodeId} not found.", request.CoursePromoCodeId);
-            throw new KeyNotFoundException($"Promo code with ID {request.CoursePromoCodeId} not found.");
+            throw new ResourceNotFound(
+                "Promo code", 
+                "كود خصم", 
+                request.CoursePromoCodeId.ToString());
         }
 
         // Map to DTO

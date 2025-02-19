@@ -1,13 +1,16 @@
 using AutoMapper;
 using MediatR;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Domain.Dtos.OrderProcessing;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace MentalHealthcare.Application.OrderProcessing.Order.Commands.Calculate_value;
 
 public class CalculateInvoiceHandler(
     ILogger<CalculateInvoiceHandler> logger,
-    IMapper mapper
+    IMapper mapper,
+    ILocalizationService localizationService
 ) : IRequestHandler<CalculateInvoice, CalculateInvoiceResponse>
 {
     public async Task<CalculateInvoiceResponse> Handle(CalculateInvoice request, CancellationToken cancellationToken)
@@ -16,7 +19,9 @@ public class CalculateInvoiceHandler(
         if (request.Courses.GroupBy(course => course.CourseId).Any(g => g.Count() > 1))
         {
             logger.LogWarning("Duplicate course IDs found in the request.");
-            throw new ArgumentException("All provided course IDs must be unique.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("CourseIdsMustBeUnique")
+            );
         }
 
         // Map InvoiceCourse to CourseCartDto

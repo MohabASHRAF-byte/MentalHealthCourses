@@ -2,9 +2,11 @@ using AutoMapper;
 using MediatR;
 using MentalHealthcare.Application.BunnyServices;
 using MentalHealthcare.Application.BunnyServices.VideoContent.Video;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Repositories.Course;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -19,33 +21,37 @@ public class ConfirmUploadCommandHandler(
     ICourseLessonRepository courseLessonRepository,
     IConfiguration configuration,
     IMapper mapper,
+    ILocalizationService localizationService,
     ILogger<ConfirmUploadCommandHandler> logger
-) : IRequestHandler<ConfirmUploadCommand,int>
+) : IRequestHandler<ConfirmUploadCommand, int>
 {
     public async Task<int> Handle(ConfirmUploadCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Handling ConfirmUploadCommand for VideoId: {VideoId}, Confirmed: {Confirmed}", 
+        logger.LogInformation("Handling ConfirmUploadCommand for VideoId: {VideoId}, Confirmed: {Confirmed}",
             request.videoId, request.Confirmed);
 
         BunnyClient bunny = new(configuration);
         var courseLessonId = -1;
         if (!request.Confirmed)
         {
-            logger.LogInformation("Video confirmation rejected. Deleting video with VideoId: {VideoId}", request.videoId);
-            
+            logger.LogInformation("Video confirmation rejected. Deleting video with VideoId: {VideoId}",
+                request.videoId);
+
             // Call BunnyCDN to delete the video
             var deleteVideo = await bunny.DeleteVideo(request.videoId);
             if (!deleteVideo.Success)
             {
                 logger.LogError("Failed to delete video with VideoId: {VideoId}.", request.videoId);
-                throw new Exception("Failed to delete video. Try again.");
+                throw new BadHttpRequestException(
+                    localizationService.GetMessage("VideoDeletionFailed")
+                );
             }
 
             logger.LogInformation("Successfully deleted video with VideoId: {VideoId}", request.videoId);
         }
         else
         {
-            logger.LogInformation("Video confirmation accepted. Fetching pending upload for VideoId: {VideoId}", 
+            logger.LogInformation("Video confirmation accepted. Fetching pending upload for VideoId: {VideoId}",
                 request.videoId);
 
             // Retrieve the pending video upload
@@ -53,7 +59,9 @@ public class ConfirmUploadCommandHandler(
             if (pending == null)
             {
                 logger.LogError("No pending upload found for VideoId: {VideoId}", request.videoId);
-                throw new Exception("Pending upload not found.");
+                throw new BadHttpRequestException(
+                    localizationService.GetMessage("PendingUploadNotFound")
+                );
             }
 
             logger.LogInformation("Mapping pending upload to CourseLesson for VideoId: {VideoId}", request.videoId);

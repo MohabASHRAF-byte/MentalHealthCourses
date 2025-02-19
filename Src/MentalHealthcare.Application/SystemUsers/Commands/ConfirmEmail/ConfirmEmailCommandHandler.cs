@@ -1,9 +1,11 @@
 using MediatR;
 using MentalHealthcare.Application.Common;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
@@ -60,7 +62,8 @@ namespace MentalHealthcare.Application.SystemUsers.Commands.ConfirmEmail;
 public class ConfirmEmailCommandHandler(
     ILogger<ConfirmEmailCommandHandler> logger,
     UserManager<User> userManager,
-    IUserRepository systemUserRepository
+    IUserRepository systemUserRepository,
+    ILocalizationService localizationService
 ) : IRequestHandler<ConfirmEmailCommand, OperationResult<string>>
 {
     public async Task<OperationResult<string>> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
@@ -79,7 +82,10 @@ public class ConfirmEmailCommandHandler(
         if (user == null)
         {
             logger.LogError("User with email {Email} does not exist.", request.Email);
-            throw new ResourceNotFound(nameof(user), request.Email);
+            throw new ResourceNotFound(
+                "User", 
+                "المستخدم", 
+                request.Email); 
         }
 
         logger.LogInformation("Authenticating the token for email: {Email}", request.Email);
@@ -87,7 +93,9 @@ public class ConfirmEmailCommandHandler(
         if (!result.Succeeded)
         {
             logger.LogWarning("Failed to authenticate the token for email: {Email}", request.Email);
-            throw new ApplicationException($"Failed to confirm email: {request.Token}");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("EmailConfirmationFailed", request.Token)
+            );
         }
 
         logger.LogInformation("Email {Email} confirmed successfully.", request.Email);

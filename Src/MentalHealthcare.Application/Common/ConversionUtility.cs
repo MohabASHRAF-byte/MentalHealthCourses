@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+
 namespace MentalHealthcare.Application.Common;
 
 public static class ConversionUtility
@@ -7,7 +9,7 @@ public static class ConversionUtility
         // Parse the input string to a long
         if (!long.TryParse(bitsString, out long bits))
         {
-            throw new ArgumentException("Input must be a valid long integer.");
+            throw new BadHttpRequestException("يجب أن يكون الإدخال عددًا صحيحًا طويلًا صالحًا.");
         }
 
         double megabytes = bits / 8.0 / 1024.0 / 1024.0; // Convert bits to megabytes
@@ -27,7 +29,7 @@ public static class ConversionUtility
     {
         if (!int.TryParse(second, out int seconds))
         {
-            throw new ArgumentException("Input must be a valid long integer.");
+            throw new BadHttpRequestException("يجب أن يكون الإدخال عددًا صحيحًا طويلًا صالحًا.");
         }
 
         int minutes = seconds / 60;

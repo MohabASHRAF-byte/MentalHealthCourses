@@ -1,7 +1,9 @@
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -11,7 +13,8 @@ namespace MentalHealthcare.Infrastructure.Repositories;
 public class AdminRepository(
     MentalHealthDbContext dbContext,
     UserManager<User> userManager,
-    ILogger<AdminRepository> logger) : IAdminRepository
+    ILogger<AdminRepository> logger,
+    ILocalizationService localizationService) : IAdminRepository
 {
     public async Task RegisterUser(User user, string password, Admin userToRegister)
     {
@@ -30,10 +33,14 @@ public class AdminRepository(
             if (existingUser is not null)
             {
                 if (existingUser.NormalizedUserName!.Equals(user.UserName, StringComparison.CurrentCultureIgnoreCase))
-                    throw new ForBidenException("Username is already taken");
+                    throw new BadHttpRequestException(
+                        localizationService.GetMessage("UsernameAlreadyTaken", "Username is already taken.")
+                    );
 
                 if (existingUser.NormalizedEmail!.Equals(user.Email, StringComparison.CurrentCultureIgnoreCase))
-                    throw new ForBidenException("Email is already taken");
+                    throw new BadHttpRequestException(
+                        localizationService.GetMessage("EmailAlreadyTaken", "Email is already taken.")
+                    );
             }
 
             // Check if the email exists in the PendingAdmins table
@@ -43,7 +50,9 @@ public class AdminRepository(
 
             if (pendingAdmin is null)
             {
-                throw new ForBidenException("Email is not registered as admin");
+                throw new BadHttpRequestException(
+                    localizationService.GetMessage("EmailNotRegisteredAsAdmin", "Email is not registered as admin.")
+                );
             }
 
             // Create the user in the Identity system
@@ -51,7 +60,9 @@ public class AdminRepository(
             if (!createUserResult.Succeeded)
             {
                 await transaction.RollbackAsync();
-                throw new CreationFailed("User creation failed Please try again.");
+                throw new BadHttpRequestException(
+                    localizationService.GetMessage("UserCreationFailed", "User creation failed. Please try again.")
+                );
             }
 
             // Add the user to the Admins table and remove from PendingAdmins
@@ -151,7 +162,11 @@ public class AdminRepository(
         );
 
         if (admin is null)
-            throw new ResourceNotFound(nameof(Admin), adminId);
+            throw new ResourceNotFound(
+                "Admin",
+                "المسؤول",
+                adminId.ToString()
+            );
         return admin;
     }
 }

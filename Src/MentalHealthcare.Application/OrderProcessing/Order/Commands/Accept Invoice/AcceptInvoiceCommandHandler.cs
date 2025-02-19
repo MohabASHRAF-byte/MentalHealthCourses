@@ -15,12 +15,7 @@ public class AcceptInvoiceCommandHandler(
 {
     public async Task Handle(AcceptInvoiceCommand request, CancellationToken cancellationToken)
     {
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            logger.LogWarning("Unauthorized attempt to delete from cart by user: {UserId}", currentUser?.Id);
-            throw new ForBidenException("You do not have permission to delete items from the cart.");
-        }
+        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
 
         await invoiceRepository.AcceptInvoice(
             request.InvoiceId,

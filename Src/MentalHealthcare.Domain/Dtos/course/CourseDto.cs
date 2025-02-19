@@ -13,7 +13,8 @@ public class CourseDto
     [MaxLength(Global.UrlMaxLength)] public string? ThumbnailUrl { get; set; }
     [MaxLength(Global.UrlMaxLength)] public string? IconUrl { get; set; }
     public decimal Price { get; set; }
-    public decimal? Rating { get; set; }
+    public decimal? Rating { get; set; } = 0;
+    public int? UserProgress { get; set; } = null;
     public DateTime CreatedAt { get; set; }
     public long SecondsSinceCreation { get; set; }
     public int ReviewsCount { get; set; } = 0;
@@ -22,8 +23,7 @@ public class CourseDto
 
     public string Description { get; set; } = default!;
     public bool IsFree { get; set; } = false;
-    [JsonIgnore]
-    public bool IsArchived { get; set; } = false;
+    [JsonIgnore] public bool IsArchived { get; set; } = false;
     public bool? IsFavourite { get; set; } = false;
     public bool? IsOwned { get; set; } = false;
 
@@ -33,5 +33,6 @@ public class CourseDto
 
     public List<CourseSectionDto> CourseSections { set; get; } = new List<CourseSectionDto>();
     public ICollection<CategoryDto>? Categories { get; set; } = new HashSet<CategoryDto>();
-    public IEnumerable<UserReviewDto> UserReviews { get; set; } =  [];
+
+    public IEnumerable<UserReviewDto> UserReviews { get; set; } = [];
 }

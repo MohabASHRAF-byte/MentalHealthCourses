@@ -16,18 +16,7 @@ public class UpdateProfileDataCommandHandler(
     {
         logger.LogInformation("Handling UpdateProfileDataCommand for User: {RequestDetails}",
             new { request.FirstName, request.LastName, request.PhoneNumber, request.BirthDate });
-
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.User))
-        {
-            logger.LogWarning(
-                "Unauthorized access attempt to update profile. User information: {UserDetails}",
-                currentUser == null
-                    ? "User is null"
-                    : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}"
-            );
-            throw new ForBidenException("You do not have permission to update this profile.");
-        }
+        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
 
         logger.LogInformation("Updating profile for UserId: {UserId} with new details: {RequestDetails}",
             currentUser.SysUserId,

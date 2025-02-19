@@ -5,6 +5,11 @@ namespace MentalHealthcare.Domain.Repositories;
 
 public interface IUserRepository
 {
+    public Task<(int, List<GetUserProfile>)> GetAllAsync(
+        int pageNumber,
+        int pageSize,
+        string? searchString = "");
+    public Task<GetUserProfile> GetByIdAsync(int id);
     public Task<(bool Succeeded, List<string> Errors)> RegisterUser(User user, string password,
         SystemUser userToRegister);
 

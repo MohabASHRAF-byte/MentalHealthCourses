@@ -1,7 +1,9 @@
 using MediatR;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace MentalHealthcare.Application.HelpCenterItem.Commands.Create;
@@ -9,7 +11,8 @@ namespace MentalHealthcare.Application.HelpCenterItem.Commands.Create;
 public class CreateHelpCenterItemCommandHandler(
     ILogger<CreateHelpCenterItemCommandHandler> logger,
     IHelpCenterRepository helpCenterRepository,
-    IUserContext userContext
+    IUserContext userContext,
+    ILocalizationService localizationService
 ) : IRequestHandler<CreateHelpCenterItemCommand, int>
 {
     public async Task<int> Handle(CreateHelpCenterItemCommand request, CancellationToken cancellationToken)
@@ -26,8 +29,14 @@ public class CreateHelpCenterItemCommandHandler(
         if (!Enum.IsDefined(typeof(Global.HelpCenterItems), request.HelpCenterItemType))
         {
             logger.LogWarning("Invalid HelpCenterItemType: {Type}", request.HelpCenterItemType);
-            throw new ArgumentException(
-                $"Invalid value for {nameof(request.HelpCenterItemType)}: {request.HelpCenterItemType}");
+            throw new BadHttpRequestException(
+                string.Format(
+                    localizationService.GetMessage("InvalidHelpCenterItemType"),
+                    nameof(request.HelpCenterItemType),
+                    request.HelpCenterItemType
+                )
+            );
+
         }
 
         // Create new HelpCenterItem entity

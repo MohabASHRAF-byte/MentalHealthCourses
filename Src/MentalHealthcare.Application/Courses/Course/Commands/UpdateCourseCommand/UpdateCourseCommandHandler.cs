@@ -19,17 +19,7 @@ public class UpdateCourseCommandHandler(
         logger.LogInformation("Starting course update process for: {CourseId}", request.CourseId);
 
         // Retrieve the current user
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            logger.LogWarning(
-                "Unauthorized access attempt to update a course. User information: {UserDetails}",
-                currentUser == null
-                    ? "User is null"
-                    : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}"
-            );
-            throw new ForBidenException("You do not have permission to update a course.");
-        }
+        userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
 
         await courseRepository.UpdateCourseAsync(
             request.CourseId,

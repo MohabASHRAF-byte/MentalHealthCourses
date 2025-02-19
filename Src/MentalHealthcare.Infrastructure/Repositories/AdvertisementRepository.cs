@@ -36,7 +36,11 @@ public class AdvertisementRepository(
             .FirstOrDefaultAsync();
 
         if (advertisement == null)
-            throw new ResourceNotFound(nameof(Advertisement), advertisementId.ToString());
+            throw new ResourceNotFound(
+                "Advertisement",
+                "إعلان",
+                advertisementId.ToString()
+            );
 
         return advertisement;
     }
@@ -52,7 +56,11 @@ public class AdvertisementRepository(
     {
         var newAdvertisement = await dbContext.Advertisements.FindAsync(advertisementId);
         if (newAdvertisement == null)
-            throw new ResourceNotFound(nameof(Advertisement), advertisementId.ToString());
+            throw new ResourceNotFound(
+                "Advertisement",
+                "إعلان",
+                advertisementId.ToString()
+            );
         dbContext.Advertisements.Remove(newAdvertisement);
         await dbContext.SaveChangesAsync();
     }
@@ -105,8 +113,7 @@ public class AdvertisementRepository(
         var adimgs = dbContext.AdvertisementImageUrls.Where(
             img => img.AdvertisementId == advertisementId
         );
-         dbContext.AdvertisementImageUrls.RemoveRange(adimgs);
-         await dbContext.SaveChangesAsync();
-       
+        dbContext.AdvertisementImageUrls.RemoveRange(adimgs);
+        await dbContext.SaveChangesAsync();
     }
 }

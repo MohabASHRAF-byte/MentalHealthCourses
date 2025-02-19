@@ -1,11 +1,14 @@
 using System.Net.Http.Headers;
 using MediatR;
+using MentalHealthcare.Application.Resources.Localization.Resources;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
 namespace MentalHealthcare.Application.BunnyServices.Files.UploadFile;
 
 public class UploadFileCommandHandler(
-    IConfiguration configuration
+    IConfiguration configuration,
+    ILocalizationService localizationService
     ) : IRequestHandler<UploadFileCommand, string>
 {
     private const string ContentType = "application/octet-stream";
@@ -49,6 +52,12 @@ public class UploadFileCommandHandler(
 
         // If the request fails, capture the error message
         var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
-        throw new Exception($"Error uploading file: {response.ReasonPhrase}. Details: {errorContent}");
+        throw new BadHttpRequestException(
+            string.Format(
+                localizationService.GetMessage("FileUploadError"),
+                response.ReasonPhrase,
+                errorContent
+            )
+        );
     }
 }

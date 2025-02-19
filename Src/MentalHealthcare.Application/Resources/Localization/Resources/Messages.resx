@@ -197,5 +197,233 @@
     <data name="AdMustHaveImage" xml:space="preserve">
         <value />
     </data>
+    <data name="NoCartFound" xml:space="preserve">
+        <value />
+    </data>
+    <data name="CourseSectionsUpdateBlocked" xml:space="preserve">
+        <value />
+    </data>
+    <data name="InvalidHelpCenterItemType" xml:space="preserve">
+        <value />
+    </data>
+    <data name="InvalidOrdersForSections" xml:space="preserve">
+        <value />
+    </data>
+    <data name="LessonNotFound" xml:space="preserve">
+        <value />
+    </data>
+    <data name="InvalidOrderForLessons" xml:space="preserve">
+        <value />
+    </data>
+    <data name="OrderValuesMustBeSequential" xml:space="preserve">
+        <value />
+    </data>
+    <data name="SectionHasNoLessons" xml:space="preserve">
+        <value />
+    </data>
+    <data name="OrderUpdateBlockedStudentsJoined" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PermissionDeniedUpdateLessonsOrder" xml:space="preserve">
+        <value />
+    </data>
+    <data name="InvalidItemType" xml:space="preserve">
+        <value />
+    </data>
+    <data name="InvalidExpireDateFormat" xml:space="preserve">
+        <value />
+    </data>
+    <data name="InvoiceNotFound" xml:space="preserve">
+        <value />
+    </data>
+    <data name="ExpireDateMustBeFuture" xml:space="preserve">
+        <value />
+    </data>
+    <data name="CourseIdsMustBeUnique" xml:space="preserve">
+        <value />
+    </data>
+    <data name="FileTooLarge" xml:space="preserve">
+        <value />
+    </data>
+    <data name="CourseNotFree" xml:space="preserve">
+        <value />
+    </data>
+    <data name="CourseAlreadyOwned" xml:space="preserve">
+        <value />
+    </data>
+    <data name="CartMaxCapacityReached" xml:space="preserve">
+        <value />
+    </data>
+    <data name="AlreadyJoinedCourse" xml:space="preserve">
+        <value />
+    </data>
+    <data name="CourseNotFound" xml:space="preserve">
+        <value />
+    </data>
+    <data name="InvalidOrdersForResources" xml:space="preserve">
+        <value />
+    </data>
+    <data name="CourseNotInCart" xml:space="preserve">
+        <value />
+    </data>
+    <data name="CartIsEmpty" xml:space="preserve">
+        <value />
+    </data>
+    <data name="InvoiceIdMustBeGreaterThanZero" xml:space="preserve">
+        <value />
+    </data>
+    <data name="InvalidLessonIdOrNotInCourse" xml:space="preserve">
+        <value />
+    </data>
+    <data name="UserNotEnrolledInCourse" xml:space="preserve">
+        <value />
+    </data>
+    <data name="CourseCompletionRequiredForReview" xml:space="preserve">
+        <value />
+    </data>
+    <data name="CourseAlreadyInCart" xml:space="preserve">
+        <value />
+    </data>
+    <data name="InvoiceNotPending" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PromoCodeNameRequired" xml:space="preserve">
+        <value />
+    </data>
+    <data name="ReviewsLimitReached" xml:space="preserve">
+        <value />
+    </data>
+    <data name="InvalidOrderStatus" xml:space="preserve">
+        <value />
+    </data>
+    <data name="CompletePreviousLessonFirst" xml:space="preserve">
+        <value />
+    </data>
+    <data name="UserAlreadyHasCourse" xml:space="preserve">
+        <value />
+    </data>
+    <data name="InvalidCourseIdsProvided" xml:space="preserve">
+        <value />
+    </data>
+    <data name="UnknownContentType" xml:space="preserve">
+        <value />
+    </data>
+    <data name="CourseIconMissing" xml:space="preserve">
+        <value />
+    </data>
+    <data name="UnspecifiedError" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PdfUploadFailed" xml:space="preserve">
+        <value />
+    </data>
+    <data name="VideoDeletionFailed" xml:space="preserve">
+        <value />
+    </data>
+    <data name="FileUploadError" xml:space="preserve">
+        <value />
+    </data>
+    <data name="PendingUploadNotFound" xml:space="preserve">
+        <value />
+    </data>
+    <data name="CourseSectionDeletionError" xml:space="preserve">
+        <value />
+    </data>
+    <data name="ImageUploadFailed" xml:space="preserve">
+        <value />
+    </data>
+    <data name="VideoCreationUnexpectedError" xml:space="preserve">
+        <value />
+    </data>
+    <data name="OldImageDeletionError" xml:space="preserve">
+        <value />
+    </data>
+    <data name="CourseLessonsUpdateError" xml:space="preserve">
+        <value />
+    </data>
+    <data name="CoursePromoCodeAlreadyExists" xml:space="preserve">
+        <value />
+    </data>
+    <data name="ThumbnailUploadFailed" xml:space="preserve">
+        <value />
+    </data>
+    <data name="ResourceDeletionFailed" xml:space="preserve">
+        <value />
+    </data>
+    <data name="UnexpectedRole" xml:space="preserve">
+        <value />
+    </data>
+    <data name="DeleteReviewNotAllowed" xml:space="preserve">
+        <value />
+    </data>
+    <data name="ProfileDataNotFound" xml:space="preserve">
+        <value />
+    </data>
+    <data name="UsernameAlreadyTaken" xml:space="preserve">
+        <value />
+    </data>
+    <data name="EmailAlreadyTaken" xml:space="preserve">
+        <value />
+    </data>
+    <data name="EmailNotRegisteredAsAdmin" xml:space="preserve">
+        <value />
+    </data>
+    <data name="UserCreationFailed" xml:space="preserve">
+        <value />
+    </data>
+    <data name="LessonNotInCourse" xml:space="preserve">
+        <value />
+    </data>
+    <data name="NotEnrolledInCourse" xml:space="preserve">
+        <value />
+    </data>
+    <data name="WatchPreviousLessonsFirst" xml:space="preserve">
+        <value />
+    </data>
+    <data name="FailedToUploadIcon" xml:space="preserve">
+        <value />
+    </data>
+    <data name="TryAgain" xml:space="preserve">
+        <value />
+    </data>
+    <data name="FailedToCreateVideoFolder" xml:space="preserve">
+        <value />
+    </data>
+    <data name="SectionShouldBeEmptyToDelete" xml:space="preserve">
+        <value />
+    </data>
+    <data name="FailedToUploadImage" xml:space="preserve">
+        <value />
+    </data>
+    <data name="FailedToDeleteIcon" xml:space="preserve">
+        <value />
+    </data>
+    <data name="ErrorRemovingLesson" xml:space="preserve">
+        <value />
+    </data>
+    <data name="ErrorAddingCourseLesson" xml:space="preserve">
+        <value />
+    </data>
+    <data name="LessonNoResourcesToUpdate" xml:space="preserve">
+        <value />
+    </data>
+    <data name="ErrorUpdatingCourseSections" xml:space="preserve">
+        <value />
+    </data>
+    <data name="CanOnlyChangeToExpired" xml:space="preserve">
+        <value />
+    </data>
+    <data name="LessonHasNoResources" xml:space="preserve">
+        <value />
+    </data>
+    <data name="CanOnlyChangeToPending" xml:space="preserve">
+        <value />
+    </data>
+    <data name="CanOnlyChangeToCancelled" xml:space="preserve">
+        <value />
+    </data>
+    <data name="StatusChangeNotAllowed" xml:space="preserve">
+        <value />
+    </data>
 </root>
 

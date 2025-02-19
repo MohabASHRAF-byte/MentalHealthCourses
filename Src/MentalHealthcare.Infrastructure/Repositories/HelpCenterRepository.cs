@@ -22,7 +22,11 @@ public class HelpCenterRepository(
     {
         var term = dbContext.HelpCenterItems.FirstOrDefault(t => t.HelpCenterItemId == id);
         if (term == null)
-            throw new ResourceNotFound("HelpCenterItems", id.ToString());
+            throw new ResourceNotFound(
+                "Help Center Item",
+                "عنصر مركز المساعدة",
+                id.ToString()
+            );
         dbContext.HelpCenterItems.Remove(term);
         await dbContext.SaveChangesAsync();
     }
@@ -44,7 +48,11 @@ public class HelpCenterRepository(
                      && t.Type == term.Type
             );
         if (newTerm == null)
-            throw new ResourceNotFound("HelpCenterItems", term.HelpCenterItemId.ToString());
+            throw new ResourceNotFound(
+                "Help Center Item",
+                "عنصر مركز المساعدة",
+                term.HelpCenterItemId.ToString()
+            );
         newTerm.Description = term.Description;
         newTerm.Name = term.Name;
         await dbContext.SaveChangesAsync();

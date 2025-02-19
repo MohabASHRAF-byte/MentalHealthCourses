@@ -36,7 +36,11 @@ public class ContactUsRepository(
     {
         var form = await dbContext.ContactUses.FindAsync(formId);
         if (form == null)
-            throw new ResourceNotFound(nameof(ContactUsForm), formId.ToString());
+            throw new ResourceNotFound(
+                "Contact Us Form",
+                "نموذج اتصل بنا",
+                formId.ToString()
+            );
         return form;
     }
 
@@ -80,7 +84,11 @@ public class ContactUsRepository(
     {
         var form = await dbContext.ContactUses.FindAsync(requestFormId);
         if (form == null)
-            throw new ResourceNotFound(nameof(ContactUsForm), requestFormId.ToString());
+            throw new ResourceNotFound(
+                "Contact Us Form",
+                "نموذج اتصل بنا",
+                requestFormId.ToString()
+            );
         form.IsRead = requestState;
         await dbContext.SaveChangesAsync();
         

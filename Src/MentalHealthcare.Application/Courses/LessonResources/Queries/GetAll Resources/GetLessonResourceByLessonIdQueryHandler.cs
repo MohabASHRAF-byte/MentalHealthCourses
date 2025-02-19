@@ -18,23 +18,13 @@ public class GetLessonResourceByLessonIdQueryHandler(
     IUserContext userContext
 ) : IRequestHandler<GetLessonResourceByLessonIdQuery, List<CourseResourceDto>>
 {
-    public async Task<List<CourseResourceDto>> Handle(GetLessonResourceByLessonIdQuery request, CancellationToken cancellationToken)
+    public async Task<List<CourseResourceDto>> Handle(GetLessonResourceByLessonIdQuery request,
+        CancellationToken cancellationToken)
     {
         logger.LogInformation("Starting GetLessonResourceByLessonIdQuery for Lesson ID: {LessonId}", request.LessonId);
 
         // Authenticate and validate admin permissions
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            var userDetails = currentUser == null
-                ? "User is null"
-                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
-
-            logger.LogWarning("Unauthorized access attempt to fetch lesson resources. User details: {UserDetails}", userDetails);
-            throw new UnauthorizedAccessException("You do not have permission to access this resource.");
-        }
-
-        logger.LogInformation("Admin access granted for user {UserId}", currentUser.Id);
+        userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
 
         // Fetch resources for the lesson
         var resources = await courseResourcesRepository.GetCourseLessonResourcesByCourseIdAsync(request.LessonId);

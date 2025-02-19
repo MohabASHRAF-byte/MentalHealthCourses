@@ -1,9 +1,11 @@
 using MediatR;
 using MentalHealthcare.Application.BunnyServices;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -13,7 +15,8 @@ public class DeleteCourseIconCommandHandler(
     ILogger<DeleteCourseIconCommandHandler> logger,
     ICourseRepository courseRepository,
     IConfiguration configuration,
-    IUserContext userContext
+    IUserContext userContext,
+    ILocalizationService localizationService
 ) : IRequestHandler<DeleteCourseIconCommand>
 {
     public async Task Handle(DeleteCourseIconCommand request, CancellationToken cancellationToken)
@@ -21,17 +24,7 @@ public class DeleteCourseIconCommandHandler(
         logger.LogInformation("Start handling DeleteCourseIconCommand for CourseId: {CourseId}", request.CourseId);
 
         // Retrieve current user and validate permissions
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            var userDetails = currentUser == null
-                ? "User is null"
-                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
-
-            logger.LogWarning("Unauthorized access attempt to delete an icon. User details: {UserDetails}",
-                userDetails);
-            throw new ForBidenException("You do not have permission to delete an icon for this course.");
-        }
+        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.Admin],logger);
 
         logger.LogInformation("User {UserId} authorized to delete course icon.", currentUser.Id);
 
@@ -41,7 +34,7 @@ public class DeleteCourseIconCommandHandler(
         if (course == null)
         {
             logger.LogError("Course with ID {CourseId} not found.", request.CourseId);
-            throw new ResourceNotFound("Course", request.CourseId.ToString());
+            throw new ResourceNotFound(nameof(course),"دورة تدريبية", request.CourseId.ToString());
         }
 
         logger.LogInformation("Course found: {CourseName} (ID: {CourseId})", course.Name, request.CourseId);
@@ -50,7 +43,12 @@ public class DeleteCourseIconCommandHandler(
         if (string.IsNullOrEmpty(course.IconName))
         {
             logger.LogInformation("Course with ID {CourseId} does not have an icon to delete.", request.CourseId);
-            throw new ArgumentException("Course with ID {CourseId} does not have an icon for this course.");
+            throw new BadHttpRequestException(
+                string.Format(
+                    localizationService.GetMessage("CourseIconMissing"),
+                    request.CourseId
+                )
+            );
         }
 
         // Delete icon using Bunny service
@@ -62,7 +60,9 @@ public class DeleteCourseIconCommandHandler(
         {
             logger.LogWarning("Failed to delete icon for CourseId: {CourseId}. Error: {ErrorMessage}",
                 request.CourseId, deleteResponse.Message);
-            throw new TryAgain("Failed to delete icon. Please try again.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("FailedToDeleteIcon", "Failed to delete icon. Please try again.")
+            );
         }
 
         logger.LogInformation("Icon deleted successfully for CourseId: {CourseId}", request.CourseId);

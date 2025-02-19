@@ -25,25 +25,17 @@ public class UpdateLessonCommandHandler(
             request.LessonId, request.LessonName);
 
         // Authenticate and validate admin permissions
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            var userDetails = currentUser == null
-                ? "User is null"
-                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
-
-            logger.LogWarning("Unauthorized access attempt to update lesson data. User details: {UserDetails}", userDetails);
-            throw new ForBidenException("You do not have permission to update this lesson.");
-        }
+        userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
 
         logger.LogInformation("Validating if the lesson exists with LessonId: {LessonId}", request.LessonId);
 
         // Perform the update.
         await courseLessonRepository.UpdateCourseLessonDataAsync(request.LessonId, request.LessonName);
-        logger.LogInformation("Successfully updated LessonName to: {LessonName} for LessonId: {LessonId}", 
+        logger.LogInformation("Successfully updated LessonName to: {LessonName} for LessonId: {LessonId}",
             request.LessonName, request.LessonId);
 
-        logger.LogInformation("UpdateLessonCommandHandler successfully completed for LessonId: {LessonId}", request.LessonId);
+        logger.LogInformation("UpdateLessonCommandHandler successfully completed for LessonId: {LessonId}",
+            request.LessonId);
         return request.LessonId;
     }
 }

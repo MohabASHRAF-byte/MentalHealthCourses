@@ -1,6 +1,7 @@
 using MediatR;
 using MentalHealthcare.Application.Common;
 using MentalHealthcare.Application.SystemUsers;
+using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos.course;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
@@ -17,23 +18,11 @@ public class GetAllCourseReviewsQueryHandler(
     public async Task<PageResult<UserReviewDto>> Handle(GetAllCourseReviewsQuery request,
         CancellationToken cancellationToken)
     {
-        logger.LogInformation("Handling GetAllCourseReviewsQuery for CourseId: {CourseId}, PageNumber: {PageNumber}, PageSize: {PageSize}", 
+        logger.LogInformation(
+            "Handling GetAllCourseReviewsQuery for CourseId: {CourseId}, PageNumber: {PageNumber}, PageSize: {PageSize}",
             request.CourseId, request.PageNumber, request.PageSize);
 
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null)
-        {
-            logger.LogWarning(
-                "Unauthorized access attempt to retrieve course reviews. User information: {UserDetails}",
-                currentUser == null
-                    ? "User is null"
-                    : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}"
-            );
-            throw new ForBidenException("You do not have permission to retrieve reviews for this course.");
-        }
-
-        logger.LogInformation("User with SysUserId: {SysUserId} is retrieving reviews for CourseId: {CourseId}",
-            currentUser.SysUserId, request.CourseId);
+        userContext.UserHaveAny([UserRoles.Admin, UserRoles.User], logger);
 
         try
         {

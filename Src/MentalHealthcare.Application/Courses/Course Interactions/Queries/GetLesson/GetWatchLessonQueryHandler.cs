@@ -16,26 +16,18 @@ public class GetWatchLessonQueryHandler(
 {
     public async Task<CourseLessonDto> Handle(GetWatchLessonQuery request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Starting Handle method for GetWatchLessonQuery with LessonId: {LessonId}", request.LessonId);
+        logger.LogInformation("Starting Handle method for GetWatchLessonQuery with LessonId: {LessonId}",
+            request.LessonId);
 
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.User))
-        {
-            logger.LogWarning(
-                "Unauthorized access attempt to fetch lesson. User information: {UserDetails}",
-                currentUser == null
-                    ? "User is null"
-                    : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}"
-            );
-            throw new ForBidenException("You do not have permission to fetch this lesson.");
-        }
+        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.User], logger);
 
         logger.LogInformation("User with SysUserId: {SysUserId} is attempting to fetch LessonId: {LessonId}",
             currentUser.SysUserId, request.LessonId);
 
         try
         {
-            var courseLesson = await courseInteractionsRepository.GetLessonAsync(request.LessonId);
+            var courseLesson = await courseInteractionsRepository.GetLessonAsync(request.CourseId, request.LessonId,
+                (int)currentUser.SysUserId!);
 
             logger.LogInformation("Successfully fetched LessonId: {LessonId} for UserId: {UserId}",
                 request.LessonId, currentUser.SysUserId);

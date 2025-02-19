@@ -1,10 +1,12 @@
 using System.Diagnostics;
 using MediatR;
 using MentalHealthcare.Application.BunnyServices;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Repositories.Course;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -15,41 +17,43 @@ public class UploadLessonResourceCommandHandler(
     ICourseResourcesRepository courseResourcesRepository,
     ICourseRepository courseRepository,
     IConfiguration configuration,
-    IUserContext userContext
+    IUserContext userContext,
+    ILocalizationService localizationService
 ) : IRequestHandler<UploadLessonResourceCommand, int>
 {
     public async Task<int> Handle(UploadLessonResourceCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Starting resource upload process for Course ID: {CourseId}, Lesson ID: {LessonId}", 
+        logger.LogInformation("Starting resource upload process for Course ID: {CourseId}, Lesson ID: {LessonId}",
             request.CourseId, request.LessonId);
 
         // Authenticate and validate admin permissions
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            var userDetails = currentUser == null
-                ? "User is null"
-                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
-
-            logger.LogWarning("Unauthorized access attempt to upload resource. User details: {UserDetails}", userDetails);
-            throw new UnauthorizedAccessException("You do not have permission to perform this action.");
-        }
-
-        logger.LogInformation("Admin access granted for user {UserId}", currentUser.Id);
+        userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
 
         // Validate file size
         var fileSizeInMB = request.File.Length / (1 << 20); // Convert bytes to MB
         if (fileSizeInMB > Global.CourseRecourseSize)
         {
-            logger.LogError("File size ({FileSize}MB) exceeds the limit of {Limit}MB.", fileSizeInMB, Global.CourseRecourseSize);
-            throw new ArgumentException($"The file {request.FileName} is too large.");
+            logger.LogError("File size ({FileSize}MB) exceeds the limit of {Limit}MB.", fileSizeInMB,
+                Global.CourseRecourseSize);
+            throw new BadHttpRequestException(
+                string.Format(
+                    localizationService.GetMessage("FileTooLarge"),
+                    request.FileName
+                )
+            );
         }
 
         // Validate content type
         if (!Enum.IsDefined(typeof(ContentType), request.ContentType))
         {
             logger.LogWarning("Invalid content type: {ContentType}", request.ContentType);
-            throw new ArgumentException($"Invalid value for {nameof(request.ContentType)}: {request.ContentType}");
+            throw new BadHttpRequestException(
+                string.Format(
+                    localizationService.GetMessage("InvalidItemType"),
+                    nameof(request.ContentType),
+                    request.ContentType
+                )
+            );
         }
 
         // Initialize Bunny client
@@ -60,7 +64,12 @@ public class UploadLessonResourceCommandHandler(
         if (course == null)
         {
             logger.LogError("Course with ID {CourseId} not found.", request.CourseId);
-            throw new ArgumentException($"Course with ID {request.CourseId} not found.");
+            throw new BadHttpRequestException(
+                string.Format(
+                    localizationService.GetMessage("CourseNotFound"),
+                    request.CourseId
+                )
+            );
         }
 
         // Prepare resource entity
@@ -87,7 +96,13 @@ public class UploadLessonResourceCommandHandler(
             ContentType.Pdf => ContentExtension.Pdf,
             ContentType.Text => ContentExtension.Text,
             ContentType.Zip => ContentExtension.Zip,
-            _ => throw new ArgumentOutOfRangeException(nameof(request.ContentType), request.ContentType, "Unknown content type")
+            _ => throw new BadHttpRequestException(
+                string.Format(
+                    localizationService.GetMessage("UnknownContentType"),
+                    nameof(request.ContentType),
+                    request.ContentType
+                )
+            )
         }}";
 
         logger.LogInformation("Uploading file: {FileName} to path: {FilePath}", fileName, filePath);
@@ -101,7 +116,7 @@ public class UploadLessonResourceCommandHandler(
         courseResource.BunnyPath = filePath;
         await courseResourcesRepository.SaveChangesAsync();
 
-        logger.LogInformation("Resource upload completed successfully. Resource ID: {ResourceId}, URL: {ResourceUrl}", 
+        logger.LogInformation("Resource upload completed successfully. Resource ID: {ResourceId}, URL: {ResourceUrl}",
             courseResource.CourseLessonResourceId, courseResource.Url);
 
         return courseResource.CourseLessonResourceId;

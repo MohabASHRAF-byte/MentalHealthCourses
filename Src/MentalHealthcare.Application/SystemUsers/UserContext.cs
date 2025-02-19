@@ -11,6 +11,8 @@ public interface IUserContext
 {
     public CurrentUser? GetCurrentUser();
     public CurrentUser EnsureAuthorizedUser(List<UserRoles> requiredRoles, ILogger logger);
+    public CurrentUser UserHaveAny(List<UserRoles> requiredRoles, ILogger logger);
+
 }
 
 internal class UserContext(
@@ -25,7 +27,7 @@ internal class UserContext(
 
         if (user == null)
         {
-            throw new InvalidOperationException(
+            throw new BadHttpRequestException(
                 localizationService.GetMessage("UserNotFound")
             );
         }
@@ -75,6 +77,24 @@ internal class UserContext(
         var currentUser = GetCurrentUser();
 
         if (currentUser == null || !currentUser.HasRole(requiredRoles))
+        {
+            var userId = currentUser?.Id ?? "Anonymous";
+            logger.LogWarning("Unauthorized access attempt by user: {UserId}", userId);
+            throw new ForBidenException(
+                localizationService.GetMessage("PermissionDenied")
+            );
+        }
+
+        logger.LogInformation("User {UserId} authorized with roles: {Roles}", currentUser.Id,
+            string.Join(",", requiredRoles));
+
+        return currentUser;
+    }
+    public CurrentUser UserHaveAny(List<UserRoles> requiredRoles, ILogger logger)
+    {
+        var currentUser = GetCurrentUser();
+
+        if (currentUser == null || !currentUser.IsAuthorized(requiredRoles))
         {
             var userId = currentUser?.Id ?? "Anonymous";
             logger.LogWarning("Unauthorized access attempt by user: {UserId}", userId);

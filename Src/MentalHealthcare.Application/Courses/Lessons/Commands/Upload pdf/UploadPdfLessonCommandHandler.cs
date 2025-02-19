@@ -1,10 +1,12 @@
 using MediatR;
 using MentalHealthcare.Application.BunnyServices;
 using MentalHealthcare.Application.Courses.Lessons.Commands.CreateVideo;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Repositories.Course;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -18,7 +20,8 @@ public class UploadPdfLessonCommandHandler(
     ICourseRepository courseRepository,
     ICourseLessonRepository courseLessonRepository,
     IConfiguration configuration,
-    IUserContext userContext
+    IUserContext userContext,
+    ILocalizationService localizationService
 ) : IRequestHandler<UploadPdfLessonCommand, int>
 {
     public async Task<int> Handle(UploadPdfLessonCommand request, CancellationToken cancellationToken)
@@ -26,20 +29,19 @@ public class UploadPdfLessonCommandHandler(
         logger.LogInformation(
             "Starting UploadPdfLessonCommandHandler for CourseId: {CourseId}, SectionId: {SectionId}, PdfName: {PdfName}",
             request.CourseId, request.SectionId, request.PdfName);
-
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            logger.LogError("Unauthorized access attempt for uploading PDF.");
-            throw new UnauthorizedAccessException();
-        }
+        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
 
         var fileSizeInMb = request.File.Length / (1 << 20); // Convert bytes to MB
         if (fileSizeInMb > Global.CourseLessonPdfSize)
         {
             logger.LogError("File size ({FileSize}MB) exceeds the limit of {Limit}MB.", fileSizeInMb,
                 Global.CourseRecourseSize);
-            throw new ArgumentException($"The file {request.PdfName} is too large.");
+            throw new BadHttpRequestException(
+                string.Format(
+                    localizationService.GetMessage("FileTooLarge"),
+                    request.PdfName
+                )
+            );
         }
 
         logger.LogInformation("Fetching course name for CourseId: {CourseId}", request.CourseId);
@@ -70,7 +72,9 @@ public class UploadPdfLessonCommandHandler(
         if (uploadFileResponse.Url == null)
         {
             logger.LogError("Failed to upload PDF to BunnyCDN for LessonId: {CourseLessonId}", lesson.CourseLessonId);
-            throw new Exception("Failed to upload PDF. Try again.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("PdfUploadFailed")
+            );
         }
 
         lesson.Url = uploadFileResponse.Url;

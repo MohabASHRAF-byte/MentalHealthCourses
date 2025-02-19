@@ -19,17 +19,7 @@ public class UpdateCourseReviewCommandHandler(
             "Starting Handle method for UpdateCourseReviewCommand with CourseId: {CourseId}, ReviewId: {ReviewId}, Rating: {Rating}",
             request.CourseId, request.ReviewId, request.Rating);
 
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.User))
-        {
-            logger.LogWarning(
-                "Unauthorized access attempt to update a course review. User information: {UserDetails}",
-                currentUser == null
-                    ? "User is null"
-                    : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}"
-            );
-            throw new ForBidenException("You do not have permission to update this review.");
-        }
+        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.User], logger);
 
         if (request.Content is null && request.Rating is null)
         {
@@ -46,11 +36,13 @@ public class UpdateCourseReviewCommandHandler(
                 request.Rating,
                 request.Content
             );
-            logger.LogInformation("Successfully updated ReviewId: {ReviewId} for CourseId: {CourseId}", request.ReviewId, request.CourseId);
+            logger.LogInformation("Successfully updated ReviewId: {ReviewId} for CourseId: {CourseId}",
+                request.ReviewId, request.CourseId);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to update ReviewId: {ReviewId} for CourseId: {CourseId}", request.ReviewId, request.CourseId);
+            logger.LogError(ex, "Failed to update ReviewId: {ReviewId} for CourseId: {CourseId}", request.ReviewId,
+                request.CourseId);
             throw;
         }
     }

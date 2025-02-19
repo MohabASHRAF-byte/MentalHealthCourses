@@ -2,6 +2,7 @@ using MediatR;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
+using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -28,7 +29,10 @@ public class GetContactFormByIdQueryHandler(
         if (form == null)
         {
             logger.LogWarning("Contact Form ID: {Id} not found in the database", request.Id);
-            throw new KeyNotFoundException($"Contact Form with ID {request.Id} not found.");
+            throw new ResourceNotFound(
+                "Contact Form", 
+                "نموذج تواصل", 
+                request.Id.ToString());
         }
 
         logger.LogInformation("Successfully fetched Contact Form ID: {Id} from the database", request.Id);

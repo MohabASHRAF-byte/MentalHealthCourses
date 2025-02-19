@@ -4,6 +4,7 @@ using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
 using MentalHealthcare.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -58,7 +59,7 @@ public class CourseRepository(
                 .FirstOrDefaultAsync();
             if (course == null)
             {
-                throw new ResourceNotFound(nameof(course), courseId.ToString());
+                throw new ResourceNotFound(nameof(course), "دورة تدريبية", courseId.ToString());
             }
 
             if (isFree.HasValue)
@@ -97,7 +98,11 @@ public class CourseRepository(
                 var instructor = await dbContext.Instructors.FindAsync(instructorId.Value);
                 if (instructor == null)
                 {
-                    throw new ResourceNotFound(nameof(instructor), instructorId.ToString() ?? "");
+                    throw new ResourceNotFound(
+                        "Instructor",         // English type name
+                        "محاضر",           // Arabic type name
+                        instructorId.ToString() ?? "" // Ensure the ID is properly converted to a string
+                    );
                 }
 
                 course.Instructor = instructor;
@@ -137,7 +142,44 @@ public class CourseRepository(
         await dbContext.SaveChangesAsync();
     }
 
+    public async Task<int?> GetProgressAsync(int? userId, int courseId)
+    {
+        logger.LogInformation("Fetching progress for User: {UserId}, Course: {CourseId}", userId, courseId);
+        if (userId == null)
+            return null;
+        var courseProgress = await dbContext.CourseProgresses
+            .Where(p => p.SystemUserId == userId && p.CourseId == courseId)
+            .FirstOrDefaultAsync();
+
+        if (courseProgress == null)
+        {
+            logger.LogWarning("Course progress not found for User: {UserId}, Course: {CourseId}", userId, courseId);
+            return null;
+        }
+
+        var lessonsCount = await dbContext.Courses
+            .Where(c => c.CourseId == courseId)
+            .Select(c => c.LessonsCount)
+            .FirstOrDefaultAsync();
+
+        if (lessonsCount == 0)
+        {
+            logger.LogInformation("Course {CourseId} has no lessons. Returning 100% progress.", courseId);
+            return 100;
+        }
+
+        decimal progressFraction = (decimal)courseProgress.LastLessonIdx / lessonsCount;
+        int progressPercentage = (int)Math.Round(progressFraction * 100);
+
+        logger.LogInformation("User {UserId} progress for Course {CourseId}: {ProgressPercentage}%", userId, courseId,
+            progressPercentage);
+
+        return progressPercentage;
+    }
+
+
     public async Task<Domain.Entities.Courses.Course> GetFullCourseByIdAsync(
+        int? userId,
         int id
     )
     {
@@ -152,7 +194,7 @@ public class CourseRepository(
 
         if (course == null)
         {
-            throw new ResourceNotFound(nameof(Domain.Entities.Courses.Course), id.ToString());
+            throw new ResourceNotFound(nameof(course), "دورة تدريبية", id.ToString());
         }
 
         return course;
@@ -164,7 +206,7 @@ public class CourseRepository(
             .FirstOrDefaultAsync(c => c.CourseId == id);
         if (course == null)
         {
-            throw new ResourceNotFound("Video", id.ToString());
+            throw new ResourceNotFound(nameof(course), "دورة تدريبية", id.ToString());
         }
 
         return course;
@@ -236,8 +278,11 @@ public class CourseRepository(
             .FirstOrDefaultAsync(c => c.PendingVideoUploadId == requestVideoId);
         if (videoUpload == null)
         {
-            throw new ResourceNotFound("Video", requestVideoId);
-        }
+            throw new ResourceNotFound(
+                "Video",
+                "فيديو",
+                requestVideoId
+            );        }
 
         dbContext.VideoUploads.Remove(videoUpload);
         await dbContext.SaveChangesAsync();
@@ -249,7 +294,11 @@ public class CourseRepository(
             .FirstOrDefaultAsync(c => c.PendingVideoUploadId == requestVideoId);
         if (videoUpload == null)
         {
-            throw new ResourceNotFound("Video", requestVideoId);
+            throw new ResourceNotFound(
+                "Video",
+                "فيديو",
+                requestVideoId
+            );
         }
 
         return videoUpload;
@@ -263,7 +312,7 @@ public class CourseRepository(
             .FirstOrDefaultAsync();
         if (collectionId == null)
         {
-            throw new ResourceNotFound("Course", courseId.ToString());
+            throw new ResourceNotFound(nameof(Domain.Entities.Courses.Course), "دورة تدريبية", courseId.ToString());
         }
 
         return collectionId;
@@ -277,7 +326,7 @@ public class CourseRepository(
             .FirstOrDefaultAsync();
         if (videoName == null)
         {
-            throw new ResourceNotFound("Course", courseId.ToString());
+            throw new ResourceNotFound(nameof(Domain.Entities.Courses.Course), "دورة تدريبية", courseId.ToString());
         }
 
         return videoName;
@@ -303,7 +352,11 @@ public class CourseRepository(
 
         if (oldSectionOrder == 0)
         {
-            throw new ResourceNotFound("Section", sectionId.ToString());
+            throw new ResourceNotFound(
+                "Course Section", // English type name
+                "قسم دورة تدريبية", // Alternative Arabic translation
+                sectionId.ToString()
+            );
         }
 
         // Find the last lesson index of the previous section

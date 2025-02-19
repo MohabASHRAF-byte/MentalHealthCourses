@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Http;
 using RestSharp;
 
 namespace MentalHealthcare.Application.Common;
@@ -16,14 +17,14 @@ public class JsonHelper
         }
         else
         {
-            throw new ArgumentException("Invalid JSON string provided");
+            throw new BadHttpRequestException("تم تقديم  JSON غير صالح.");
         }
     }
 
     public JsonHelper(string jsonString)
     {
         _jsonDictionary = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(jsonString)
-                          ?? throw new ArgumentException("Invalid JSON string provided");
+                          ?? throw new BadHttpRequestException("تم تقديم  JSON غير صالح.");
     }
 
     // Method: Get value of a key as string, null if not found or invalid

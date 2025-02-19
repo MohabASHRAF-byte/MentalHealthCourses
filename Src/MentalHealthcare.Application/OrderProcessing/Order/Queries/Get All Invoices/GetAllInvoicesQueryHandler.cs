@@ -18,22 +18,14 @@ public class GetAllInvoicesQueryHandler(
     public async Task<PageResult<InvoiceViewDto>> Handle(GetAllInvoicesQuery request,
         CancellationToken cancellationToken)
     {
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null)
-        {
-            logger.LogWarning("Unauthorized access attempt to fetch all invoices.");
-            throw new ForBidenException("You do not have permission to access invoices.");
-        }
-
-        logger.LogInformation("Fetching invoices for user: {UserId} with role: {UserRole}", currentUser.Id,
-            currentUser.Roles);
+        var currentUser = userContext.UserHaveAny([UserRoles.Admin, UserRoles.User], logger);
 
         var userId = currentUser.HasRole(UserRoles.Admin) ? (int?)null : currentUser.SysUserId!.Value;
 
         var (count, invoices) = await invoiceRepository.GetInvoicesAsync(
             request.PageNumber, request.PageSize,
             request.InvoiceId,
-            request.Status,  request.Email,
+            request.Status, request.Email,
             request.PhoneNumber, request.FromDate, request.ToDate,
             request.PromoCode,
             userId

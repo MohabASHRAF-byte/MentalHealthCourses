@@ -16,12 +16,7 @@ public class GlobalErrorHandling(
         {
             await next.Invoke(context);
         }
-        catch (AlreadyExist ex)
-        {
-            logger.LogError(ex, ex.Message);
-            context.Response.StatusCode = 400;
-            await context.Response.WriteAsync(ex.Message);
-        }
+
         catch (ResourceNotFound ex)
         {
             logger.LogError(ex, "Resource not found: {Message}", ex.Message);
@@ -36,26 +31,6 @@ public class GlobalErrorHandling(
             context.Response.StatusCode = 401;
             var ret = OperationResult<string>.Failure(ex.Message, statusCode: StateCode.Forbidden);
             context.Response.ContentType = "application/json";
-            await context.Response.WriteAsJsonAsync(ret);
-        }
-        catch (ArgumentException ex)
-        {
-            logger.LogError(ex, "Argument: {Message}", ex.Message);
-            context.Response.StatusCode = 400;
-            var ret = OperationResult<string>.Failure(ex.Message, statusCode: StateCode.BadRequest);
-            ret.Errors.Add(ex.Message);
-            context.Response.ContentType = "application/json";
-
-            await context.Response.WriteAsJsonAsync(ret);
-        }
-        catch (CreationFailed ex)
-        {
-            logger.LogError(ex, "Argument: {Message}", ex.Message);
-            context.Response.StatusCode = 400;
-            var ret = OperationResult<string>.Failure(ex.Message, statusCode: StateCode.BadRequest);
-            ret.Errors.Add(ex.Message);
-            context.Response.ContentType = "application/json";
-
             await context.Response.WriteAsJsonAsync(ret);
         }
         catch (InvalidOtp ex)
@@ -76,7 +51,6 @@ public class GlobalErrorHandling(
             ret.Errors.Add(ex.Message);
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsJsonAsync(ret);
-
         }
         catch (Exception ex)
         {

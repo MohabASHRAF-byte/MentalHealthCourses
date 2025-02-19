@@ -1,7 +1,10 @@
 using MediatR;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
+using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.PromoCode;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using static System.DateTime;
 
@@ -10,7 +13,8 @@ namespace MentalHealthcare.Application.PromoCode.Course.Commands.UpdateCoursePro
 public class UpdateCoursePromoCodeCommandHandler(
     ILogger<UpdateCoursePromoCodeCommandHandler> logger,
     ICoursePromoCodeRepository promoCodeRepository,
-    IUserContext userContext
+    IUserContext userContext,
+    ILocalizationService localizationService
 ) : IRequestHandler<UpdateCoursePromoCodeCommand, int>
 {
     public async Task<int> Handle(UpdateCoursePromoCodeCommand request, CancellationToken cancellationToken)
@@ -29,7 +33,10 @@ public class UpdateCoursePromoCodeCommandHandler(
         if (coursePromoCode == null)
         {
             logger.LogError("CoursePromoCode with ID: {PromoCodeId} not found.", request.CoursePromoCodeId);
-            throw new KeyNotFoundException($"CoursePromoCode with ID {request.CoursePromoCodeId} not found.");
+            throw new ResourceNotFound(
+                "CoursePromoCode", 
+                "كود خصم الدورة", 
+                request.CoursePromoCodeId.ToString());
         }
 
         // Update Percentage
@@ -53,7 +60,9 @@ public class UpdateCoursePromoCodeCommandHandler(
                 {
                     logger.LogWarning("ExpireDate {ParsedExpireDate} is not in the future. Rejecting update.",
                         parsedExpireDate);
-                    throw new ArgumentException("ExpireDate must be a future date.");
+                    throw new BadHttpRequestException(
+                        localizationService.GetMessage("ExpireDateMustBeFuture")
+                    );
                 }
 
                 coursePromoCode.expiredate = parsedExpireDate;
@@ -62,7 +71,9 @@ public class UpdateCoursePromoCodeCommandHandler(
             {
                 logger.LogError("Failed to parse ExpireDate: {ExpireDate} for CoursePromoCode ID: {PromoCodeId}",
                     request.ExpireDate, request.CoursePromoCodeId);
-                throw new ArgumentException("Invalid ExpireDate format. Please provide a valid date.");
+                throw new BadHttpRequestException(
+                    localizationService.GetMessage("InvalidExpireDateFormat")
+                );
             }
         }
 

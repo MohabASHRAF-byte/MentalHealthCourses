@@ -1,14 +1,16 @@
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Domain.Dtos.course;
 using MentalHealthcare.Domain.Entities.Courses;
 using MentalHealthcare.Domain.Repositories.Course;
 using MentalHealthcare.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using ArgumentException = System.ArgumentException;
 
 namespace MentalHealthcare.Infrastructure.Repositories.Course;
 
 public class CourseInteractionsRepository(
-    MentalHealthDbContext dbContext
+    MentalHealthDbContext dbContext, 
+    ILocalizationService localizationService
 ) : ICourseInteractionsRepository
 {
     public async Task Enroll(int courseId, int userId)
@@ -23,7 +25,9 @@ public class CourseInteractionsRepository(
 
             if (course == null)
             {
-                throw new ArgumentException("Course is not free");
+                throw new BadHttpRequestException(
+                    localizationService.GetMessage("CourseNotFree")
+                );
             }
 
             course.EnrollmentsCount++;
@@ -34,7 +38,9 @@ public class CourseInteractionsRepository(
 
             if (isOwned)
             {
-                throw new ArgumentException("Course is already owned");
+                throw new BadHttpRequestException(
+                    localizationService.GetMessage("CourseAlreadyOwned")
+                );
             }
 
             var courseProgress = new CourseProgress()
@@ -67,7 +73,9 @@ public class CourseInteractionsRepository(
 
         if (lessonOrder == 0)
         {
-            throw new ArgumentException("Invalid lesson ID or the lesson does not belong to the specified course");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("InvalidLessonIdOrNotInCourse")
+            );
         }
 
         // Fetch course progress
@@ -77,7 +85,9 @@ public class CourseInteractionsRepository(
 
         if (courseProgress == null)
         {
-            throw new ArgumentException("User is not enrolled in this course");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("UserNotEnrolledInCourse")
+            );
         }
 
         if (courseProgress.LastLessonIdx >= lessonOrder)
@@ -87,7 +97,9 @@ public class CourseInteractionsRepository(
 
         if (courseProgress.LastLessonIdx + 1 != lessonOrder)
         {
-            throw new ArgumentException("Complete the previous lesson before proceeding");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("CompletePreviousLessonFirst")
+            );
         }
 
         // Update progress
@@ -96,14 +108,42 @@ public class CourseInteractionsRepository(
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task<CourseLessonDto> GetLessonAsync(int lessonId)
+    public async Task<CourseLessonDto> GetLessonAsync(int courseId, int lessonId, int userId)
     {
         var lesson = await dbContext.CourseLessons
             .Include(cl => cl.CourseLessonResources)
             .FirstOrDefaultAsync(cl => cl.CourseLessonId == lessonId);
+
         if (lesson == null)
         {
-            throw new ArgumentException("Lesson not found.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("LessonNotFound")
+            );
+        }
+
+        if (lesson.courseId != courseId)
+        {
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("LessonNotInCourse", "Lesson does not belong to this course.")
+            );
+        }
+
+        var progress = await dbContext
+            .CourseProgresses
+            .Where(cp => cp.CourseId == lesson.courseId && cp.SystemUserId == userId)
+            .FirstOrDefaultAsync();
+        if (progress == null)
+        {
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("NotEnrolledInCourse", "You are not enrolled in this course.")
+            );
+        }
+
+        if (progress.LastLessonIdx + 1 < lesson.OrderOnCourse)
+        {
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("WatchPreviousLessonsFirst", "You should watch previous lessons first.")
+            );
         }
 
         lesson.views += 1;

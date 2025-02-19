@@ -15,6 +15,8 @@ using MentalHealthcare.Application.SystemUsers.Commands.RemoveRoles;
 using MentalHealthcare.Application.SystemUsers.Commands.ResendEmailConfirmtion;
 using MentalHealthcare.Application.SystemUsers.Commands.ResetPassword;
 using MentalHealthcare.Application.SystemUsers.Commands.ValidateChangePasswordOtp;
+using MentalHealthcare.Application.SystemUsers.Queries.GerUsersQuery;
+using MentalHealthcare.Application.SystemUsers.Queries.GetUserQuery;
 using MentalHealthcare.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -189,5 +191,24 @@ public class AdminIdentityController(
     {
         var result = await mediator.Send(query);
         return Ok(result);
+    }
+
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [HttpGet]
+    public async Task<IActionResult> GetAllUsers([FromQuery] GetUsersQuery query)
+    {
+        var results = await mediator.Send(query);
+        return Ok(results);
+    }
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [HttpGet("{userId}")]
+    public async Task<IActionResult> GetUser([FromRoute] int userId)
+    {
+        var query = new GetUserQuery()
+        {
+            UserId = userId
+        };
+        var results = await mediator.Send(query);
+        return Ok(results);
     }
 }

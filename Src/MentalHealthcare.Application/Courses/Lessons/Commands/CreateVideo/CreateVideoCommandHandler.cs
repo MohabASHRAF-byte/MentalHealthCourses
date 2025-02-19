@@ -2,6 +2,7 @@ using AutoMapper;
 using MediatR;
 using MentalHealthcare.Application.BunnyServices;
 using MentalHealthcare.Application.BunnyServices.VideoContent.Video;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Repositories;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Exceptions;
+using Microsoft.AspNetCore.Http;
 
 namespace MentalHealthcare.Application.Courses.Lessons.Commands.CreateVideo;
 
@@ -22,7 +24,8 @@ public class CreateVideoCommandHandler(
     ICourseSectionRepository courseSectionRepository,
     IConfiguration configuration,
     IMapper mapper,
-    IUserContext userContext
+    IUserContext userContext,
+    ILocalizationService localizationService
 ) : IRequestHandler<CreateVideoCommand, CreateVideoCommandResponse>
 {
     public async Task<CreateVideoCommandResponse> Handle(CreateVideoCommand request,
@@ -32,16 +35,7 @@ public class CreateVideoCommandHandler(
             request.CourseId, request.CourseSectionId);
 
         // Authenticate and validate admin permissions
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            var userDetails = currentUser == null
-                ? "User is null"
-                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
-
-            logger.LogWarning("Unauthorized access attempt to create a video. User details: {UserDetails}", userDetails);
-            throw new ForBidenException("You do not have permission to create a video lesson.");
-        }
+        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
 
         // Validate course and section existence
         logger.LogInformation("Validating existence of CourseId: {CourseId}, SectionId: {SectionId}",
@@ -57,14 +51,16 @@ public class CreateVideoCommandHandler(
             "Calling BunnyCDN API to create video with Title: {Title} in CollectionId: {CollectionId}",
             request.Title, collectionId);
         var bunny = new BunnyClient(configuration);
-        var videoId = await 
+        var videoId = await
             bunny
                 .CreateVideoAsync(request.Title, collectionId);
 
         if (videoId == null)
         {
             logger.LogError("Failed to create video on BunnyCDN for Title: {Title}", request.Title);
-            throw new Exception("Unexpected error occurred while creating the video.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("VideoCreationUnexpectedError")
+            );
         }
 
         logger.LogInformation("Successfully created video on BunnyCDN with VideoId: {VideoId}", videoId);

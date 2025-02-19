@@ -14,5 +14,6 @@ public class CourseViewDto
     public int EnrollmentsCount { get; set; } = 0;
     public bool IsOwned { get; set; } = false;
     public bool IsFree { get; set; } = false;
+    public int? Progress { get; set; } = null;
     public List<MiniCategoryDto> Categories { get; set; } = [];
 }

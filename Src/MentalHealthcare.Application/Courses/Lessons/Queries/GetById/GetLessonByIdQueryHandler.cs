@@ -21,16 +21,7 @@ public class GetLessonByIdQueryHandler(
         logger.LogInformation("Fetching lesson with ID {LessonId}", request.LessonId);
 
         // Authenticate and validate admin permissions
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            var userDetails = currentUser == null
-                ? "User is null"
-                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
-
-            logger.LogWarning("Unauthorized access attempt to fetch lesson. User details: {UserDetails}", userDetails);
-            throw new ForBidenException("You do not have permission to access this resource.");
-        }
+        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
 
         logger.LogInformation("Admin access granted for user {UserId}", currentUser.Id);
 
@@ -40,7 +31,7 @@ public class GetLessonByIdQueryHandler(
         if (lesson == null)
         {
             logger.LogWarning("Lesson with ID {LessonId} not found.", request.LessonId);
-            throw new ResourceNotFound("Lesson",request.LessonId.ToString());
+            throw new ResourceNotFound("lesson", "درس", request.LessonId.ToString());
         }
 
         logger.LogInformation("Successfully fetched lesson with ID {LessonId}. Mapping to DTO.", request.LessonId);

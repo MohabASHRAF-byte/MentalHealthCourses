@@ -20,17 +20,7 @@ public class UpdateSectionsOrderCommandHandler(
         logger.LogInformation($"Handling updated sections order for course {request.CourseId}");
 
         // Authenticate and validate user permissions
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            var userDetails = currentUser == null
-                ? "User is null"
-                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
-
-            logger.LogWarning("Unauthorized access attempt to update sections order. User details: {UserDetails}", userDetails);
-            throw new ForBidenException("You do not have permission to update sections order.");
-        }
-
+        userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
         try
         {
             await sectionRepository.UpdateCourseSectionsAsync(request.CourseId, request.Orders);

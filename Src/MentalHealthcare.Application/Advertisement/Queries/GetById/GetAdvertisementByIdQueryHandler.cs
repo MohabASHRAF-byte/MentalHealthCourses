@@ -3,6 +3,7 @@ using MediatR;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos;
+using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -30,7 +31,10 @@ public class GetAdvertisementByIdQueryHandler(
         if (ad == null)
         {
             logger.LogWarning("Advertisement with ID: {AdId} not found.", request.AdvertisementId);
-            throw new KeyNotFoundException($"Advertisement with ID {request.AdvertisementId} not found.");
+            throw new ResourceNotFound(
+                "Advertisement", 
+                "إعلان", 
+                request.AdvertisementId.ToString());
         }
 
         // Map to DTO

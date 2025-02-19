@@ -3,6 +3,7 @@ using MentalHealthcare.Application.BunnyServices;
 using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
+using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -13,8 +14,7 @@ public class DeleteAdvertisementCommandHandler(
     ILogger<DeleteAdvertisementCommandHandler> logger,
     IAdvertisementRepository adRepository,
     IConfiguration configuration,
-    IUserContext userContext,
-    ILocalizationService localizationService
+    IUserContext userContext
 ) : IRequestHandler<DeleteAdvertisementCommand>
 {
     public async Task Handle(DeleteAdvertisementCommand request, CancellationToken cancellationToken)
@@ -33,12 +33,10 @@ public class DeleteAdvertisementCommandHandler(
         if (ad == null)
         {
             logger.LogWarning("Advertisement with ID: {AdId} not found.", request.AdvertisementId);
-            throw new KeyNotFoundException(
-                string.Format(
-                    localizationService.GetMessage("AdNotFound", "Advertisement with ID {0} not found."),
-                    localizationService.TranslateNumber(request.AdvertisementId)
-                )
-            );
+            throw new ResourceNotFound(
+                "Advertisement",
+                "إعلان",
+                request.AdvertisementId.ToString());
         }
 
 

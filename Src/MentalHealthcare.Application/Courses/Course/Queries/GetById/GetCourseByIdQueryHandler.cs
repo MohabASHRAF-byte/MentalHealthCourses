@@ -25,37 +25,27 @@ public class GetCourseByIdQueryHandler(
         logger.LogInformation("Starting Handle method for GetCourseByIdQuery with CourseId: {CourseId}", request.Id);
 
         // Retrieve the current user
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null)
-        {
-            logger.LogWarning(
-                "Unauthorized access attempt to retrieve course details. User information: {UserDetails}",
-                currentUser == null
-                    ? "User is null"
-                    : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}"
-            );
-            throw new ForBidenException("You do not have permission to view this course.");
-        }
+        var currentUser = userContext.UserHaveAny([UserRoles.Admin, UserRoles.User], logger);
 
         logger.LogInformation("Retrieving course details for CourseId: {CourseId}", request.Id);
-        var course = await courseRepository.GetFullCourseByIdAsync(request.Id);
+        var course = await courseRepository.GetFullCourseByIdAsync(currentUser.SysUserId, request.Id);
 
         if (course == null)
         {
             logger.LogWarning("Course with ID {CourseId} not found.", request.Id);
-            throw new ResourceNotFound(nameof(course), request.Id.ToString());
+            throw new ResourceNotFound(nameof(course), "دورة تدريبية", request.Id.ToString());
         }
 
         if (course.IsArchived && currentUser.HasRole(UserRoles.User))
         {
             logger.LogInformation("Course with ID {CourseId} is archived.", request.Id);
-            throw new ResourceNotFound(nameof(course), request.Id.ToString());
+            throw new ResourceNotFound(nameof(course), "دورة تدريبية", request.Id.ToString());
         }
 
         logger.LogInformation("Mapping course entity to CourseDto.");
         var courseDto = mapper.Map<CourseDto>(course);
         courseDto.Rating ??= 0;
-
+        courseDto.UserProgress = await courseRepository.GetProgressAsync((int)currentUser.SysUserId!, request.Id);
         if (course.ReviewsCount != 0 && course.Rating != 0)
         {
             courseDto.Rating = Math.Round(course.Rating / course.ReviewsCount, 1);

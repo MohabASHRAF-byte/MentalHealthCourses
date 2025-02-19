@@ -21,17 +21,7 @@ public class UpdateSectionCommandHandler(
         logger.LogInformation("Start handling UpdateSectionCommand for SectionId: {SectionId}", request.SectionId);
 
         // Retrieve current user and validate permissions
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            var userDetails = currentUser == null
-                ? "User is null"
-                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
-
-            logger.LogWarning("Unauthorized access attempt to update a course section. User details: {UserDetails}",
-                userDetails);
-            throw new ForBidenException("You do not have permission to update this section.");
-        }
+        userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
 
         logger.LogInformation("Fetching section {SectionId} for update", request.SectionId);
         var section =
@@ -43,7 +33,11 @@ public class UpdateSectionCommandHandler(
         if (section == null)
         {
             logger.LogWarning("Section with ID {SectionId} not found", request.SectionId);
-            throw new ResourceNotFound(nameof(CourseSection), request.SectionId.ToString());
+            throw new ResourceNotFound(
+                "Course Section", // English type name
+                "قسم دورة تدريبية", // Alternative Arabic translation
+                request.SectionId.ToString()
+            );
         }
 
         logger.LogInformation("Updating section {SectionId} with new name: {SectionName}", request.SectionId,

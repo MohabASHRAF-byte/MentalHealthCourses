@@ -26,21 +26,13 @@ namespace MentalHealthcare.Application.Instructors.Commands.Delete
     {
         public async Task Handle(DeleteInstructorCommand request, CancellationToken cancellationToken)
         {
-
-
             logger.LogInformation("Delete Instructor");
-            var currentUser = userContext.GetCurrentUser();
-            if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-            {
-                logger.LogWarning("Unauthorized attempt to delete Instructor by user: {UserId}", currentUser?.Id);
-                throw new ForBidenException("Don't have the permission to delete Instructor.");
-            }
+            userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
             var ins = await insRepo.GetInstructorByIdAsync(request.InstructorID);
             var bunny = new BunnyClient(configuration);
             var imgName = GetImageName(ins.ImageUrl);
             await bunny.DeleteFileAsync(imgName, Global.InstructorFolderName);
             await insRepo.DeleteInstructorAsync(request.InstructorID);
-
         }
 
 
@@ -48,6 +40,5 @@ namespace MentalHealthcare.Application.Instructors.Commands.Delete
         {
             return url.Split('/').Last();
         }
-
     }
 }

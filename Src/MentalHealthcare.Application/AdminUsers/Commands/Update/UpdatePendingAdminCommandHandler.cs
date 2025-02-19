@@ -4,6 +4,7 @@ using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace MentalHealthcare.Application.AdminUsers.Commands.Update;
@@ -27,7 +28,7 @@ public class UpdatePendingAdminCommandHandler(
         if (admin == null)
         {
             logger.LogWarning("Admin with identity {Id} does not exist.", currentUser.Id);
-            throw new ForBidenException(
+            throw new BadHttpRequestException(
                 localizationService.GetMessage("AdminIdentityNotExist", "Admin with given identity does not exist.")
             );
         }
@@ -40,9 +41,8 @@ public class UpdatePendingAdminCommandHandler(
         if (!result)
         {
             logger.LogWarning("Old email {OldEmail} not found.", request.OldEmail);
-            throw new ResourceNotFound(
-                localizationService.GetMessage("OldEmailNotFound", "Old email not found: {0}", request.OldEmail),
-                request.OldEmail
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("OldEmailNotFound", "Old email not found: {0}", request.OldEmail)
             );
         }
 

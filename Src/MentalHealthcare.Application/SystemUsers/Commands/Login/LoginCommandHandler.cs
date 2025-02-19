@@ -124,7 +124,10 @@ public class LoginCommandHandler(
         if (user == null)
         {
             logger.LogError("User with identifier {UserIdentifier} not found.", request.UserIdentifier);
-            throw new ResourceNotFound("User", request.UserIdentifier);
+            throw new ResourceNotFound(
+                "User", 
+                "المستخدم", 
+                request.UserIdentifier); 
         }
 
         // Verify tenant association

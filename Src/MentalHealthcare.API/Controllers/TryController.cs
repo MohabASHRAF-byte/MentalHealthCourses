@@ -16,7 +16,9 @@ public class FileUploadController(
     public async Task<IActionResult> UploadFileAsync(string key, string lang)
     {
         var gfh = 900;
-        throw new Exception("dfd");
+        throw new BadHttpRequestException(
+            localizationService.GetMessage("UnspecifiedError")
+        );
         return Ok("sdfadf");
     }
 }

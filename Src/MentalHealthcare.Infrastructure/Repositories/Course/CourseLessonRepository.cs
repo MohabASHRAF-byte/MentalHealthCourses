@@ -1,15 +1,18 @@
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Domain.Dtos.course;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
 using MentalHealthcare.Infrastructure.Persistence;
 using MentalHealthcare.Infrastructure.scripts;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace MentalHealthcare.Infrastructure.Repositories.Course;
 
 public class CourseLessonRepository(
-    MentalHealthDbContext dbContext
+    MentalHealthDbContext dbContext,
+    ILocalizationService localizationService
 ) : ICourseLessonRepository
 {
     public async Task<int> AddCourseLesson(CourseLesson courseLesson)
@@ -32,7 +35,7 @@ public class CourseLessonRepository(
                 .FirstOrDefaultAsync();
             if (course == null)
             {
-                throw new ResourceNotFound("course", courseLesson.courseId.ToString());
+            throw new ResourceNotFound(nameof(course),"دورة تدريبية", courseLesson.courseId.ToString());
             }
 
             // Increment the lesson count for the course
@@ -52,7 +55,10 @@ public class CourseLessonRepository(
         {
             // Rollback the transaction on error
             await transaction.RollbackAsync();
-            throw new InvalidOperationException("Error adding course lesson", ex);
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("ErrorAddingCourseLesson", "Error adding course lesson."),
+                ex
+            );
         }
     }
 
@@ -119,7 +125,10 @@ public class CourseLessonRepository(
         {
             // Rollback the transaction in case of an error
             await transaction.RollbackAsync();
-            throw new Exception("An error occurred while updating course lessons.", ex);
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("CourseLessonsUpdateError"),
+                ex
+            );
         }
     }
 
@@ -132,7 +141,7 @@ public class CourseLessonRepository(
             .FirstOrDefaultAsync(c => c.CourseLessonId == id);
         if (courseLesson == null)
         {
-            throw new ResourceNotFound(nameof(courseLesson), id.ToString());
+            throw new ResourceNotFound("lesson", "درس", id.ToString());
         }
 
         return courseLesson;
@@ -148,7 +157,9 @@ public class CourseLessonRepository(
                     && cls.courseId == courseId
             ).FirstOrDefaultAsync();
         if (lesson == null)
-            throw new ResourceNotFound(nameof(lesson), lessonId.ToString());
+        {
+            throw new ResourceNotFound("lesson", "درس", lessonId.ToString());
+        }
         return lesson;
     }
 
@@ -160,7 +171,7 @@ public class CourseLessonRepository(
 
         if (courseLesson == null)
         {
-            throw new ResourceNotFound(nameof(courseLesson), id.ToString());
+            throw new ResourceNotFound("lesson", "درس", id.ToString());
         }
 
         if (courseLesson.CourseLessonResources != null)
@@ -186,7 +197,7 @@ public class CourseLessonRepository(
         }
         catch (DbUpdateConcurrencyException)
         {
-            throw new ResourceNotFound(nameof(CourseLesson), lessonId.ToString());
+            throw new ResourceNotFound("lesson", "درس", lessonId.ToString());
         }
     }
 
@@ -205,7 +216,7 @@ public class CourseLessonRepository(
                 ).FirstOrDefaultAsync();
 
             if (lesson == null)
-                throw new ResourceNotFound(nameof(lesson), lessonId.ToString());
+                throw new ResourceNotFound("lesson", "درس", lessonId.ToString());
 
             // Update course progresses
             var courseProgresses = await dbContext.CourseProgresses
@@ -246,7 +257,9 @@ public class CourseLessonRepository(
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            throw new TryAgain("Error occurred while removing the lesson.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("ErrorRemovingLesson", "Error occurred while removing the lesson.")
+            );
         }
     }
 }

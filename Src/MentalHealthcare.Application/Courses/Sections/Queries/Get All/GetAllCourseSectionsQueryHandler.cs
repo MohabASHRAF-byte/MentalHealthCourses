@@ -25,17 +25,7 @@ public class GetAllCourseSectionsQueryHandler(
         logger.LogInformation("Handling GetAllCourseSectionsQuery for CourseId: {CourseId}", request.courseId);
 
         // Authenticate and validate user permissions
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            var userDetails = currentUser == null
-                ? "User is null"
-                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
-
-            logger.LogWarning("Unauthorized access attempt to retrieve course sections. User details: {UserDetails}",
-                userDetails);
-            throw new ForBidenException("You do not have permission to view course sections.");
-        }
+        userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
 
         // Retrieve course sections
         var courseSectionDtos =

@@ -19,18 +19,8 @@ public class DeleteCourseReviewCommandHandler(
             "Starting Handle method for DeleteCourseReviewCommand with CourseId: {CourseId}, ReviewId: {ReviewId}",
             request.CourseId, request.ReviewId);
 
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null)
-        {
-            logger.LogWarning(
-                "Unauthorized access attempt to delete a course review. User information: {UserDetails}",
-                currentUser == null
-                    ? "User is null"
-                    : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}"
-            );
-            throw new ForBidenException("You do not have permission to delete this review.");
-        }
-
+        var currentUser = userContext.UserHaveAny([UserRoles.Admin,UserRoles.User],logger);
+        
         int? userId = null;
         if (currentUser.HasRole(UserRoles.User))
         {

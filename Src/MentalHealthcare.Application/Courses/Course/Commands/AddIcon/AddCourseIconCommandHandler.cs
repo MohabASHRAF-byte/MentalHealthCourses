@@ -1,9 +1,11 @@
 using MediatR;
 using MentalHealthcare.Application.BunnyServices;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -13,7 +15,8 @@ public class AddCourseIconCommandHandler(
     ILogger<AddCourseIconCommandHandler> logger,
     ICourseRepository courseRepository,
     IConfiguration configuration,
-    IUserContext userContext
+    IUserContext userContext,
+    ILocalizationService localizationService
 ) : IRequestHandler<AddCourseIconCommand>
 {
     public async Task Handle(AddCourseIconCommand request, CancellationToken cancellationToken)
@@ -21,16 +24,7 @@ public class AddCourseIconCommandHandler(
         logger.LogInformation("Start handling AddCourseIconCommand for CourseId: {CourseId}", request.CourseId);
 
         // Retrieve current user and validate permissions
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            var userDetails = currentUser == null
-                ? "User is null"
-                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
-
-            logger.LogWarning("Unauthorized access attempt to add an icon. User details: {UserDetails}", userDetails);
-            throw new ForBidenException("You do not have permission to add an icon to this course.");
-        }
+        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
 
         logger.LogInformation("User {UserId} authorized to add course icon.", currentUser.Id);
 
@@ -40,7 +34,7 @@ public class AddCourseIconCommandHandler(
         if (course == null)
         {
             logger.LogError("Course with ID {CourseId} not found.", request.CourseId);
-            throw new ResourceNotFound("Course", request.CourseId.ToString());
+            throw new ResourceNotFound(nameof(course), "دورة تدريبية", request.CourseId.ToString());
         }
 
         logger.LogInformation("Course found: {CourseName} (ID: {CourseId})", course.Name, request.CourseId);
@@ -55,12 +49,14 @@ public class AddCourseIconCommandHandler(
 
         if (!thumbnailResponse.IsSuccessful)
         {
-            logger.LogWarning("Failed to upload icon for CourseId: {CourseId}. Error: {ErrorMessage}", 
+            logger.LogWarning("Failed to upload icon for CourseId: {CourseId}. Error: {ErrorMessage}",
                 request.CourseId, thumbnailResponse.Message);
-            throw new TryAgain("Failed to upload icon. Please try again.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("FailedToUploadIcon", "Failed to upload icon. Please try again.")
+            );
         }
 
-        logger.LogInformation("Icon uploaded successfully for CourseId: {CourseId}. URL: {ThumbnailUrl}", 
+        logger.LogInformation("Icon uploaded successfully for CourseId: {CourseId}. URL: {ThumbnailUrl}",
             request.CourseId, thumbnailResponse.Url);
 
         // Clear cache for the uploaded icon
@@ -71,10 +67,9 @@ public class AddCourseIconCommandHandler(
         course.IconUrl = thumbnailResponse.Url;
         await courseRepository.SaveChangesAsync();
 
-        logger.LogInformation("Successfully updated CourseId: {CourseId} with IconUrl: {IconUrl}", 
+        logger.LogInformation("Successfully updated CourseId: {CourseId} with IconUrl: {IconUrl}",
             request.CourseId, course.IconUrl);
 
         logger.LogInformation("End handling AddCourseIconCommand for CourseId: {CourseId}", request.CourseId);
-
     }
 }

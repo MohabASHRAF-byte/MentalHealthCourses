@@ -21,6 +21,7 @@ public interface ICourseRepository
     public Task UpdateCourse(Entities.Courses.Course course);
 
     public Task<Entities.Courses.Course> GetFullCourseByIdAsync(
+        int? userId,
         int id
     );
 
@@ -49,6 +50,7 @@ public interface ICourseRepository
     );
 
     public Task<bool> IsEnrolledInCourse(int courseId, int userId);
+    public Task<int?> GetProgressAsync(int? userId, int courseId);
     Task BeginTransactionAsync();
     Task CommitTransactionAsync();
     Task RollbackTransactionAsync();

@@ -1,8 +1,10 @@
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Domain.Dtos.User;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -12,8 +14,72 @@ namespace MentalHealthcare.Infrastructure.Repositories;
 public class UserRepository(
     MentalHealthDbContext dbContext,
     UserManager<User> userManager,
+    ILocalizationService localizationService,
     ILogger<UserRepository> logger) : IUserRepository
 {
+    public async Task<(int, List<GetUserProfile>)> GetAllAsync(
+        int pageNumber,
+        int pageSize,
+        string? searchString = "")
+    {
+        var users = dbContext.SystemUsers.AsNoTracking();
+
+
+        if (!string.IsNullOrEmpty(searchString))
+        {
+            searchString = searchString.ToLower().Trim();
+            users = users
+                .Where(i => i.FName.ToLower().Contains(searchString));
+        }
+
+
+        // Get total count before applying pagination
+        var totalCount = await dbContext.SystemUsers.CountAsync();
+
+        // Apply pagination and projection
+        var paginatedUsers = await users
+            .Skip(pageSize * (pageNumber - 1))
+            .Take(pageSize)
+            .Include(p => p.User)
+            .Select(i => new GetUserProfile
+            {
+                UserId = i.SystemUserId,
+                PhoneNumber = i.User.PhoneNumber,
+                Email = i.User.Email,
+                UserName = i.User.UserName!,
+                FirstName = i.FName,
+                LastName = i.LName,
+                BirthDate = i.BirthDate,
+            })
+            .ToListAsync();
+
+        return (totalCount, paginatedUsers);
+    }
+
+    public async Task<GetUserProfile> GetByIdAsync(int id)
+    {
+        var user = await dbContext.SystemUsers
+            .Where(u => u.SystemUserId == id)
+            .Include(p => p.User)
+            .Select(i => new GetUserProfile
+            {
+                UserId = i.SystemUserId,
+                PhoneNumber = i.User.PhoneNumber,
+                Email = i.User.Email,
+                UserName = i.User.UserName!,
+                FirstName = i.FName,
+                LastName = i.LName,
+                BirthDate = i.BirthDate,
+            })
+            .FirstOrDefaultAsync();
+        if (user == null)
+        {
+            throw new ResourceNotFound(nameof(SystemUser), "مستخدم", id.ToString());
+        }
+
+        return user;
+    }
+
     public async Task<(bool, List<string>)> RegisterUser(User user, string password, SystemUser userToRegister)
     {
         var errors = new List<string>();
@@ -113,7 +179,9 @@ public class UserRepository(
             .FirstOrDefaultAsync(u => u.UserName == username && u.Tenant == tenant);
 
         if (user == null)
-            throw new Exception("User does not exist");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("UserNotFound")
+            );
 
         user.Roles = roles;
 
@@ -175,7 +243,11 @@ public class UserRepository(
             }).FirstOrDefaultAsync();
         if (userProfile == null)
         {
-            throw new ResourceNotFound(nameof(User), userId.ToString());
+            throw new ResourceNotFound(
+                "User",
+                "مستخدم",
+                userId.ToString()
+            );
         }
 
         return userProfile;
@@ -195,7 +267,11 @@ public class UserRepository(
             .FirstOrDefaultAsync();
         if (user == null)
         {
-            throw new ResourceNotFound(nameof(User), userId.ToString());
+            throw new ResourceNotFound(
+                "User",
+                "مستخدم",
+                userId.ToString()
+            );
         }
 
         if (!string.IsNullOrWhiteSpace(firstName))

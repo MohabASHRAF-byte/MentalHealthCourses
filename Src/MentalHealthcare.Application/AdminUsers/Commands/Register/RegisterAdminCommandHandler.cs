@@ -7,6 +7,7 @@ using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Logging;
@@ -29,7 +30,7 @@ public class RegisterAdminCommandHandler(
         if (!await adminRepository.IsPendingExistAsync(request.Email))
         {
             logger.LogWarning("Email {Email} is not registered as a pending admin.", request.Email);
-            throw new ForBidenException(
+            throw new BadHttpRequestException(
                 string.Format(
                     localizationService.GetMessage("AdminNotPending", "{0} can't register with email {1}"),
                     request.UserName,
@@ -57,7 +58,7 @@ public class RegisterAdminCommandHandler(
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to register user {UserName}.", request.UserName);
-            throw new ApplicationException(
+            throw new BadHttpRequestException(
                 string.Format(
                     localizationService.GetMessage("AdminRegistrationFailed", "Failed to register admin user {0}."),
                     request.UserName
@@ -81,7 +82,7 @@ public class RegisterAdminCommandHandler(
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to send confirmation email to {Email}.", user.Email);
-            throw new ApplicationException(
+            throw new BadHttpRequestException(
                 string.Format(
                     localizationService.GetMessage("EmailConfirmationFailed", "Failed to send confirmation email to {0}."),
                     user.Email

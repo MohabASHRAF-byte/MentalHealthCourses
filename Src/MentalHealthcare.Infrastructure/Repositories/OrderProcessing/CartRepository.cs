@@ -1,14 +1,17 @@
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Domain.Dtos.OrderProcessing;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Entities.OrderProcessing;
 using MentalHealthcare.Domain.Repositories.OrderProcessing;
 using MentalHealthcare.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace MentalHealthcare.Infrastructure.Repositories.OrderProcessing;
 
 public class CartRepository(
-    MentalHealthDbContext dbContext
+    MentalHealthDbContext dbContext,
+    ILocalizationService localizationService
 ) : ICartRepository
 {
     public async Task<CoursesCart?> GetCartByUserIdAsync(string userId)
@@ -30,7 +33,8 @@ public class CartRepository(
         return await dbContext.CartItems
             .AnyAsync(item => item.CourseId == courseId &&
                               dbContext.Carts.Any(
-                                  cart => cart.UserId.ToString() == userId && cart.CoursesCartId == item.CoursesCartId));
+                                  cart => cart.UserId.ToString() == userId &&
+                                          cart.CoursesCartId == item.CoursesCartId));
     }
 
     public async Task SaveChangesAsync()
@@ -47,14 +51,18 @@ public class CartRepository(
 
         if (cart == null)
         {
-            throw new ArgumentException("No cart found for the user.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("NoCartFound")
+            );
         }
 
         // Check if the item exists in the cart
         var cartItem = cart.Items.FirstOrDefault(item => item.CourseId == courseId);
         if (cartItem == null)
         {
-            throw new ArgumentException("The course is not in your cart.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("CourseNotInCart")
+            );
         }
 
         // Remove the item from the cart and mark it for deletion
@@ -83,7 +91,7 @@ public class CartRepository(
 
         if (!cartItems.Any())
         {
-          return new List<CourseCartDto>();
+            return new List<CourseCartDto>();
         }
 
         return cartItems;
@@ -97,7 +105,9 @@ public class CartRepository(
 
         if (cart == null)
         {
-            throw new ArgumentException("No cart found for the user.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("NoCartFound")
+            );
         }
 
         // Remove the cart (with cascade delete ensuring cart items are also removed)

@@ -23,16 +23,8 @@ public class GetAllCoursesQueryHandler(
         logger.LogInformation(
             "Starting Handle method for GetAllCoursesQuery. SearchText: {SearchText}, PageNumber: {PageNumber}, PageSize: {PageSize}",
             request.SearchText, request.PageNumber, request.PageSize);
-
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null)
-        {
-            logger.LogWarning("Unauthorized attempt to retrieve courses.");
-            throw new ForBidenException("You do not have permission to retrieve courses.");
-        }
-
-        logger.LogInformation("User {UserId} is attempting to retrieve courses.", currentUser.Id);
-
+        var currentUser = userContext.UserHaveAny([UserRoles.Admin, UserRoles.User], logger);
+        
         int? userId = currentUser.HasRole(UserRoles.Admin) ? null : currentUser.SysUserId!.Value;
 
         logger.LogDebug("Calling repository to get all courses for UserId: {UserId}", userId);
@@ -47,11 +39,17 @@ public class GetAllCoursesQueryHandler(
             );
 
         logger.LogInformation("Retrieved {Count} courses for UserId: {UserId}", count, userId);
+        var courseViewDtos = courses.ToList();
+        foreach (var courseViewDto in courseViewDtos)
+        {
+            courseViewDto.Progress =
+                await courseRepository.GetProgressAsync(currentUser.SysUserId, courseViewDto.CourseId);
+        }
 
         // Map the retrieved courses to DTOs
         logger.LogDebug("Mapping retrieved courses to CourseViewDto.");
         var ret = new PageResult<CourseViewDto>(
-            courses,
+            courseViewDtos,
             count,
             request.PageSize,
             request.PageNumber);

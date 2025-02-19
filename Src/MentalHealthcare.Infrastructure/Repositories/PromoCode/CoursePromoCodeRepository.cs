@@ -1,15 +1,18 @@
 using MentalHealthcare.Application.PromoCode.Course;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Domain.Dtos.PromoCode;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.PromoCode;
 using MentalHealthcare.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace MentalHealthcare.Infrastructure.Repositories.PromoCode;
 
 public class CoursePromoCodeRepository(
-    MentalHealthDbContext dbContext
+    MentalHealthDbContext dbContext,
+    ILocalizationService localizationService
 ) : ICoursePromoCodeRepository
 {
     public async Task<int> AddCoursePromoCodeAsync(CoursePromoCode coursePromoCode)
@@ -19,7 +22,9 @@ public class CoursePromoCodeRepository(
 
         if (promoCodeExists)
         {
-            throw new TryAgain("Course promo code already exists for the specified course.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("CoursePromoCodeAlreadyExists")
+            );
         }
 
         try
@@ -29,7 +34,9 @@ public class CoursePromoCodeRepository(
         }
         catch
         {
-            throw new TryAgain("Please try again.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("TryAgain", "Please try again.")
+            );
         }
 
         return coursePromoCode.CoursePromoCodeId;
@@ -39,7 +46,11 @@ public class CoursePromoCodeRepository(
     {
         var coursePromoCode = await dbContext.CoursePromoCodes.FindAsync(coursePromoCodeId);
         if (coursePromoCode == null)
-            throw new ResourceNotFound(nameof(CoursePromoCode), coursePromoCodeId.ToString());
+            throw new ResourceNotFound(
+                "Course Promo Code",
+                "كود الخصم للدورة",
+                coursePromoCodeId.ToString()
+            );
         return coursePromoCode;
     }
 
@@ -87,7 +98,11 @@ public class CoursePromoCodeRepository(
     {
         var coursePromoCode = await dbContext.CoursePromoCodes.FindAsync(coursePromoCodeId);
         if (coursePromoCode == null)
-            throw new ResourceNotFound(nameof(CoursePromoCode), coursePromoCodeId.ToString());
+            throw new ResourceNotFound(
+                "Course Promo Code",
+                "كود الخصم للدورة",
+                coursePromoCodeId.ToString()
+            );
         dbContext.CoursePromoCodes.Remove(coursePromoCode);
         await dbContext.SaveChangesAsync();
     }

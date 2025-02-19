@@ -30,7 +30,11 @@ public class CourseResourcesRepository(
             .FirstOrDefaultAsync(c => c.CourseLessonResourceId == id);
         if (courseLessonResource == null)
         {
-            throw new ResourceNotFound(nameof(courseLessonResource), id.ToString());
+            throw new ResourceNotFound(
+                "Course Lesson Resource",
+                "مورد درس لدورة",
+                id.ToString()
+            );
         }
 
         return courseLessonResource;

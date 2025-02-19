@@ -23,17 +23,8 @@ public class GetLessonsBySectionIdQueryHandler(
             request.CourseId, request.CourseSectionId);
 
         // Authenticate and validate admin permissions
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            var userDetails = currentUser == null
-                ? "User is null"
-                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
-
-            logger.LogWarning("Unauthorized access attempt to fetch lessons. User details: {UserDetails}", userDetails);
-            throw new ForBidenException("You do not have permission to access this resource.");
-        }
-
+        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.Admin],logger);
+        
         logger.LogInformation("Admin access granted for user {UserId}", currentUser.Id);
 
         // Retrieve lessons from the repository
@@ -42,7 +33,7 @@ public class GetLessonsBySectionIdQueryHandler(
         if (lessons == null )
         {
             logger.LogWarning("No lessons found for course ID {CourseId} and section ID {SectionId}.", request.CourseId, request.CourseSectionId);
-            throw new ResourceNotFound("course",$"{request.CourseId}.");
+            throw new ResourceNotFound(nameof(Domain.Entities.Courses.Course),"دورة تدريبية", request.CourseId.ToString());
         }
 
         logger.LogInformation("Found {LessonCount} lessons, mapping to DTO", lessons.Count);

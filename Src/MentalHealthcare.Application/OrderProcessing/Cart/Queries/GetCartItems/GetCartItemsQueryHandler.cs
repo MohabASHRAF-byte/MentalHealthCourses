@@ -22,12 +22,7 @@ public class GetCartItemsQueryHandler(
         logger.LogInformation("Starting Add to Cart Command handling for user.");
 
         // Validate user context
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.User))
-        {
-            logger.LogWarning("Unauthorized attempt to add to cart by user: {UserId}", currentUser?.Id);
-            throw new ForBidenException("You do not have permission to add items to the cart.");
-        }
+        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.User], logger);
 
         logger.LogInformation("Fetching cart for user: {UserId}", currentUser.Id);
 

@@ -1,8 +1,11 @@
 using AutoMapper;
 using MediatR;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
+using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.PromoCode;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace MentalHealthcare.Application.PromoCode.General.Commands.UpdateGeneralPromoCode;
@@ -10,7 +13,8 @@ namespace MentalHealthcare.Application.PromoCode.General.Commands.UpdateGeneralP
 public class UpdateGeneralPromoCodeCommandHandler(
     ILogger<UpdateGeneralPromoCodeCommandHandler> logger,
     IGeneralPromoCodeRepository generalPromoCodeRepository,
-    IUserContext userContext
+    IUserContext userContext,
+    ILocalizationService localizationService
 ) : IRequestHandler<UpdateGeneralPromoCodeCommand>
 {
     public async Task Handle(UpdateGeneralPromoCodeCommand request, CancellationToken cancellationToken)
@@ -30,7 +34,10 @@ public class UpdateGeneralPromoCodeCommandHandler(
         if (generalPromoCode == null)
         {
             logger.LogError("GeneralPromoCode with ID: {PromoCodeId} not found.", request.GeneralPromoCodeId);
-            throw new KeyNotFoundException($"GeneralPromoCode with ID {request.GeneralPromoCodeId} not found.");
+            throw new ResourceNotFound(
+                "GeneralPromoCode", 
+                "كود خصم عام", 
+                request.GeneralPromoCodeId.ToString());
         }
 
         // Update Percentage
@@ -54,7 +61,9 @@ public class UpdateGeneralPromoCodeCommandHandler(
                 {
                     logger.LogWarning("ExpireDate {ParsedExpireDate} is not in the future. Rejecting update.",
                         parsedExpireDate);
-                    throw new ArgumentException("ExpireDate must be a future date.");
+                    throw new BadHttpRequestException(
+                        localizationService.GetMessage("ExpireDateMustBeFuture")
+                    );
                 }
 
                 generalPromoCode.expiredate = parsedExpireDate;
@@ -63,7 +72,9 @@ public class UpdateGeneralPromoCodeCommandHandler(
             {
                 logger.LogError("Failed to parse ExpireDate: {ExpireDate} for GeneralPromoCode ID: {PromoCodeId}",
                     request.ExpireDate, request.GeneralPromoCodeId);
-                throw new ArgumentException("Invalid ExpireDate format. Please provide a valid date.");
+                throw new BadHttpRequestException(
+                    localizationService.GetMessage("InvalidExpireDateFormat")
+                );
             }
         }
 

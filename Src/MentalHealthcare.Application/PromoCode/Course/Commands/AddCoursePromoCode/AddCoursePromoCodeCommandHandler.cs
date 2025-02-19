@@ -1,9 +1,11 @@
 using AutoMapper;
 using MediatR;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Repositories.PromoCode;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace MentalHealthcare.Application.PromoCode.Course.Commands.AddCoursePromoCode;
@@ -12,7 +14,8 @@ public class AddCoursePromoCodeCommandHandler(
     ILogger<AddCoursePromoCodeCommandHandler> logger,
     IMapper mapper,
     ICoursePromoCodeRepository promoCodeRepository,
-    IUserContext userContext
+    IUserContext userContext,
+    ILocalizationService localizationService
 ) : IRequestHandler<AddCoursePromoCodeCommand, int>
 {
     public async Task<int> Handle(AddCoursePromoCodeCommand request, CancellationToken cancellationToken)
@@ -34,7 +37,9 @@ public class AddCoursePromoCodeCommandHandler(
             if (!DateTime.TryParse(request.ExpireDate, out var parsedExpireDate))
             {
                 logger.LogWarning("Invalid ExpireDate format received: {ExpireDate}", request.ExpireDate);
-                throw new ArgumentException("Invalid date format for ExpireDate.");
+                throw new BadHttpRequestException(
+                    localizationService.GetMessage("InvalidExpireDateFormat")
+                );
             }
 
             coursePromoCode.expiredate = parsedExpireDate;

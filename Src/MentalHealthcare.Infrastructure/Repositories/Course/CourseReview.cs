@@ -1,3 +1,4 @@
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos.course;
 using MentalHealthcare.Domain.Dtos.User;
@@ -5,12 +6,14 @@ using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
 using MentalHealthcare.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace MentalHealthcare.Infrastructure.Repositories.Course;
 
 public class CourseReview(
-    MentalHealthDbContext dbContext
+    MentalHealthDbContext dbContext,
+    ILocalizationService localizationService
 ) : ICourseReview
 {
     public async Task AddCourseReviewAsync(UserReview review)
@@ -25,7 +28,9 @@ public class CourseReview(
 
             if (course == null)
             {
-                throw new ArgumentException("Course does not exist");
+                throw new BadHttpRequestException(
+                    localizationService.GetMessage("CourseNotFound")
+                );
             }
 
             var totalReviewsMadeWithUser = await dbContext.UserReviews
@@ -33,7 +38,9 @@ public class CourseReview(
                 .CountAsync();
             if (totalReviewsMadeWithUser >= Global.UserReviewsLimit)
             {
-                throw new ArgumentException("Reviews limit reached Delete Some Before Add new ");
+                throw new BadHttpRequestException(
+                    localizationService.GetMessage("ReviewsLimitReached")
+                );
             }
 
             var totalLessons = course.LessonsCount;
@@ -45,8 +52,12 @@ public class CourseReview(
 
             if (lastCompletedLessonIndex < Math.Ceiling(totalLessons * Global.CourseCompleteToReview))
             {
-                throw new ArgumentException(
-                    $"You must complete at least {Global.CourseCompleteToReview}% of the course to leave a review.");
+                throw new BadHttpRequestException(
+                    string.Format(
+                        localizationService.GetMessage("CourseCompletionRequiredForReview"),
+                        Global.CourseCompleteToReview
+                    )
+                );
             }
 
             // Update course ratings and reviews count atomically
@@ -127,7 +138,7 @@ public class CourseReview(
                 ).FirstOrDefaultAsync();
             if (review == null)
             {
-                throw new ResourceNotFound(nameof(Domain.Entities.Courses.Course), nameof(courseId));
+                throw new ResourceNotFound(nameof(Domain.Entities.Courses.Course), "دورة تدريبية", courseId.ToString());
             }
 
             if (!string.IsNullOrWhiteSpace(content))
@@ -137,7 +148,8 @@ public class CourseReview(
             {
                 var course = await dbContext.Courses.FindAsync(courseId);
                 if (course == null)
-                    throw new ResourceNotFound(nameof(Domain.Entities.Courses.Course), nameof(courseId));
+                    throw new ResourceNotFound(nameof(Domain.Entities.Courses.Course), "دورة تدريبية",
+                        courseId.ToString());
 
                 course.Rating -= (decimal)review.Rating;
                 review.Rating = (float)rating;
@@ -175,18 +187,24 @@ public class CourseReview(
                 ).FirstOrDefaultAsync();
             if (review == null)
             {
-                throw new ResourceNotFound(nameof(UserReview), nameof(reviewId));
+                throw new ResourceNotFound(
+                    "User Review",
+                    "مراجعة مستخدم",
+                    reviewId.ToString()
+                );
             }
 
             if (userId.HasValue && review.SystemUserId != userId.Value)
             {
-                throw new ForBidenException("You are not allowed to delete this review.");
+                throw new BadHttpRequestException(
+                    localizationService.GetMessage("DeleteReviewNotAllowed", "You are not allowed to delete this review.")
+                );
             }
 
             var course = await dbContext.Courses.FindAsync(courseId);
             if (course == null)
             {
-                throw new ResourceNotFound(nameof(Domain.Entities.Courses.Course), nameof(courseId));
+                throw new ResourceNotFound(nameof(course),"دورة تدريبية", courseId.ToString());
             }
 
             course.Rating -= (decimal)review.Rating;
@@ -233,8 +251,11 @@ public class CourseReview(
 
         if (review == null)
         {
-            throw new ResourceNotFound(nameof(UserReview), nameof(reviewId));
-        }
+            throw new ResourceNotFound(
+                "User Review",
+                "مراجعة مستخدم",
+                reviewId.ToString()
+            );        }
 
         return review;
     }

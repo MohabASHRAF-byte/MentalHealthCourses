@@ -1,11 +1,14 @@
 using System.Net.Http.Headers;
 using MediatR;
+using MentalHealthcare.Application.Resources.Localization.Resources;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
 namespace MentalHealthcare.Application.BunnyServices.Files.DeleteFile;
 
 public class DeleteFileCommandHandler(
-    IConfiguration configuration
+    IConfiguration configuration,
+    ILocalizationService localizationService
     ):IRequestHandler<DeleteFileCommand>
 {
     public async Task Handle(DeleteFileCommand request, CancellationToken cancellationToken)
@@ -27,7 +30,13 @@ public class DeleteFileCommandHandler(
         }
 
         var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
-        throw new Exception($"Error uploading file: {response.ReasonPhrase}. Details: {errorContent}");
+        throw new BadHttpRequestException(
+            string.Format(
+                localizationService.GetMessage("FileUploadError"),
+                response.ReasonPhrase,
+                errorContent
+            )
+        );
 
     }
 }

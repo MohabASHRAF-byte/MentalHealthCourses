@@ -7,6 +7,7 @@ using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -75,10 +76,10 @@ public class CreateAdvertisementCommandHandler(
                 newAd.AdvertisementId);
 
             var inactiveMessage = localizationService.GetMessage(
-                "AdMarkedInactive",
+                "AdMarkedInactive", 
                 "No images were successfully uploaded for Advertisement ID: {0}. Marking as inactive."
             );
-            throw new InvalidOperationException(string.Format(inactiveMessage, newAd.AdvertisementId));
+            throw new BadHttpRequestException(string.Format(inactiveMessage, newAd.AdvertisementId));
         }
 
         await adRepository.UpdateAdvertisementAsync(newAd);
@@ -97,7 +98,6 @@ public class CreateAdvertisementCommandHandler(
     /// Validates the size of the images in the request.
     /// </summary>
     /// <param name="request">The request containing the images to validate.</param>
-    /// <exception cref="ArgumentException">Thrown if any image exceeds the allowed size limit.</exception>
     private void ValidateImageSizes(CreateAdvertisementCommand request)
     {
         foreach (var img in request.Images)
@@ -113,7 +113,7 @@ public class CreateAdvertisementCommandHandler(
                 logger.LogWarning("Image size validation failed. Image size: {SizeInMb} MB, Allowed size: {MaxSize} MB",
                     imgSizeInMb, Global.AdvertisementImgSize);
 
-                throw new ArgumentException(string.Format(validationErrorMessage, Global.AdvertisementImgSize));
+                throw new BadHttpRequestException(string.Format(validationErrorMessage, Global.AdvertisementImgSize));
             }
         }
     }

@@ -9,6 +9,7 @@ using MentalHealthcare.Application.SystemUsers.Commands.Register;
 using MentalHealthcare.Application.SystemUsers.Commands.ResendEmailConfirmtion;
 using MentalHealthcare.Application.SystemUsers.Commands.ResetPassword;
 using MentalHealthcare.Application.SystemUsers.Commands.ValidateChangePasswordOtp;
+using MentalHealthcare.Application.SystemUsers.Queries.GerUsersQuery;
 using MentalHealthcare.Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -131,4 +132,5 @@ public class ClientsUsersIdentityController(
             _ => BadRequest(commandResult)
         };
     }
+
 }

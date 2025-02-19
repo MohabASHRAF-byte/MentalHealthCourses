@@ -18,15 +18,7 @@ public class EnrollCourseCommandHandler(
         logger.LogInformation("Starting Handle method for EnrollCourseCommand with CourseId: {CourseId}", request.CourseId);
 
         // Retrieve the current user
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.User))
-        {
-            logger.LogWarning(
-                "Unauthorized access attempt to enroll in a course. User information: {UserDetails}",
-                currentUser == null ? "User is null" : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}"
-            );
-            throw new ForBidenException("You do not have permission to enroll in this course.");
-        }
+        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.User],logger);
 
         logger.LogInformation("User with SysUserId: {SysUserId} is attempting to enroll in CourseId: {CourseId}",
             currentUser.SysUserId, request.CourseId);

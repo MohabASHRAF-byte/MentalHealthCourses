@@ -3,6 +3,7 @@ using MediatR;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos.PromoCode;
+using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.PromoCode;
 using Microsoft.Extensions.Logging;
 
@@ -17,7 +18,8 @@ public class GetGeneralPromoCodeQueryHandler(
 {
     public async Task<GeneralPromoCodeDto> Handle(GetGeneralPromoCodeQuery request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Handling GetGeneralPromoCodeQuery for Promo Code ID: {PromoCodeId}", request.PromoCodeId);
+        logger.LogInformation("Handling GetGeneralPromoCodeQuery for Promo Code ID: {PromoCodeId}",
+            request.PromoCodeId);
 
         // Authorize user
         logger.LogInformation("Authorizing user for accessing general promo codes.");
@@ -31,7 +33,10 @@ public class GetGeneralPromoCodeQueryHandler(
         if (generalPromoCode == null)
         {
             logger.LogWarning("General promo code with ID: {PromoCodeId} not found.", request.PromoCodeId);
-            throw new KeyNotFoundException($"General promo code with ID {request.PromoCodeId} not found.");
+            throw new ResourceNotFound(
+                "General promo code",
+                "كود خصم عام",
+                request.PromoCodeId.ToString());
         }
 
         // Map to DTO
@@ -43,7 +48,9 @@ public class GetGeneralPromoCodeQueryHandler(
             generalPromoCodeDto.isActive = false;
             generalPromoCodeDto.expiresInSeconds = 0;
         }
-        logger.LogInformation("Successfully fetched and mapped general promo code details for ID: {PromoCodeId}", request.PromoCodeId);
+
+        logger.LogInformation("Successfully fetched and mapped general promo code details for ID: {PromoCodeId}",
+            request.PromoCodeId);
 
         return generalPromoCodeDto;
     }

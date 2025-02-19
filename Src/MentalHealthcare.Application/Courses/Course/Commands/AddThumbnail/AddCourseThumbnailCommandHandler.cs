@@ -1,9 +1,11 @@
 using MediatR;
 using MentalHealthcare.Application.BunnyServices;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -14,7 +16,8 @@ public class AddCourseThumbnailCommandHandler(
     ICourseRepository courseRepository,
     IMediator mediator,
     IConfiguration configuration,
-    IUserContext userContext
+    IUserContext userContext,
+    ILocalizationService localizationService
 ) : IRequestHandler<AddCourseThumbnailCommand, string>
 {
     public async Task<string> Handle(AddCourseThumbnailCommand request, CancellationToken cancellationToken)
@@ -22,17 +25,7 @@ public class AddCourseThumbnailCommandHandler(
         logger.LogInformation("Handling AddCourseThumbnailCommand for CourseId: {CourseId}", request.CourseId);
 
         // Retrieve current user and validate permissions
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            logger.LogWarning(
-                "Unauthorized access attempt to add a thumbnail. User information: {UserDetails}",
-                currentUser == null
-                    ? "User is null"
-                    : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}"
-            );
-            throw new ForBidenException("You do not have permission to add a thumbnail to this course.");
-        }
+        userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
 
         // Retrieve course information
         logger.LogInformation("Retrieving course details for CourseId: {CourseId}", request.CourseId);
@@ -40,7 +33,7 @@ public class AddCourseThumbnailCommandHandler(
         if (course == null)
         {
             logger.LogError("Course with ID {CourseId} not found.", request.CourseId);
-            throw new ResourceNotFound("Course", request.CourseId.ToString());
+            throw new ResourceNotFound(nameof(course), "دورة تدريبية", request.CourseId.ToString());
         }
 
         // Upload thumbnail using Bunny service
@@ -49,23 +42,26 @@ public class AddCourseThumbnailCommandHandler(
         course.ThumbnailName = $"{course.Name}.jpeg";
         var thumbnailResponse = await bunny.UploadFileAsync(
             request.File, course.ThumbnailName, "CoursesThumbnail"
-            );
+        );
 
         if (!thumbnailResponse.IsSuccessful)
         {
-            logger.LogWarning("Failed to upload thumbnail image for CourseId: {CourseId}. Error: {ErrorMessage}", 
+            logger.LogWarning("Failed to upload thumbnail image for CourseId: {CourseId}. Error: {ErrorMessage}",
                 request.CourseId, thumbnailResponse.Message);
-            throw new TryAgain("Failed to upload thumbnail. Please try again.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("ThumbnailUploadFailed")
+            );
         }
 
         // Clear cache for the uploaded thumbnail
-        logger.LogInformation("Clearing cache for the uploaded thumbnail at URL: {ThumbnailUrl}", thumbnailResponse.Url);
+        logger.LogInformation("Clearing cache for the uploaded thumbnail at URL: {ThumbnailUrl}",
+            thumbnailResponse.Url);
         await bunny.ClearCacheAsync(thumbnailResponse.Url!);
 
         // Update course with the thumbnail URL
         course.ThumbnailUrl = thumbnailResponse.Url;
         await courseRepository.SaveChangesAsync();
-        logger.LogInformation("Successfully added thumbnail for CourseId: {CourseId}. URL: {ThumbnailUrl}", 
+        logger.LogInformation("Successfully added thumbnail for CourseId: {CourseId}. URL: {ThumbnailUrl}",
             request.CourseId, course.ThumbnailUrl);
 
         return course.ThumbnailUrl!;

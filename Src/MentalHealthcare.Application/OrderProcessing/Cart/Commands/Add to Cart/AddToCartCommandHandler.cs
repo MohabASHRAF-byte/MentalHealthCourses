@@ -1,9 +1,11 @@
 using MediatR;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities.OrderProcessing;
 using MentalHealthcare.Domain.Repositories.Course;
 using MentalHealthcare.Domain.Repositories.OrderProcessing;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace MentalHealthcare.Application.OrderProcessing.Cart.Commands.Add_to_Cart;
@@ -12,7 +14,8 @@ public class AddToCartCommandHandler(
     ILogger<AddToCartCommandHandler> logger,
     ICartRepository cartRepository,
     ICourseRepository courseRepository,
-    IUserContext userContext
+    IUserContext userContext,
+    ILocalizationService localizationService
 ) : IRequestHandler<AddToCartCommand, int>
 {
     public async Task<int> Handle(AddToCartCommand request, CancellationToken cancellationToken)
@@ -45,7 +48,9 @@ public class AddToCartCommandHandler(
         {
             logger.LogWarning("Cart item limit reached for user: {UserId}. Maximum allowed items: {MaxItems}",
                 currentUser.Id, Global.MaxCartItems);
-            throw new ArgumentException("The cart has reached its maximum item capacity.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("CartMaxCapacityReached")
+            );
         }
 
         var isEnrolled = await courseRepository
@@ -53,7 +58,9 @@ public class AddToCartCommandHandler(
         if (isEnrolled)
         {
             logger.LogWarning("You already Joint the course");
-            throw new ArgumentException("You already Joint the course");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("AlreadyJoinedCourse")
+            );
         }
 
         // Check if the course is already in the cart
@@ -64,7 +71,9 @@ public class AddToCartCommandHandler(
         {
             logger.LogWarning("Course {CourseId} is already in the cart for user: {UserId}", request.CourseId,
                 currentUser.Id);
-            throw new ArgumentException("The course is already in your cart.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("CourseAlreadyInCart")
+            );
         }
 
         // Check if the course exists
@@ -73,7 +82,9 @@ public class AddToCartCommandHandler(
         if (!courseExists)
         {
             logger.LogWarning("Course does not exist: {CourseId}", request.CourseId);
-            throw new ArgumentException("The selected course does not exist.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("CourseNotFound")
+            );
         }
 
         // Add the course to the cart

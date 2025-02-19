@@ -213,4 +213,229 @@
     <data name="AdMustHaveImage" xml:space="preserve">
         <value>Advertisement must have at least one image.</value>
     </data>
+    <data name="NoCartFound" xml:space="preserve">
+        <value>No cart found for the user</value>
+    </data>
+    <data name="CourseSectionsUpdateBlocked" xml:space="preserve">
+        <value>Course sections cannot be updated as users have joined the course.</value>
+    </data>
+    <data name="InvalidHelpCenterItemType" xml:space="preserve">
+        <value>Invalid value for {0}: {1}</value>
+    </data>
+    <data name="InvalidOrdersForSections" xml:space="preserve">
+        <value>InvalidOrdersForSections</value>
+    </data>
+    <data name="LessonNotFound" xml:space="preserve">
+        <value>Lesson not found.</value>
+    </data>
+    <data name="InvalidOrderForLessons" xml:space="preserve">
+        <value>The request does not contain a valid order for all lessons.</value>
+    </data>
+    <data name="OrderValuesMustBeSequential" xml:space="preserve">
+        <value>Order values must be sequential from 1 to the total number of lessons.</value>
+    </data>
+    <data name="SectionHasNoLessons" xml:space="preserve">
+        <value>Section {0} in course {1} has no lessons.</value>
+    </data>
+    <data name="OrderUpdateBlockedStudentsJoined" xml:space="preserve">
+        <value>You can't update this order because students have joined.</value>
+    </data>
+    <data name="PermissionDeniedUpdateLessonsOrder" xml:space="preserve">
+        <value>You do not have permission to update the lessons order.</value>
+    </data>
+    <data name="InvalidItemType" xml:space="preserve">
+        <value>Invalid value for {0}: {1}</value>
+    </data>
+    <data name="InvalidExpireDateFormat" xml:space="preserve">
+        <value>Invalid date format for ExpireDate.</value>
+    </data>
+    <data name="InvoiceNotFound" xml:space="preserve">
+        <value>Invoice not found.</value>
+    </data>
+    <data name="ExpireDateMustBeFuture" xml:space="preserve">
+        <value>ExpireDate must be a future date.</value>
+    </data>
+    <data name="CourseIdsMustBeUnique" xml:space="preserve">
+        <value> All provided course IDs must be unique.</value>
+    </data>
+    <data name="FileTooLarge" xml:space="preserve">
+        <value>The file {0} is too large.</value>
+    </data>
+    <data name="CourseNotFree" xml:space="preserve">
+        <value>Course is not free.</value>
+    </data>
+    <data name="CourseAlreadyOwned" xml:space="preserve">
+        <value>Course is already owned.</value>
+    </data>
+    <data name="CartMaxCapacityReached" xml:space="preserve">
+        <value>The cart has reached its maximum item capacity.</value>
+    </data>
+    <data name="AlreadyJoinedCourse" xml:space="preserve">
+        <value>You have already joined the course.</value>
+    </data>
+    <data name="CourseNotFound" xml:space="preserve">
+        <value>Course does not exist.</value>
+    </data>
+    <data name="InvalidOrdersForResources" xml:space="preserve">
+        <value>The request does not contain valid orders for all resources.</value>
+    </data>
+    <data name="CourseNotInCart" xml:space="preserve">
+        <value>The course is not in your cart.</value>
+    </data>
+    <data name="CartIsEmpty" xml:space="preserve">
+        <value>The cart is empty.</value>
+    </data>
+    <data name="InvoiceIdMustBeGreaterThanZero" xml:space="preserve">
+        <value> Invoice ID must be greater than 0.</value>
+    </data>
+    <data name="InvalidLessonIdOrNotInCourse" xml:space="preserve">
+        <value> Invalid lesson ID or the lesson does not belong to the specified course.</value>
+    </data>
+    <data name="UserNotEnrolledInCourse" xml:space="preserve">
+        <value> User is not enrolled in this course.</value>
+    </data>
+    <data name="CourseCompletionRequiredForReview" xml:space="preserve">
+        <value>You must complete at least {0}% of the course to leave a review.</value>
+    </data>
+    <data name="CourseAlreadyInCart" xml:space="preserve">
+        <value>The course is already in your cart.</value>
+    </data>
+    <data name="InvoiceNotPending" xml:space="preserve">
+        <value>Invoice is not in Pending State.</value>
+    </data>
+    <data name="PromoCodeNameRequired" xml:space="preserve">
+        <value>Promo code name cannot be null or empty.</value>
+    </data>
+    <data name="ReviewsLimitReached" xml:space="preserve">
+        <value>Reviews limit reached. Delete some before adding a new one.</value>
+    </data>
+    <data name="InvalidOrderStatus" xml:space="preserve">
+        <value>Invalid order status provided.</value>
+    </data>
+    <data name="CompletePreviousLessonFirst" xml:space="preserve">
+        <value>Complete the previous lesson before proceeding.</value>
+    </data>
+    <data name="UserAlreadyHasCourse" xml:space="preserve">
+        <value>User already has course with ID: {0}.</value>
+    </data>
+    <data name="InvalidCourseIdsProvided" xml:space="preserve">
+        <value>Invalid course IDs provided: {0}.</value>
+    </data>
+    <data name="UnknownContentType" xml:space="preserve">
+        <value>Unknown content type: {1}.</value>
+    </data>
+    <data name="CourseIconMissing" xml:space="preserve">
+        <value>Course with ID {0} does not have an icon for this course.</value>
+    </data>
+    <data name="UnspecifiedError" xml:space="preserve">
+        <value>An unspecified error occurred.</value>
+    </data>
+    <data name="PdfUploadFailed" xml:space="preserve">
+        <value>Failed to upload PDF. Try again.</value>
+    </data>
+    <data name="VideoDeletionFailed" xml:space="preserve">
+        <value>Failed to delete video. Try again.</value>
+    </data>
+    <data name="FileUploadError" xml:space="preserve">
+        <value>Error uploading file: {0}. Details: {1}.</value>
+    </data>
+    <data name="PendingUploadNotFound" xml:space="preserve">
+        <value>Pending upload not found.</value>
+    </data>
+    <data name="CourseSectionDeletionError" xml:space="preserve">
+        <value>An error occurred while deleting the course section.</value>
+    </data>
+    <data name="ImageUploadFailed" xml:space="preserve">
+        <value>Failed to upload the new image.</value>
+    </data>
+    <data name="VideoCreationUnexpectedError" xml:space="preserve">
+        <value>Unexpected error occurred while creating the video.</value>
+    </data>
+    <data name="OldImageDeletionError" xml:space="preserve">
+        <value>Error occurred while deleting the old image.</value>
+    </data>
+    <data name="CourseLessonsUpdateError" xml:space="preserve">
+        <value>An error occurred while updating course lessons.</value>
+    </data>
+    <data name="CoursePromoCodeAlreadyExists" xml:space="preserve">
+        <value>Course promo code already exists for the specified course.</value>
+    </data>
+    <data name="ResourceDeletionFailed" xml:space="preserve">
+        <value>Failed to delete resource. Please try again.</value>
+    </data>
+    <data name="UnexpectedRole" xml:space="preserve">
+        <value>Unexpected role. Access denied.	</value>
+    </data>
+    <data name="DeleteReviewNotAllowed" xml:space="preserve">
+        <value>You are not allowed to delete this review.	</value>
+    </data>
+    <data name="ProfileDataNotFound" xml:space="preserve">
+        <value>Profile data not found.	</value>
+    </data>
+    <data name="UsernameAlreadyTaken" xml:space="preserve">
+        <value>Username is already taken.	</value>
+    </data>
+    <data name="EmailAlreadyTaken" xml:space="preserve">
+        <value>Email is already taken.	</value>
+    </data>
+    <data name="EmailNotRegisteredAsAdmin" xml:space="preserve">
+        <value>Email is not registered as admin.	</value>
+    </data>
+    <data name="UserCreationFailed" xml:space="preserve">
+        <value>User creation failed. Please try again.	</value>
+    </data>
+    <data name="LessonNotInCourse" xml:space="preserve">
+        <value>Lesson does not belong to this course.	</value>
+    </data>
+    <data name="NotEnrolledInCourse" xml:space="preserve">
+        <value>You are not enrolled in this course.	</value>
+    </data>
+    <data name="WatchPreviousLessonsFirst" xml:space="preserve">
+        <value>You should watch previous lessons first.	</value>
+    </data>
+    <data name="FailedToUploadIcon" xml:space="preserve">
+        <value>Failed to upload icon. Please try again.	</value>
+    </data>
+    <data name="TryAgain" xml:space="preserve">
+        <value>Please try again.	</value>
+    </data>
+    <data name="FailedToCreateVideoFolder" xml:space="preserve">
+        <value>Failed to create video folder. Please try again.	</value>
+    </data>
+    <data name="SectionShouldBeEmptyToDelete" xml:space="preserve">
+        <value>Section should be empty to delete.	</value>
+    </data>
+    <data name="FailedToUploadImage" xml:space="preserve">
+        <value>Failed to upload image. Please try again.	</value>
+    </data>
+    <data name="FailedToDeleteIcon" xml:space="preserve">
+        <value>Failed to delete icon. Please try again.	</value>
+    </data>
+    <data name="ErrorRemovingLesson" xml:space="preserve">
+        <value>Error occurred while removing the lesson.	</value>
+    </data>
+    <data name="ErrorAddingCourseLesson" xml:space="preserve">
+        <value>Error adding course lesson.	</value>
+    </data>
+    <data name="LessonNoResourcesToUpdate" xml:space="preserve">
+        <value>Lesson {0} has no resources to update.	</value>
+    </data>
+    <data name="ErrorUpdatingCourseSections" xml:space="preserve">
+        <value>Error updating course sections.	</value>
+    </data>
+    <data name="CanOnlyChangeToExpired" xml:space="preserve">
+        <value>Can only change to 'Expired' if the current status is 'Pending'.	</value>
+    </data>
+    <data name="LessonHasNoResources" xml:space="preserve">
+        <value>Lesson {0} has no resources.	</value>
+    </data>
+    <data name="CanOnlyChangeToPending" xml:space="preserve">
+        <value>Can only change to 'Pending' if the current status is 'Expired' or 'Cancelled'.	</value>
+    </data>
+    <data name="CanOnlyChangeToCancelled" xml:space="preserve">
+        <value>Can only change to 'Cancelled' if the current status is 'Pending'.	</value>
+    </data>
+    <data name="StatusChangeNotAllowed" xml:space="preserve">
+        <value>Changing to status '{0}' is not allowed.	</value>
+    </data>
 </root>

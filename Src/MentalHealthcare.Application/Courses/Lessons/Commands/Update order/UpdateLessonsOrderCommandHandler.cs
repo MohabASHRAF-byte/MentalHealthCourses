@@ -1,9 +1,11 @@
 using MediatR;
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Domain.Repositories.Course;
 using MentalHealthcare.Application.SystemUsers;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Exceptions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace MentalHealthcare.Application.Courses.Lessons.Commands.Update_order;
@@ -11,7 +13,8 @@ namespace MentalHealthcare.Application.Courses.Lessons.Commands.Update_order;
 public class UpdateLessonsOrderCommandHandler(
     ILogger<UpdateLessonsOrderCommandHandler> logger,
     ICourseLessonRepository lessonRepository,
-    IUserContext userContext
+    IUserContext userContext,
+    ILocalizationService localizationService
 ) : IRequestHandler<UpdateLessonsOrderCommand>
 {
     public async Task Handle(UpdateLessonsOrderCommand request, CancellationToken cancellationToken)
@@ -29,7 +32,9 @@ public class UpdateLessonsOrderCommandHandler(
                 : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
 
             logger.LogWarning("Unauthorized access attempt to update lessons order. User details: {UserDetails}", userDetails);
-            throw new ForBidenException("You do not have permission to update the lessons order.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("PermissionDeniedUpdateLessonsOrder")
+            );
         }
 
         // Fetch existing lessons for the specified section
@@ -38,15 +43,23 @@ public class UpdateLessonsOrderCommandHandler(
         if (!isOrderable)
         {
             logger.LogError("Cannot update order: Students are already joined in course {CourseId}, section {SectionId}", request.CourseId, request.SectionId);
-            throw new InvalidOperationException("You can't update this order because students are joined.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("OrderUpdateBlockedStudentsJoined")
+            );
         }
 
         var lessons = await lessonRepository.GetCourseLessons(request.CourseId, request.SectionId);
         if (lessons == null || lessons.Count == 0)
         {
             logger.LogWarning("No lessons found for section {SectionId} in course {CourseId}", request.SectionId, request.CourseId);
-            throw new InvalidOperationException(
-                $"Section {request.SectionId} in course {request.CourseId} has no lessons.");
+            throw new BadHttpRequestException(
+                string.Format(
+                    localizationService.GetMessage("SectionHasNoLessons"),
+                    request.SectionId,
+                    request.CourseId
+                )
+            );
+
         }
 
         // Check for missing or mismatched lesson IDs in the request
@@ -56,7 +69,9 @@ public class UpdateLessonsOrderCommandHandler(
         if (!lessonIds.SetEquals(requestLessonIds))
         {
             logger.LogError("Mismatch between existing lessons and provided orders in request.");
-            throw new ArgumentException("The request does not contain valid orders for all lessons.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("InvalidOrderForLessons")
+            );
         }
 
         // Validate the order range
@@ -64,7 +79,9 @@ public class UpdateLessonsOrderCommandHandler(
         if (!orderValues.SequenceEqual(Enumerable.Range(1, lessons.Count)))
         {
             logger.LogError("The provided order values are not sequential starting from 1.");
-            throw new ArgumentException("Order values must be sequential from 1 to the total number of lessons.");
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("OrderValuesMustBeSequential")
+            );
         }
 
         // Update lessons and log changes

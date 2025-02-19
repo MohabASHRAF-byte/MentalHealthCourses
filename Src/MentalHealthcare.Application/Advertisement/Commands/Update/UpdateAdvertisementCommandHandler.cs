@@ -6,6 +6,7 @@ using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -46,12 +47,11 @@ public class UpdateAdvertisementCommandHandler(
         if (advertisement == null)
         {
             logger.LogWarning("Advertisement with ID: {AdId} not found.", request.AdvertisementId);
-            throw new KeyNotFoundException(
-                string.Format(
-                    localizationService.GetMessage("AdNotFound", "Advertisement with ID {0} not found."),
-                    localizationService.TranslateNumber(request.AdvertisementId ?? 0m)
-                )
-            );
+            throw new ResourceNotFound(
+                "Advertisement", 
+                "إعلان", 
+                request.AdvertisementId?.ToString() ?? "0");
+
         }
 
 
@@ -94,7 +94,7 @@ public class UpdateAdvertisementCommandHandler(
             {
                 logger.LogWarning("Attempted to upload an image exceeding the allowed size: {ImageSize} MB.",
                     imageSizeInMb);
-                throw new Exception(
+                throw new BadHttpRequestException(
                     string.Format(
                         localizationService.GetMessage("ImageSizeExceedsLimit", "Image size cannot exceed {0} MB."),
                         localizationService.TranslateNumber(Global.AdvertisementImgSize)

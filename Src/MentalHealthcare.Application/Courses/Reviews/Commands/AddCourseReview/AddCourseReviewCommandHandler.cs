@@ -16,19 +16,10 @@ public class AddCourseReviewCommandHandler(
 {
     public async Task<int> Handle(AddCourseReviewCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Starting Handle method for AddCourseReviewCommand with CourseId: {CourseId}, Rating: {Rating}", request.CourseId, request.Rating);
-
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.User))
-        {
-            logger.LogWarning(
-                "Unauthorized access attempt to add a course review. User information: {UserDetails}",
-                currentUser == null
-                    ? "User is null"
-                    : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}"
-            );
-            throw new ForBidenException("You do not have permission to add a review for this course.");
-        }
+        logger.LogInformation(
+            "Starting Handle method for AddCourseReviewCommand with CourseId: {CourseId}, Rating: {Rating}",
+            request.CourseId, request.Rating);
+        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.User], logger);
 
         logger.LogInformation("User with SysUserId: {SysUserId} is adding a review for CourseId: {CourseId}",
             currentUser.SysUserId, request.CourseId);
@@ -45,7 +36,8 @@ public class AddCourseReviewCommandHandler(
         try
         {
             await courseReview.AddCourseReviewAsync(review);
-            logger.LogInformation("Successfully added review with UserReviewId: {UserReviewId} for CourseId: {CourseId}",
+            logger.LogInformation(
+                "Successfully added review with UserReviewId: {UserReviewId} for CourseId: {CourseId}",
                 review.UserReviewId, request.CourseId);
             return review.UserReviewId;
         }

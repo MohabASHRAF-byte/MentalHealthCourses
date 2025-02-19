@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using RestSharp;
 
 namespace MentalHealthcare.Application.BunnyServices;
@@ -21,7 +22,13 @@ public static class PurgeLink
 
             if (!response.IsSuccessful)
             {
-                throw new Exception($"Failed to clear cache: {response.StatusCode} - {response.ErrorMessage}");
+                throw new BadHttpRequestException(
+                    string.Format(
+                        "فشل في مسح ذاكرة التخزين المؤقت: {0} - {1}.",
+                        response.StatusCode,
+                        response.ErrorMessage
+                    )
+                );
             }
         }
         catch (Exception ex)

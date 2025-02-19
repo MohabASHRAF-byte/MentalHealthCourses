@@ -410,5 +410,455 @@ namespace MentalHealthcare.Application.Resources.Localization.Resources {
                 return ResourceManager.GetString("AdMustHaveImage", resourceCulture);
             }
         }
+        
+        internal static string NoCartFound {
+            get {
+                return ResourceManager.GetString("NoCartFound", resourceCulture);
+            }
+        }
+        
+        internal static string CourseSectionsUpdateBlocked {
+            get {
+                return ResourceManager.GetString("CourseSectionsUpdateBlocked", resourceCulture);
+            }
+        }
+        
+        internal static string InvalidHelpCenterItemType {
+            get {
+                return ResourceManager.GetString("InvalidHelpCenterItemType", resourceCulture);
+            }
+        }
+        
+        internal static string InvalidOrdersForSections {
+            get {
+                return ResourceManager.GetString("InvalidOrdersForSections", resourceCulture);
+            }
+        }
+        
+        internal static string LessonNotFound {
+            get {
+                return ResourceManager.GetString("LessonNotFound", resourceCulture);
+            }
+        }
+        
+        internal static string InvalidOrderForLessons {
+            get {
+                return ResourceManager.GetString("InvalidOrderForLessons", resourceCulture);
+            }
+        }
+        
+        internal static string OrderValuesMustBeSequential {
+            get {
+                return ResourceManager.GetString("OrderValuesMustBeSequential", resourceCulture);
+            }
+        }
+        
+        internal static string SectionHasNoLessons {
+            get {
+                return ResourceManager.GetString("SectionHasNoLessons", resourceCulture);
+            }
+        }
+        
+        internal static string OrderUpdateBlockedStudentsJoined {
+            get {
+                return ResourceManager.GetString("OrderUpdateBlockedStudentsJoined", resourceCulture);
+            }
+        }
+        
+        internal static string PermissionDeniedUpdateLessonsOrder {
+            get {
+                return ResourceManager.GetString("PermissionDeniedUpdateLessonsOrder", resourceCulture);
+            }
+        }
+        
+        internal static string InvalidItemType {
+            get {
+                return ResourceManager.GetString("InvalidItemType", resourceCulture);
+            }
+        }
+        
+        internal static string InvalidExpireDateFormat {
+            get {
+                return ResourceManager.GetString("InvalidExpireDateFormat", resourceCulture);
+            }
+        }
+        
+        internal static string InvoiceNotFound {
+            get {
+                return ResourceManager.GetString("InvoiceNotFound", resourceCulture);
+            }
+        }
+        
+        internal static string ExpireDateMustBeFuture {
+            get {
+                return ResourceManager.GetString("ExpireDateMustBeFuture", resourceCulture);
+            }
+        }
+        
+        internal static string CourseIdsMustBeUnique {
+            get {
+                return ResourceManager.GetString("CourseIdsMustBeUnique", resourceCulture);
+            }
+        }
+        
+        internal static string FileTooLarge {
+            get {
+                return ResourceManager.GetString("FileTooLarge", resourceCulture);
+            }
+        }
+        
+        internal static string CourseNotFree {
+            get {
+                return ResourceManager.GetString("CourseNotFree", resourceCulture);
+            }
+        }
+        
+        internal static string CourseAlreadyOwned {
+            get {
+                return ResourceManager.GetString("CourseAlreadyOwned", resourceCulture);
+            }
+        }
+        
+        internal static string CartMaxCapacityReached {
+            get {
+                return ResourceManager.GetString("CartMaxCapacityReached", resourceCulture);
+            }
+        }
+        
+        internal static string AlreadyJoinedCourse {
+            get {
+                return ResourceManager.GetString("AlreadyJoinedCourse", resourceCulture);
+            }
+        }
+        
+        internal static string CourseNotFound {
+            get {
+                return ResourceManager.GetString("CourseNotFound", resourceCulture);
+            }
+        }
+        
+        internal static string InvalidOrdersForResources {
+            get {
+                return ResourceManager.GetString("InvalidOrdersForResources", resourceCulture);
+            }
+        }
+        
+        internal static string CourseNotInCart {
+            get {
+                return ResourceManager.GetString("CourseNotInCart", resourceCulture);
+            }
+        }
+        
+        internal static string CartIsEmpty {
+            get {
+                return ResourceManager.GetString("CartIsEmpty", resourceCulture);
+            }
+        }
+        
+        internal static string InvoiceIdMustBeGreaterThanZero {
+            get {
+                return ResourceManager.GetString("InvoiceIdMustBeGreaterThanZero", resourceCulture);
+            }
+        }
+        
+        internal static string InvalidLessonIdOrNotInCourse {
+            get {
+                return ResourceManager.GetString("InvalidLessonIdOrNotInCourse", resourceCulture);
+            }
+        }
+        
+        internal static string UserNotEnrolledInCourse {
+            get {
+                return ResourceManager.GetString("UserNotEnrolledInCourse", resourceCulture);
+            }
+        }
+        
+        internal static string CourseCompletionRequiredForReview {
+            get {
+                return ResourceManager.GetString("CourseCompletionRequiredForReview", resourceCulture);
+            }
+        }
+        
+        internal static string CourseAlreadyInCart {
+            get {
+                return ResourceManager.GetString("CourseAlreadyInCart", resourceCulture);
+            }
+        }
+        
+        internal static string InvoiceNotPending {
+            get {
+                return ResourceManager.GetString("InvoiceNotPending", resourceCulture);
+            }
+        }
+        
+        internal static string PromoCodeNameRequired {
+            get {
+                return ResourceManager.GetString("PromoCodeNameRequired", resourceCulture);
+            }
+        }
+        
+        internal static string ReviewsLimitReached {
+            get {
+                return ResourceManager.GetString("ReviewsLimitReached", resourceCulture);
+            }
+        }
+        
+        internal static string InvalidOrderStatus {
+            get {
+                return ResourceManager.GetString("InvalidOrderStatus", resourceCulture);
+            }
+        }
+        
+        internal static string CompletePreviousLessonFirst {
+            get {
+                return ResourceManager.GetString("CompletePreviousLessonFirst", resourceCulture);
+            }
+        }
+        
+        internal static string UserAlreadyHasCourse {
+            get {
+                return ResourceManager.GetString("UserAlreadyHasCourse", resourceCulture);
+            }
+        }
+        
+        internal static string InvalidCourseIdsProvided {
+            get {
+                return ResourceManager.GetString("InvalidCourseIdsProvided", resourceCulture);
+            }
+        }
+        
+        internal static string UnknownContentType {
+            get {
+                return ResourceManager.GetString("UnknownContentType", resourceCulture);
+            }
+        }
+        
+        internal static string CourseIconMissing {
+            get {
+                return ResourceManager.GetString("CourseIconMissing", resourceCulture);
+            }
+        }
+        
+        internal static string UnspecifiedError {
+            get {
+                return ResourceManager.GetString("UnspecifiedError", resourceCulture);
+            }
+        }
+        
+        internal static string PdfUploadFailed {
+            get {
+                return ResourceManager.GetString("PdfUploadFailed", resourceCulture);
+            }
+        }
+        
+        internal static string VideoDeletionFailed {
+            get {
+                return ResourceManager.GetString("VideoDeletionFailed", resourceCulture);
+            }
+        }
+        
+        internal static string FileUploadError {
+            get {
+                return ResourceManager.GetString("FileUploadError", resourceCulture);
+            }
+        }
+        
+        internal static string PendingUploadNotFound {
+            get {
+                return ResourceManager.GetString("PendingUploadNotFound", resourceCulture);
+            }
+        }
+        
+        internal static string CourseSectionDeletionError {
+            get {
+                return ResourceManager.GetString("CourseSectionDeletionError", resourceCulture);
+            }
+        }
+        
+        internal static string ImageUploadFailed {
+            get {
+                return ResourceManager.GetString("ImageUploadFailed", resourceCulture);
+            }
+        }
+        
+        internal static string VideoCreationUnexpectedError {
+            get {
+                return ResourceManager.GetString("VideoCreationUnexpectedError", resourceCulture);
+            }
+        }
+        
+        internal static string OldImageDeletionError {
+            get {
+                return ResourceManager.GetString("OldImageDeletionError", resourceCulture);
+            }
+        }
+        
+        internal static string CourseLessonsUpdateError {
+            get {
+                return ResourceManager.GetString("CourseLessonsUpdateError", resourceCulture);
+            }
+        }
+        
+        internal static string CoursePromoCodeAlreadyExists {
+            get {
+                return ResourceManager.GetString("CoursePromoCodeAlreadyExists", resourceCulture);
+            }
+        }
+        
+        internal static string ResourceDeletionFailed {
+            get {
+                return ResourceManager.GetString("ResourceDeletionFailed", resourceCulture);
+            }
+        }
+        
+        internal static string UnexpectedRole {
+            get {
+                return ResourceManager.GetString("UnexpectedRole", resourceCulture);
+            }
+        }
+        
+        internal static string DeleteReviewNotAllowed {
+            get {
+                return ResourceManager.GetString("DeleteReviewNotAllowed", resourceCulture);
+            }
+        }
+        
+        internal static string ProfileDataNotFound {
+            get {
+                return ResourceManager.GetString("ProfileDataNotFound", resourceCulture);
+            }
+        }
+        
+        internal static string UsernameAlreadyTaken {
+            get {
+                return ResourceManager.GetString("UsernameAlreadyTaken", resourceCulture);
+            }
+        }
+        
+        internal static string EmailAlreadyTaken {
+            get {
+                return ResourceManager.GetString("EmailAlreadyTaken", resourceCulture);
+            }
+        }
+        
+        internal static string EmailNotRegisteredAsAdmin {
+            get {
+                return ResourceManager.GetString("EmailNotRegisteredAsAdmin", resourceCulture);
+            }
+        }
+        
+        internal static string UserCreationFailed {
+            get {
+                return ResourceManager.GetString("UserCreationFailed", resourceCulture);
+            }
+        }
+        
+        internal static string LessonNotInCourse {
+            get {
+                return ResourceManager.GetString("LessonNotInCourse", resourceCulture);
+            }
+        }
+        
+        internal static string NotEnrolledInCourse {
+            get {
+                return ResourceManager.GetString("NotEnrolledInCourse", resourceCulture);
+            }
+        }
+        
+        internal static string WatchPreviousLessonsFirst {
+            get {
+                return ResourceManager.GetString("WatchPreviousLessonsFirst", resourceCulture);
+            }
+        }
+        
+        internal static string FailedToUploadIcon {
+            get {
+                return ResourceManager.GetString("FailedToUploadIcon", resourceCulture);
+            }
+        }
+        
+        internal static string TryAgain {
+            get {
+                return ResourceManager.GetString("TryAgain", resourceCulture);
+            }
+        }
+        
+        internal static string FailedToCreateVideoFolder {
+            get {
+                return ResourceManager.GetString("FailedToCreateVideoFolder", resourceCulture);
+            }
+        }
+        
+        internal static string SectionShouldBeEmptyToDelete {
+            get {
+                return ResourceManager.GetString("SectionShouldBeEmptyToDelete", resourceCulture);
+            }
+        }
+        
+        internal static string FailedToUploadImage {
+            get {
+                return ResourceManager.GetString("FailedToUploadImage", resourceCulture);
+            }
+        }
+        
+        internal static string FailedToDeleteIcon {
+            get {
+                return ResourceManager.GetString("FailedToDeleteIcon", resourceCulture);
+            }
+        }
+        
+        internal static string ErrorRemovingLesson {
+            get {
+                return ResourceManager.GetString("ErrorRemovingLesson", resourceCulture);
+            }
+        }
+        
+        internal static string ErrorAddingCourseLesson {
+            get {
+                return ResourceManager.GetString("ErrorAddingCourseLesson", resourceCulture);
+            }
+        }
+        
+        internal static string LessonNoResourcesToUpdate {
+            get {
+                return ResourceManager.GetString("LessonNoResourcesToUpdate", resourceCulture);
+            }
+        }
+        
+        internal static string ErrorUpdatingCourseSections {
+            get {
+                return ResourceManager.GetString("ErrorUpdatingCourseSections", resourceCulture);
+            }
+        }
+        
+        internal static string CanOnlyChangeToExpired {
+            get {
+                return ResourceManager.GetString("CanOnlyChangeToExpired", resourceCulture);
+            }
+        }
+        
+        internal static string LessonHasNoResources {
+            get {
+                return ResourceManager.GetString("LessonHasNoResources", resourceCulture);
+            }
+        }
+        
+        internal static string CanOnlyChangeToPending {
+            get {
+                return ResourceManager.GetString("CanOnlyChangeToPending", resourceCulture);
+            }
+        }
+        
+        internal static string CanOnlyChangeToCancelled {
+            get {
+                return ResourceManager.GetString("CanOnlyChangeToCancelled", resourceCulture);
+            }
+        }
+        
+        internal static string StatusChangeNotAllowed {
+            get {
+                return ResourceManager.GetString("StatusChangeNotAllowed", resourceCulture);
+            }
+        }
     }
 }

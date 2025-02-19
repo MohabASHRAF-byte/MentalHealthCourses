@@ -24,31 +24,17 @@ namespace MentalHealthcare.Application.Instructors.Queries.GetAll
         IUserContext userContext
     ) : IRequestHandler<GetAllInstructorsQuery, PageResult<InstructorDto>>
     {
-        public async Task<PageResult<InstructorDto>> Handle(GetAllInstructorsQuery request, CancellationToken cancellationToken)
+        public async Task<PageResult<InstructorDto>> Handle(GetAllInstructorsQuery request,
+            CancellationToken cancellationToken)
         {
-
-
-
             logger.LogInformation("Handling GetAllInstructorsQuery");
-            var currentUser = userContext.GetCurrentUser();
-            if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-            {
-                logger.LogWarning("Unauthorized attempt to get all Instructors by user: {UserId}", currentUser?.Id);
-                throw new ForBidenException("Don't have the permission to get all Instructors");
-            }
-
+            userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
             var Instructors = await insRepo.GetInstructorsAsync(request.SearchText,
                 request.PageNumber, request.PageSize);
             var InstructorsDto = mapper.Map<IEnumerable<InstructorDto>>(Instructors.Item2);
 
-            return new PageResult<InstructorDto>(InstructorsDto, Instructors.Item1, request.PageSize, request.PageNumber);
-
-
-
-
-
-
-
+            return new PageResult<InstructorDto>(InstructorsDto, Instructors.Item1, request.PageSize,
+                request.PageNumber);
         }
     }
 }

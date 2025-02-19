@@ -16,45 +16,34 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using MentalHealthcare.Application.Resources.Localization.Resources;
+using Microsoft.AspNetCore.Http;
 
 namespace MentalHealthcare.Application.Instructors.Commands.Create
 {
     public class CreateInstructorCommandHandler(
-     ILogger<CreateInstructorCommandHandler> logger,
-     IMapper mapper,
-     IInstructorRepository insRepo,
-     IConfiguration configuration,
-     IUserContext userContext
- ) : IRequestHandler<CreateInstructorCommand, CreateInstructorCommandResponse>
+        ILogger<CreateInstructorCommandHandler> logger,
+        IMapper mapper,
+        IInstructorRepository insRepo,
+        IConfiguration configuration,
+        IUserContext userContext,
+        ILocalizationService localizationService
+    ) : IRequestHandler<CreateInstructorCommand, CreateInstructorCommandResponse>
     {
-        public async Task<CreateInstructorCommandResponse> Handle(CreateInstructorCommand request, CancellationToken cancellationToken)
+        public async Task<CreateInstructorCommandResponse> Handle(CreateInstructorCommand request,
+            CancellationToken cancellationToken)
         {
-
-
             // Retrieve the current user
-            var currentUser = userContext.GetCurrentUser();
-            if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-            {
-                logger.LogWarning(
-                    "Unauthorized access attempt to add a Photo. User information: {UserDetails}",
-                    currentUser == null
-                        ? "User is null"
-                        : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}"
-                );
-                throw new ForBidenException("You do not have permission to add a Photo to this Instructor.");
-            } 
-
-
+            var currentUser = userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
 
 
             // Map the request to the Instructor entity
             var newInstructor = mapper.Map<Domain.Entities.Instructor>(request);
             // Assign the Data from the current user
-           newInstructor.AddedByAdminId = (int)currentUser.AdminId;
+            newInstructor.AddedByAdminId = (int)currentUser.AdminId;
             //newInstructor.Name = request.Name;
             //newInstructor.About = request.About;
             //wait insRepo.CreateInstructorAsync(newInstructor);
-
 
 
             // Upload thumbnail using Bunny service
@@ -63,13 +52,15 @@ namespace MentalHealthcare.Application.Instructors.Commands.Create
             newInstructor.ImageUrl = $"{newInstructor.Name}.jpeg";
             var ImageResponse = await bunny.UploadFileAsync(
                 request.File, newInstructor.Name, "Instructors"
-                );
+            );
 
             if (!ImageResponse.IsSuccessful)
             {
                 logger.LogWarning("Failed to upload image for InstructorsId: {InstructorsId}. Error: {ErrorMessage}",
                     request.Name, ImageResponse.Message);
-                throw new TryAgain("Failed to upload Image. Please try again.");
+                throw new BadHttpRequestException(
+                    localizationService.GetMessage("FailedToUploadImage", "Failed to upload image. Please try again.")
+                );
             }
 
 
@@ -85,23 +76,16 @@ namespace MentalHealthcare.Application.Instructors.Commands.Create
                 request.Name, newInstructor.ImageUrl);
 
 
-
-
-           
             // Insert the new instructor into the database
             logger.LogInformation("Inserting New Instructor {InstructorName} into the database", request.Name);
             var instructorId = await insRepo.CreateInstructorAsync(newInstructor);
 
-          
 
             // Return the response
             return new CreateInstructorCommandResponse
             {
                 InstructorId = instructorId
             };
-
-
-
         }
     }
 }

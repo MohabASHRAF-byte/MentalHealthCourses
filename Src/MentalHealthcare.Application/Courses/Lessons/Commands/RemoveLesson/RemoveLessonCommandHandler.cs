@@ -23,26 +23,19 @@ public class RemoveLessonCommandHandler(
 {
     public async Task Handle(RemoveLessonCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Starting RemoveLessonCommandHandler for LessonId: {LessonId}, CourseId: {CourseId}, SectionId: {SectionId}",
+        logger.LogInformation(
+            "Starting RemoveLessonCommandHandler for LessonId: {LessonId}, CourseId: {CourseId}, SectionId: {SectionId}",
             request.LessonId, request.CourseId, request.SectionId);
 
         // Authenticate and validate admin permissions
-        var currentUser = userContext.GetCurrentUser();
-        if (currentUser == null || !currentUser.HasRole(UserRoles.Admin))
-        {
-            var userDetails = currentUser == null
-                ? "User is null"
-                : $"UserId: {currentUser.Id}, Roles: {string.Join(",", currentUser.Roles)}";
-
-            logger.LogWarning("Unauthorized access attempt to remove a lesson. User details: {UserDetails}", userDetails);
-            throw new ForBidenException("You do not have permission to remove this lesson.");
-        }
+        userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
 
         // Retrieve the target lesson
-        logger.LogInformation("Fetching target lesson for CourseId: {CourseId}, SectionId: {SectionId}, LessonId: {LessonId}", 
+        logger.LogInformation(
+            "Fetching target lesson for CourseId: {CourseId}, SectionId: {SectionId}, LessonId: {LessonId}",
             request.CourseId, request.SectionId, request.LessonId);
 
-        var targetLesson = 
+        var targetLesson =
             await courseLessonRepository
                 .GetCourseLessonByIdAsync(
                     request.CourseId, request.SectionId, request.LessonId
@@ -50,9 +43,9 @@ public class RemoveLessonCommandHandler(
 
         if (targetLesson == null)
         {
-            logger.LogWarning("Lesson not found for CourseId: {CourseId}, SectionId: {SectionId}, LessonId: {LessonId}", 
+            logger.LogWarning("Lesson not found for CourseId: {CourseId}, SectionId: {SectionId}, LessonId: {LessonId}",
                 request.CourseId, request.SectionId, request.LessonId);
-            throw new ResourceNotFound(nameof(targetLesson), request.LessonId.ToString());
+            throw new ResourceNotFound("lesson", "درس", request.LessonId.ToString());
         }
 
         // Initialize Bunny client
@@ -71,12 +64,14 @@ public class RemoveLessonCommandHandler(
         }
 
         // Remove lesson from the database
-        logger.LogInformation("Removing lesson from the database for CourseId: {CourseId}, SectionId: {SectionId}, LessonId: {LessonId}", 
+        logger.LogInformation(
+            "Removing lesson from the database for CourseId: {CourseId}, SectionId: {SectionId}, LessonId: {LessonId}",
             request.CourseId, request.SectionId, request.LessonId);
 
         await courseLessonRepository.RemoveLesson(request.CourseId, request.SectionId, request.LessonId);
 
-        logger.LogInformation("Successfully removed lesson with LessonId: {LessonId} from CourseId: {CourseId}, SectionId: {SectionId}", 
+        logger.LogInformation(
+            "Successfully removed lesson with LessonId: {LessonId} from CourseId: {CourseId}, SectionId: {SectionId}",
             request.LessonId, request.CourseId, request.SectionId);
     }
 }

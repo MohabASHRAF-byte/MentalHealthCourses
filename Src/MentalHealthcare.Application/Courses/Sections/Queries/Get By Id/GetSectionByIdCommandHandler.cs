@@ -32,8 +32,11 @@ public class GetSectionByIdCommandHandler(
         {
             logger.LogWarning("Course section with SectionId: {SectionId} for CourseId: {CourseId} was not found",
                 request.SectionId, request.CourseId);
-            throw new ResourceNotFound(nameof(courseSection), request.SectionId.ToString());
-        }
+            throw new ResourceNotFound(
+                "Course Section",   // English type name
+                "قسم دورة تدريبية",      // Alternative Arabic translation
+                request.SectionId.ToString()
+            );        }
 
         var dto = mapper.Map<CourseSectionDto>(courseSection);
         logger.LogInformation("Successfully retrieved SectionId: {SectionId} for CourseId: {CourseId}",

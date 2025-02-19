@@ -6,7 +6,7 @@ public interface ICourseInteractionsRepository
 {
     public Task Enroll(int courseId, int userId);
     public Task CompleteLessonAsync(int courseId, int lessonId, int userId);
-    public Task<CourseLessonDto> GetLessonAsync(int lessonId);
+    public Task<CourseLessonDto> GetLessonAsync(int courseId ,int lessonId,int userId);
 
     public Task<(int count, IEnumerable<CourseActivityDto> courses)> GetActiveCourseProgress(
         int userId,

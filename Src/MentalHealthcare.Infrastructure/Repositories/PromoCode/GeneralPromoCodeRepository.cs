@@ -1,14 +1,17 @@
+using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Domain.Dtos.PromoCode;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.PromoCode;
 using MentalHealthcare.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace MentalHealthcare.Infrastructure.Repositories.PromoCode;
 
 public class GeneralPromoCodeRepository(
-    MentalHealthDbContext dbContext
+    MentalHealthDbContext dbContext,
+    ILocalizationService localizationService
 ) : IGeneralPromoCodeRepository
 {
     public async Task<int> AddGeneralPromoCodeAsync(GeneralPromoCode generalPromoCode)
@@ -22,7 +25,11 @@ public class GeneralPromoCodeRepository(
     {
         var generalPromoCode = await dbContext.GeneralPromoCodes.FindAsync(generalPromoCodeId);
         if (generalPromoCode == null)
-            throw new ResourceNotFound(nameof(GeneralPromoCode), generalPromoCodeId.ToString());
+            throw new ResourceNotFound(
+                "General Promo Code",
+                "كود الخصم العام",
+                generalPromoCodeId.ToString()
+            );
         return generalPromoCode;
     }
 
@@ -68,7 +75,11 @@ public class GeneralPromoCodeRepository(
     {
         var generalPromoCode = await dbContext.GeneralPromoCodes.FindAsync(generalPromoCodeId);
         if (generalPromoCode == null)
-            throw new ResourceNotFound(nameof(generalPromoCodeId), generalPromoCodeId.ToString());
+            throw new ResourceNotFound(
+                "General Promo Code",
+                "كود الخصم العام",
+                generalPromoCodeId.ToString()
+            );
         dbContext.GeneralPromoCodes.Remove(generalPromoCode);
         await dbContext.SaveChangesAsync();
     }
@@ -77,7 +88,9 @@ public class GeneralPromoCodeRepository(
     {
         if (string.IsNullOrWhiteSpace(promoCodeName))
         {
-            throw new ArgumentException("Promo code name cannot be null or empty.", nameof(promoCodeName));
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("PromoCodeNameRequired")
+            );
         }
 
         var promoCode = await dbContext.GeneralPromoCodes
