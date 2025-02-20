@@ -6,6 +6,8 @@ namespace MentalHealthcare.Domain.Entities;
 public class User : IdentityUser
 {
     public long Roles { get; set; }
-    [MaxLength(20)]
-    public string Tenant { get; set; } = default!;
+    [MaxLength(20)] public string Tenant { get; set; } = default!;
+
+    public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
+    
 }

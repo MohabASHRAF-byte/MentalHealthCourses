@@ -8,6 +8,7 @@ public static class WebApplicationExtensions
 {
     public static void AddPresentation(this WebApplicationBuilder builder)
     {
+
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddControllers();
         builder.Services.AddSwaggerGen(c =>
@@ -87,6 +88,5 @@ public static class WebApplicationExtensions
             configuration
                 .ReadFrom.Configuration(context.Configuration);
         });
-        
     }
 }

@@ -3,6 +3,7 @@ using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Domain.Repositories.Course;
 using MentalHealthcare.Domain.Repositories.OrderProcessing;
 using MentalHealthcare.Domain.Repositories.PromoCode;
+using MentalHealthcare.Infrastructure.BackgroundService;
 using MentalHealthcare.Infrastructure.Persistence;
 using MentalHealthcare.Infrastructure.Repositories;
 using MentalHealthcare.Infrastructure.Repositories.Course;
@@ -21,6 +22,8 @@ public static class ServiceCollectionExtensions
 {
     public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddHostedService<DeleteUnConfirmedUsers>();
+
         services.AddDataBase(configuration);
         services.AddRepositories();
         services.AddIdentity();
@@ -63,7 +66,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICourseInteractionsRepository, CourseInteractionsRepository>();
         services.AddScoped<ICourseReview, CourseReview>();
         services.AddScoped<IInstructorRepository, InstructorRepository>();
-
     }
 
     private static void AddIdentity(this IServiceCollection services)
