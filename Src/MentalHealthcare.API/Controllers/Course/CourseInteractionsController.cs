@@ -3,6 +3,7 @@ using MentalHealthcare.API.Docs;
 using MentalHealthcare.Application.Common;
 using MentalHealthcare.Application.Courses.Course_Interactions.Commands.Complete_Lesson;
 using MentalHealthcare.Application.Courses.Course_Interactions.Commands.Enroll_Course;
+using MentalHealthcare.Application.Courses.Course_Interactions.Commands.RemoveCourseFromUser;
 using MentalHealthcare.Application.Courses.Course_Interactions.Queries.GetLesson;
 using MentalHealthcare.Application.Courses.Course_Interactions.Queries.GetMyCourses;
 using MentalHealthcare.Domain.Constants;
@@ -25,7 +26,6 @@ public class CourseInteractionsController(
     /// Enroll in a course.
     /// </summary>
     [HttpPost("{courseId}/enroll")]
-    
     [SwaggerOperation(
         Summary = "Enroll in a Course",
         Description = CourseInteractionDocs.EnrollCourseDescription
@@ -44,7 +44,6 @@ public class CourseInteractionsController(
     /// Mark a lesson as completed within a course.
     /// </summary>
     [HttpPost("{courseId}/complete/{lessonId}")]
-    
     [SwaggerOperation(
         Summary = "Complete a Lesson",
         Description = CourseInteractionDocs.CompleteLessonDescription
@@ -64,7 +63,6 @@ public class CourseInteractionsController(
     /// Get the details of a specific lesson within a course.
     /// </summary>
     [HttpGet("{courseId}/watch/{lessonId}")]
-    
     [ProducesResponseType(typeof(CourseLessonDto), 200)]
     [SwaggerOperation(
         Summary = "Get Course Lesson",
@@ -87,7 +85,6 @@ public class CourseInteractionsController(
     /// Get all active courses the user is currently enrolled in along with progress in each course.
     /// </summary>
     [HttpGet("courses/active")]
-    
     [SwaggerOperation(
         Summary = "Get Active Courses",
         Description = "Retrieve all the courses the user is currently enrolled in, including progress for each course."
@@ -99,4 +96,13 @@ public class CourseInteractionsController(
             .SuccessResult(result);
         return Ok(op);
     }
+
+    [HttpPost("RemoveCourse")]
+    [ApiExplorerSettings(GroupName = Global.DashboardVersion)]
+    public async Task<IActionResult> DeleteCourseFromUser([FromBody] RemoveCourseCommand command)
+    {
+        await mediator.Send(command);
+        return NoContent();
+    }
 }
+// 62 19

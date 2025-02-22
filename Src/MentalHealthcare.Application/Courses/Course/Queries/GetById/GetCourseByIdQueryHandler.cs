@@ -45,7 +45,7 @@ public class GetCourseByIdQueryHandler(
         logger.LogInformation("Mapping course entity to CourseDto.");
         var courseDto = mapper.Map<CourseDto>(course);
         courseDto.Rating ??= 0;
-        courseDto.UserProgress = await courseRepository.GetProgressAsync((int)currentUser.SysUserId!, request.Id);
+        // courseDto.UserProgress = await courseRepository.GetProgressAsync((int)currentUser.SysUserId!, request.Id);
         if (course.ReviewsCount != 0 && course.Rating != 0)
         {
             courseDto.Rating = Math.Round(course.Rating / course.ReviewsCount, 1);

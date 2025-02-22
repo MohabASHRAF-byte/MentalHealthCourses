@@ -1,5 +1,6 @@
 using MentalHealthcare.Domain.Dtos;
 using MentalHealthcare.Domain.Dtos.Category;
+using MentalHealthcare.Domain.Dtos.User;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories.Course;
@@ -99,8 +100,8 @@ public class CourseRepository(
                 if (instructor == null)
                 {
                     throw new ResourceNotFound(
-                        "Instructor",         // English type name
-                        "محاضر",           // Arabic type name
+                        "Instructor", // English type name
+                        "محاضر", // Arabic type name
                         instructorId.ToString() ?? "" // Ensure the ID is properly converted to a string
                     );
                 }
@@ -282,7 +283,8 @@ public class CourseRepository(
                 "Video",
                 "فيديو",
                 requestVideoId
-            );        }
+            );
+        }
 
         dbContext.VideoUploads.Remove(videoUpload);
         await dbContext.SaveChangesAsync();
@@ -416,6 +418,61 @@ public class CourseRepository(
                 cp.CourseId == courseId
                 && cp.SystemUserId == userId
             ).AnyAsync();
+    }
+
+    public async Task RemoveCourseFromUserAsync(int courseId, int userId)
+    {
+        var progress = await dbContext.CourseProgresses
+            .Where(p => p.CourseId == courseId && p.SystemUserId == userId)
+            .FirstOrDefaultAsync();
+        if (progress == null)
+            return;
+        dbContext.CourseProgresses.Remove(progress);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task<(int, List<GetUserProfile>)> GetEnrolledUsersAsync(
+        int courseId,
+        int pageNumber,
+        int pageSize,
+        string? searchName)
+    {
+        var users = dbContext.CourseProgresses
+            .Where(cp => cp.CourseId == courseId)
+            .Include(cp => cp.SystemUser)
+            .ThenInclude(us => us.User)
+            .Select(c => c.SystemUser)
+            .AsNoTracking();
+
+
+        if (!string.IsNullOrEmpty(searchName))
+        {
+            searchName = searchName.ToLower().Trim();
+            users = users
+                .Where(i => i.FName.ToLower().Contains(searchName));
+        }
+
+
+        // Get total count before applying pagination
+        var totalCount = await users.CountAsync();
+
+        // Apply pagination and projection
+        var paginatedUsers = await users
+            .Skip(pageSize * (pageNumber - 1))
+            .Take(pageSize)
+            .Select(i => new GetUserProfile
+            {
+                UserId = i.SystemUserId,
+                PhoneNumber = i.User.PhoneNumber,
+                Email = i.User.Email,
+                UserName = i.User.UserName!,
+                FirstName = i.FName,
+                LastName = i.LName,
+                BirthDate = i.BirthDate,
+            })
+            .ToListAsync();
+
+        return (totalCount, paginatedUsers);
     }
 
     public async Task BeginTransactionAsync()

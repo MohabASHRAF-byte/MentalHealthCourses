@@ -12,7 +12,7 @@ public static class ValidationRules
 {
     private static readonly string[] AllowedExtensions = { ".jpg", ".jpeg", ".png" };
     private const long MaxThumbnailFileSize = 1 * 1024 * 1024; // 1 MB
-    private const long MaxIconFileSize = 10 * 1024; // 100 Kb
+    private const long MaxIconFileSize = 512 * 1024; // 100 Kb
 
     public static IRuleBuilderOptions<T, IFormFile> CustomIsValidThumbnail<T>(
         this IRuleBuilder<T, IFormFile> ruleBuilder, ILocalizationService localizationService)
@@ -47,29 +47,29 @@ public static class ValidationRules
     }
 
 
-    public static IRuleBuilderOptions<T, IFormFile> CustomIsValidIcon<T>(
-        this IRuleBuilder<T, IFormFile> ruleBuilder, ILocalizationService localizationService)
-    {
-        return ruleBuilder
-            .NotNull()
-            .WithMessage(localizationService.GetMessage("IconRequired"))
-            .Must(file =>
-            {
-                var extension = Path.GetExtension(file?.FileName)?.ToLower();
-                return AllowedExtensions.Contains(extension);
-            })
-            .WithMessage(
-                string.Format(
-                    localizationService.GetMessage("IconInvalidType"),
-                    string.Join(", ", AllowedExtensions)
-                ))
-            .Must(file => file?.Length > 0 && file?.Length <= MaxIconFileSize)
-            .WithMessage(
-                string.Format(
-                    localizationService.GetMessage("IconInvalidSize"),
-                    localizationService.TranslateNumber(MaxIconFileSize / 1024)
-                ));
-    }
+    // public static IRuleBuilderOptions<T, IFormFile> CustomIsValidIcon<T>(
+    //     this IRuleBuilder<T, IFormFile> ruleBuilder, ILocalizationService localizationService)
+    // {
+    //     return ruleBuilder
+    //         .NotNull()
+    //         .WithMessage(localizationService.GetMessage("IconRequired"))
+    //         .Must(file =>
+    //         {
+    //             var extension = Path.GetExtension(file?.FileName)?.ToLower();
+    //             return AllowedExtensions.Contains(extension);
+    //         })
+    //         .WithMessage(
+    //             string.Format(
+    //                 localizationService.GetMessage("IconInvalidType"),
+    //                 string.Join(", ", AllowedExtensions)
+    //             ))
+    //         .Must(file => file?.Length > 0 && file?.Length <= MaxIconFileSize)
+    //         .WithMessage(
+    //             string.Format(
+    //                 localizationService.GetMessage("IconInvalidSize"),
+    //                 localizationService.TranslateNumber(MaxIconFileSize / 1024)
+    //             ));
+    // }
 
     public static IRuleBuilderOptions<T, string> CustomIsValidAbout<T>(this IRuleBuilder<T, string> ruleBuilder)
     {

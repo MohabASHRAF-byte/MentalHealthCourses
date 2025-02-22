@@ -1,4 +1,5 @@
 using MentalHealthcare.Domain.Dtos;
+using MentalHealthcare.Domain.Dtos.User;
 using MentalHealthcare.Domain.Entities;
 
 namespace MentalHealthcare.Domain.Repositories.Course;
@@ -54,4 +55,11 @@ public interface ICourseRepository
     Task BeginTransactionAsync();
     Task CommitTransactionAsync();
     Task RollbackTransactionAsync();
+    public Task RemoveCourseFromUserAsync(int courseId, int userId);
+
+    public Task<(int, List<GetUserProfile>)> GetEnrolledUsersAsync(
+        int courseId,
+        int pageNumber,
+        int pageSize,
+        string? searchName);
 }

@@ -7,11 +7,13 @@ using MentalHealthcare.Application.Courses.Course.Commands.Create;
 using MentalHealthcare.Application.Courses.Course.Commands.DeleteIconCommand;
 using MentalHealthcare.Application.Courses.Course.Commands.DeleteThumbnail;
 using MentalHealthcare.Application.Courses.Course.Commands.UpdateCourseCommand;
+using MentalHealthcare.Application.Courses.Course.Queries.EnrolledUsers;
 using MentalHealthcare.Application.Courses.Course.Queries.GetAll;
 using MentalHealthcare.Application.Courses.Course.Queries.GetById;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos;
 using MentalHealthcare.Domain.Dtos.course;
+using MentalHealthcare.Domain.Dtos.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -41,7 +43,6 @@ public class CourseController(IMediator mediator) : ControllerBase
             });
         return Ok(op);
         return CreatedAtAction(nameof(CreateCourse), new { id = result }, new { courseId = result });
-
     }
 
     /// <summary>
@@ -51,7 +52,6 @@ public class CourseController(IMediator mediator) : ControllerBase
     [Authorize(AuthenticationSchemes = "Bearer")]
     [SwaggerOperation(Summary = "Get all courses", Description = CourseDocs.GetAllCoursesDescription)]
     [ApiExplorerSettings(GroupName = Global.SharedVersion)]
-
     [ProducesResponseType(typeof(OperationResult<PageResult<CourseViewDto>>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllCourses([FromQuery] GetAllCoursesQuery query)
     {
@@ -68,12 +68,30 @@ public class CourseController(IMediator mediator) : ControllerBase
     [ProducesResponseType(typeof(CourseDto), StatusCodes.Status200OK)]
     [SwaggerOperation(Summary = "Get a course by ID", Description = CourseDocs.GetCourseByIdDescription)]
     [ApiExplorerSettings(GroupName = Global.SharedVersion)]
-
     public async Task<ActionResult<Domain.Entities.Courses.Course>> GetCourseById([FromRoute] int courseId)
     {
         var query = new GetCourseByIdQuery { Id = courseId };
         var result = await mediator.Send(query);
         var operationResult = OperationResult<CourseDto>.SuccessResult(result);
+        return Ok(operationResult);
+    }
+
+    /// <summary>
+    /// Get a specific course by its ID.
+    /// </summary>
+    [HttpGet("{courseId}/enrolled")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [ProducesResponseType(typeof(CourseDto), StatusCodes.Status200OK)]
+    [SwaggerOperation(Summary = "Get Enrolled users in course by ID",
+        Description = CourseDocs.GetCourseByIdDescription)]
+    [ApiExplorerSettings(GroupName = Global.SharedVersion)]
+    public async Task<ActionResult<Domain.Entities.Courses.Course>> GetCourseEnrolledUsersById(
+        [FromRoute] int courseId,
+        [FromQuery] GetEnrolledUsersQuery query)
+    {
+        query.CourseId = courseId;
+        var result = await mediator.Send(query);
+        var operationResult = OperationResult<PageResult<GetUserProfile>>.SuccessResult(result);
         return Ok(operationResult);
     }
 
@@ -98,7 +116,8 @@ public class CourseController(IMediator mediator) : ControllerBase
     /// </summary>
     [HttpPost("{courseId}/thumbnail")]
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [SwaggerOperation(Summary = "Add or update course thumbnail", Description = CourseDocs.AddOrUpdateThumbnailDescription)]
+    [SwaggerOperation(Summary = "Add or update course thumbnail",
+        Description = CourseDocs.AddOrUpdateThumbnailDescription)]
     public async Task<IActionResult> AddOrUpdateThumbnail(
         [FromRoute] int courseId,
         [FromForm] AddCourseThumbnailCommand command
