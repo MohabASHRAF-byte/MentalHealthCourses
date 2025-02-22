@@ -64,6 +64,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICourseReview, CourseReview>();
         services.AddScoped<IInstructorRepository, InstructorRepository>();
         services.AddScoped<IArticleRepository, ArticleRepository>();
+        services.AddScoped<IAuthorRepository, AuthorRepository>();
 
 
     }
