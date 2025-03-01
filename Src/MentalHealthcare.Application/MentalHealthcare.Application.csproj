@@ -21,6 +21,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Articles\Commands\Delete\" />
+    <Folder Include="Articles\Commands\Update\" />
+    <Folder Include="Articles\Queries\GetAll\" />
+    <Folder Include="Articles\Queries\GetById\" />
+    <Folder Include="HomeScreen\Queries\GetAllAdvertisements\" />
+    <Folder Include="HomeScreen\Queries\GetAllEnrolledUsers\" />
+    <Folder Include="HomeScreen\Queries\GetAllInstructors\" />
     <Folder Include="Repositories\" />
   </ItemGroup>
 

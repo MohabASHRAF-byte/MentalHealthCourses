@@ -4,6 +4,7 @@ using MentalHealthcare.API.MiddleWares;
 using MentalHealthcare.Application.Extensions;
 using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Infrastructure.Extensions;
+using MentalHealthcare.Infrastructure.Hubs;
 using MentalHealthcare.Infrastructure.Seeders;
 using Serilog;
 
@@ -18,6 +19,7 @@ try
     builder.Services.AddScoped<GlobalErrorHandling>();
     builder.Services.AddScoped<RequestTimeLogging>();
     builder.Services.AddControllers();
+    builder.Services.AddSignalR();
     // builder.Services.AddControllers()
     //     .AddJsonOptions(options =>
     //     {
@@ -77,7 +79,7 @@ try
             c.SwaggerEndpoint("/swagger/All/swagger.json", "All API v1"); // Ensure this is included
         });
     }
-
+    app.MapHub<NotificationHub>("NotificationHub");
     app.Run();
 }
 catch (Exception ex)
