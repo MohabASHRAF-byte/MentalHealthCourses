@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "apis1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.ApiManagement/service/GeneralCommittee-APIs/apis/GeneralCommittee-APIs",
+      "type": "apis.azure"
+    }
+  }
+}

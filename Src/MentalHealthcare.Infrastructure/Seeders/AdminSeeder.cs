@@ -13,13 +13,13 @@ public class AdminSeeder(
 {
     public async Task seed()
     {
-       return;
+     return;
 
         if ((await dbContext.Database.GetPendingMigrationsAsync()).Any())
         {
             await dbContext.Database.MigrateAsync();
         }
-     //   return;
+  //   return;
         await dbContext.Database.MigrateAsync();
 
         #region Seed Admins

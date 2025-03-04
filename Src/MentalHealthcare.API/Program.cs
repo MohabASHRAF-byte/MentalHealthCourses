@@ -6,6 +6,7 @@ using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Infrastructure.Extensions;
 using MentalHealthcare.Infrastructure.Hubs;
 using MentalHealthcare.Infrastructure.Seeders;
+using Microsoft.AspNetCore.Builder;
 using Serilog;
 
 try
@@ -20,14 +21,13 @@ try
     builder.Services.AddScoped<RequestTimeLogging>();
     builder.Services.AddControllers();
     builder.Services.AddSignalR();
-    // builder.Services.AddControllers()
-    //     .AddJsonOptions(options =>
-    //     {
-    //         options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never;
-    //         options.JsonSerializerOptions.PropertyNamingPolicy = null; // Use PascalCase if required
-    //     });
+        //.AddJsonOptions(options =>
+        //{
+        //    options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never;
+        //    options.JsonSerializerOptions.PropertyNamingPolicy = null; // Use PascalCase if required
+        //});
 
-// Add CORS services
+    // Add CORS services
     builder.Services.AddCors(options =>
     {
         options.AddPolicy("AllowAll", policy =>
@@ -35,8 +35,12 @@ try
             policy.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader();
+
         });
     });
+
+
+
 
     var app = builder.Build();
     var scope = app.Services.CreateScope();
@@ -57,28 +61,34 @@ try
     app.UseMiddleware<GlobalErrorHandling>();
     app.UseMiddleware<RequestTimeLogging>();
 
+
+ 
+
+
+    // Use CORS middleware
+    app.UseCors("AllowAll");
+
 // Configure the HTTP request pipeline.
     app.UseHttpsRedirection();
     app.UseRouting();
 
-// Use CORS middleware
-    app.UseCors("AllowAll");
+
+
+
 
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
 
-    if (app.Environment.IsDevelopment())
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
     {
-        app.UseSwagger();
-        app.UseSwaggerUI(c =>
-        {
-            c.SwaggerEndpoint("/swagger/Dashboard/swagger.json", "Dashboard API v1");
-            c.SwaggerEndpoint("/swagger/MobileApp/swagger.json", "Mobile App API v1");
-            c.SwaggerEndpoint("/swagger/Development/swagger.json", "Development API v1"); // Ensure this is included
-            c.SwaggerEndpoint("/swagger/All/swagger.json", "All API v1"); // Ensure this is included
-        });
-    }
+        c.SwaggerEndpoint("/swagger/Dashboard/swagger.json", "Dashboard API v1");
+        c.SwaggerEndpoint("/swagger/MobileApp/swagger.json", "Mobile App API v1");
+        c.SwaggerEndpoint("/swagger/Development/swagger.json", "Development API v1");
+        c.SwaggerEndpoint("/swagger/All/swagger.json", "All API v1");
+
+    });
     app.MapHub<NotificationHub>("NotificationHub");
     app.Run();
 }
