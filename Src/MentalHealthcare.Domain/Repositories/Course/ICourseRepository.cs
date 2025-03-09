@@ -62,4 +62,8 @@ public interface ICourseRepository
         int pageNumber,
         int pageSize,
         string? searchName);
+
+
+
+
 }

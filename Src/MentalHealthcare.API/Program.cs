@@ -66,8 +66,8 @@ try
     app.UseAuthorization();
     app.MapControllers();
 
-    if (app.Environment.IsDevelopment())
-    {
+    //if (app.Environment.IsDevelopment())
+    //{
         app.UseSwagger();
         app.UseSwaggerUI(c =>
         {
@@ -76,7 +76,7 @@ try
             c.SwaggerEndpoint("/swagger/Development/swagger.json", "Development API v1"); // Ensure this is included
             c.SwaggerEndpoint("/swagger/All/swagger.json", "All API v1"); // Ensure this is included
         });
-    }
+    //}
 
     app.Run();
 }

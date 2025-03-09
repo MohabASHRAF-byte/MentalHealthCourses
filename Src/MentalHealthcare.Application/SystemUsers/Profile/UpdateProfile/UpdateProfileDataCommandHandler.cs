@@ -16,7 +16,8 @@ public class UpdateProfileDataCommandHandler(
     {
         logger.LogInformation("Handling UpdateProfileDataCommand for User: {RequestDetails}",
             new { request.FirstName, request.LastName, request.PhoneNumber, request.BirthDate });
-        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
+                                   //TODO: Change in UserRoles From Admin => User
+        var currentUser = userContext.EnsureAuthorizedUser([UserRoles.User], logger);
 
         logger.LogInformation("Updating profile for UserId: {UserId} with new details: {RequestDetails}",
             currentUser.SysUserId,
