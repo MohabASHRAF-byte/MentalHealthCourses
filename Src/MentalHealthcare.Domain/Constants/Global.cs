@@ -83,5 +83,20 @@ public class Global
     public const int InstructorImgSize = 10;
 
     #endregion
-    
+
+    #region Article
+
+    public const string ArticleFolderName = "Articles";
+    public const int ArticleTitleMaxLength = 50;
+    public const int ArticleLinesMaxLength = 500;
+    public const int ArticleImgSize = 10;
+
+    #endregion
+    #region Users
+
+    public const string UsersFolderName = "Users";
+   
+    public const int UsersImgSize = 10;
+
+    #endregion
 }

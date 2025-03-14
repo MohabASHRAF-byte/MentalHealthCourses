@@ -8,7 +8,8 @@ public class UserProfileDto
     public string PhoneNumber { get; set; }
     public string userName { get; set; }
     public DateOnly BirthDate { get; set; }
-    
+    public string? ProfilePic { get; set; }
+
     public long SecondsSinceUpdate { get; set; }
     public long SecondsSinceCreate { get; set; }
 }

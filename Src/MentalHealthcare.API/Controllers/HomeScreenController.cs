@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using MentalHealthcare.API.Docs;
 using MentalHealthcare.Application.Common;
 using MentalHealthcare.Application.HomeScreenItems.Queries.GetAdvertisements;
 using MentalHealthcare.Application.HomeScreenItems.Queries.GetRecentlyAddedCourses;
@@ -11,28 +12,23 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace MentalHealthcare.API.Controllers;
 
-[AllowAnonymous] // This already allows anonymous access, so no need for additional [Authorize]
+[AllowAnonymous]
 [ApiController]
-[Route("api/homescreen")] // Define a base route for better structure
+[Route("api/homescreen")] 
 [ApiExplorerSettings(GroupName = Global.MobileVersion)]
 public class HomeScreenController(IMediator mediator) : ControllerBase
 {
-    /// <summary>
-    /// Get all Advertisements.
-    /// </summary>
-    [SwaggerOperation(Summary = "Get all Advertisements")]
+    [SwaggerOperation(Summary = "Get all Advertisements",
+           Description = HomeScreenControllerDocs.GetAllAdvertisements)]
     [ProducesResponseType(typeof(PageResult<AdvertisementDto>), 200)]
-    [HttpGet("advertisements")] // ✅ Unique route
+    [HttpGet("advertisements")] 
     public async Task<IActionResult> GetAdvertisements([FromQuery] GetAdvertisementsQuery query)
     {
         var advertisements = await mediator.Send(query);
         return Ok(advertisements);
     }
-
-    /// <summary>
-    /// Get recently added courses.
-    /// </summary>
-    [SwaggerOperation(Summary = "Get Recently Added Courses")]
+    [SwaggerOperation(Summary = "Get Most Recent Courses",
+               Description = HomeScreenControllerDocs.MostRecentCoursesSection)]
     [ProducesResponseType(typeof(PageResult<CourseViewDto>), 200)]
     [HttpGet("recent-courses")] // ✅ Unique route
     public async Task<IActionResult> GetRecentlyAddedCourses([FromQuery] GetRecentlyAddedCoursesQuery query)
@@ -40,11 +36,8 @@ public class HomeScreenController(IMediator mediator) : ControllerBase
         var courses = await mediator.Send(query);
         return Ok(courses);
     }
-
-    /// <summary>
-    /// Get all trainers.
-    /// </summary>
-    [SwaggerOperation(Summary = "Get all Trainers")]
+    [SwaggerOperation(Summary = "Get all Trainers",
+           Description = HomeScreenControllerDocs.GetAllInstructorDescription)]
     [ProducesResponseType(typeof(PageResult<InstructorDto>), 200)] // ✅ Fixed response type
     [HttpGet("trainers")] // ✅ Unique route
     public async Task<IActionResult> GetTrainers([FromQuery] GetTrainersQuery query)

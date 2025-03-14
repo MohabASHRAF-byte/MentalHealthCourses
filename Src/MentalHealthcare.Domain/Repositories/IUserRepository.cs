@@ -11,7 +11,7 @@ public interface IUserRepository
         string? searchString = "");
     public Task<GetUserProfile> GetByIdAsync(int id);
     public Task<(bool Succeeded, List<string> Errors)> RegisterUser(User user, string password,
-        SystemUser userToRegister);
+        SystemUser userToRegister );
 
     public Task<Guid?> GetUserTokenCodeAsync(User user);
     public Task<Guid> ChangePasswordAsync(User user);
@@ -31,7 +31,8 @@ public interface IUserRepository
         string? firstName,
         string? lastName,
         string? phoneNumber,
-        DateOnly? birthDate
+        DateOnly? birthDate ,
+        string? profilePicUrl
     );
 
     public Task<UserProfileDto> GetUserProfileByIdAsync(int userId);

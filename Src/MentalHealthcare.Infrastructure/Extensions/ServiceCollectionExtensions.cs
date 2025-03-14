@@ -67,6 +67,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICourseReview, CourseReview>();
         services.AddScoped<IInstructorRepository, InstructorRepository>();
         services.AddScoped<IHomeScreenRepository, HomeScreenRepository>();
+        services.AddScoped<IArticleRepository, ArticleRepository>();
 
     }
 

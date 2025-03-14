@@ -80,13 +80,14 @@ public class UserRepository(
         return user;
     }
 
-    public async Task<(bool, List<string>)> RegisterUser(User user, string password, SystemUser userToRegister)
+    public async Task<(bool, List<string>)> RegisterUser(User user, string password, SystemUser userToRegister )
     {
         var errors = new List<string>();
         var existingUser = await dbContext.Users
             .Where(u =>
                 u.NormalizedUserName == user.UserName ||
                 u.Email == user.Email
+                
             ).ToListAsync();
         var validUserName = !existingUser.Any(u =>
             u.NormalizedUserName!.Equals(user.UserName));
@@ -99,9 +100,14 @@ public class UserRepository(
             return (false, errors);
         try
         {
+
+
+
             IdentityResult createUserResult = await userManager.CreateAsync(user, password);
             if (!createUserResult.Succeeded)
                 return (false, new());
+
+
             await dbContext.AddAsync(userToRegister);
             await dbContext.SaveChangesAsync();
             return (true, new());
@@ -216,6 +222,7 @@ public class UserRepository(
     public async Task<(int? systemUserId, int? adminId)> GetSystemUserOrAdminIdByIdentityIdAsync(string userId)
     {
         var systemUser = await dbContext.SystemUsers
+            .Include(su => su.User)
             .Where(su => su.UserId == userId)
             .FirstOrDefaultAsync();
 
@@ -238,6 +245,7 @@ public class UserRepository(
                 FirstName = su.FName,
                 LastName = su.LName,
                 BirthDate = su.BirthDate,
+                ProfilePic = su.User.ProfilePic,
                 SecondsSinceCreate = (long)DateTime.UtcNow.Subtract(su.CreatedDate).TotalSeconds,
                 SecondsSinceUpdate = (long)DateTime.UtcNow.Subtract(su.LastUpdatedDate).TotalSeconds
             }).FirstOrDefaultAsync();
@@ -258,7 +266,9 @@ public class UserRepository(
         string? firstName,
         string? lastName,
         string? phoneNumber,
-        DateOnly? birthDate
+        DateOnly? birthDate,
+        string? profilePicUrl
+
     )
     {
         var user = await dbContext.SystemUsers
@@ -282,6 +292,9 @@ public class UserRepository(
             user.User.PhoneNumber = phoneNumber;
         if (birthDate.HasValue)
             user.BirthDate = birthDate.Value;
+        if (!string.IsNullOrWhiteSpace(profilePicUrl)) 
+            user.User.ProfilePic = profilePicUrl;
+
         await dbContext.SaveChangesAsync();
     }
 }

@@ -9,5 +9,8 @@ public class User : IdentityUser
     [MaxLength(20)] public string Tenant { get; set; } = default!;
 
     public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
-    
+
+
+    public string ProfilePic { get; set; }
+
 }
