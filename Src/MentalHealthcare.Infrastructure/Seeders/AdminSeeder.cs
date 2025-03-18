@@ -13,13 +13,13 @@ public class AdminSeeder(
 {
     public async Task seed()
     {
-        return;
+   return;
 
         if ((await dbContext.Database.GetPendingMigrationsAsync()).Any())
         {
             await dbContext.Database.MigrateAsync();
         }
-        //   return;
+        // return;
         await dbContext.Database.MigrateAsync();
 
         #region Seed Admins
@@ -42,6 +42,8 @@ public class AdminSeeder(
             AccessFailedCount = 0,
             NormalizedUserName = "admin".ToUpper(),
             PhoneNumberConfirmed = true,
+            ProfilePic = "default.png"
+
         };
 
         var admin = new Admin
@@ -71,6 +73,8 @@ public class AdminSeeder(
             AccessFailedCount = 0,
             NormalizedUserName = "admin1".ToUpper(),
             PhoneNumberConfirmed = true,
+           ProfilePic = "default.png"
+
         };
         var admin1 = new Admin
         {

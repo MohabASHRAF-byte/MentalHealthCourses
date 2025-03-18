@@ -165,7 +165,8 @@ namespace MentalHealthcare.Application.Instructors.Commands.Update
         }
 
 
-        private void UpdateInstructorInfo(ref Domain.Entities.Instructor instructor, UpdateInstructorCommand request)
+        private void UpdateInstructorInfo(ref Domain.Entities.Instructor instructor, 
+            UpdateInstructorCommand request)
         {
             if (!request.Name.IsNullOrEmpty())
             {

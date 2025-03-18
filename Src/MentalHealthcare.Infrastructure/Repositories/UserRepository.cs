@@ -244,8 +244,10 @@ public class UserRepository(
                 userName = su.User.UserName!,
                 FirstName = su.FName,
                 LastName = su.LName,
-                BirthDate = su.BirthDate,
-                ProfilePic = su.User.ProfilePic,
+                BirthDate = su.BirthDate, // ✅ Combine the base URL with profile picture file name
+                ProfilePic = string.IsNullOrEmpty(su.User.ProfilePic)
+                ? null
+                : $"https://pullzonegeneralcommittee.b-cdn.net/Users/{su.User.ProfilePic}",
                 SecondsSinceCreate = (long)DateTime.UtcNow.Subtract(su.CreatedDate).TotalSeconds,
                 SecondsSinceUpdate = (long)DateTime.UtcNow.Subtract(su.LastUpdatedDate).TotalSeconds
             }).FirstOrDefaultAsync();

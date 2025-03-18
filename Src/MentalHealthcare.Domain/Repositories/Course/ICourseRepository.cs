@@ -64,6 +64,7 @@ public interface ICourseRepository
         string? searchName);
 
 
+    public Task<IEnumerable<CourseViewDto>> GetRecentlyAddedCoursesAsync(int count);
 
 
 }

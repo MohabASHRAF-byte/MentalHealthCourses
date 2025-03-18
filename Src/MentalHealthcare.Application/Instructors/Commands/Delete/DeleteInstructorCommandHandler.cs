@@ -28,16 +28,44 @@ namespace MentalHealthcare.Application.Instructors.Commands.Delete
         {
             logger.LogInformation("Delete Instructor");
             userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
+
+
+
             var ins = await insRepo.GetInstructorByIdAsync(request.InstructorID);
-            var bunny = new BunnyClient(configuration);
-            var imgName = GetImageName(ins.ImageUrl);
-            await bunny.DeleteFileAsync(imgName, Global.InstructorFolderName);
+
+
+            if (ins == null)
+            {
+                logger.LogWarning("Article with ID: {AdId} not found.", request.InstructorID);
+                throw new KeyNotFoundException($"Article with ID {request.InstructorID} not found.");
+            }
+
+
+            // Delete the image from BunnyCDN if the ImageUrl is not null
+            if (!string.IsNullOrEmpty(ins.ImageUrl))
+            {
+                var bunny = new BunnyClient(configuration);
+                var imgName = GetImageName(ins.ImageUrl);
+                await bunny.DeleteFileAsync(imgName, Global.InstructorFolderName);
+            }
+            else
+            {
+                logger.LogWarning($"Instructor with ID {request.InstructorID} has no image URL.");
+            }
+
+            // Delete the instructor from the database
             await insRepo.DeleteInstructorAsync(request.InstructorID);
         }
 
 
         private string GetImageName(string url)
         {
+            if (string.IsNullOrEmpty(url))
+            {
+                logger.LogWarning("Image URL is null or empty.");
+                return null; // or throw an exception, depending on your requirements
+            }
+
             return url.Split('/').Last();
         }
     }

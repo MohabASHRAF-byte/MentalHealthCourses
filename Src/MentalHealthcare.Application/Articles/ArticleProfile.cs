@@ -17,29 +17,16 @@ namespace MentalHealthcare.Application.Articles
         public ArticleProfile()
         {
             CreateMap<Domain.Entities.Article, ArticleDto>()
-                .ForMember(dest => dest.ArticleImageUrls,
-                    opt => opt.MapFrom(src => src.ArticleImageUrls.Select(img => img.ImageUrl).ToList()));
+           .ForMember(dest => dest.ArticleImageUrls,
+               opt => opt.MapFrom(src => src.ArticleImageUrls.Select(img => img.ImageUrl).ToList()))
+           .ForMember(dest => dest.AuthorName,
+               opt => opt.MapFrom(src => src.Author.Name));
 
-            // Optionally map AdvertisementDto back to  Article
+            // Reverse mapping (optional)
             CreateMap<ArticleDto, Domain.Entities.Article>()
-                .ForMember(dest => dest.ArticleImageUrls,
-                    opt => opt.Ignore());
+                .ForMember(dest => dest.ArticleImageUrls, opt => opt.Ignore());
+
             CreateMap<AddArticleCommand, Domain.Entities.Article>().ReverseMap();
-
-
-
-
-
-            CreateMap<Domain.Entities.Article, ArticleDto>()
-                .ForMember(dest => dest.AuthorName,
-                    opt => opt.MapFrom(src => src.Author.Name));
-
-            // Optionally map AdvertisementDto back to  Article
-            CreateMap<ArticleDto, Domain.Entities.Article>()
-                .ForMember(dest => dest.Author,
-                    opt => opt.Ignore());
-            CreateMap<AddArticleCommand, Domain.Entities.Article>().ReverseMap();
-
 
 
 

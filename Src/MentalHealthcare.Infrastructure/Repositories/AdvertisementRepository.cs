@@ -1,3 +1,4 @@
+using MentalHealthcare.Domain.Dtos;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
@@ -115,5 +116,18 @@ public class AdvertisementRepository(
         );
         dbContext.AdvertisementImageUrls.RemoveRange(adimgs);
         await dbContext.SaveChangesAsync();
+    }
+
+    public async Task<(int TotalCount, IEnumerable<Advertisement>)> GetRecentlyAddedAdvertisementsAsync(int count)
+    {
+        var totalCount = await dbContext.Advertisements.CountAsync();
+
+        var advertisements = await dbContext.Advertisements
+            .OrderByDescending(a => a.AdvertisementId)
+            .Take(count)
+            .Include(a => a.AdvertisementImageUrls) // ✅ Ensure navigation property is loaded
+            .ToListAsync();
+
+        return (totalCount, advertisements);
     }
 }

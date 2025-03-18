@@ -1,3 +1,4 @@
+using MentalHealthcare.Domain.Dtos;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Exceptions;
 using MentalHealthcare.Domain.Repositories;
@@ -103,6 +104,29 @@ namespace MentalHealthcare.Infrastructure.Repositories
         public async Task SaveChangesAsync()
         {
             await dbContext.SaveChangesAsync();
+        }
+
+        public async Task<(int TotalCount, IEnumerable<Instructor>)> GetRecentlyAddedInstructorsAsync(int count)
+        {
+            var totalCount = await dbContext.Instructors.CountAsync();
+            var instructors = await dbContext.Instructors
+                .OrderByDescending(i => i.InstructorId)
+                .Take(count)
+                .Select(i => new Instructor // ✅ Select only required fields
+                {
+                    InstructorId = i.InstructorId,
+                    Name = i.Name,
+                    About = i.About,
+                    ImageUrl = i.ImageUrl,
+                    Courses = i.Courses.Select(c => new Domain.Entities.Courses.Course // ✅ Fetch only required course fields
+                    {
+                        CourseId = c.CourseId,
+                        Name = c.Name
+                    }).ToList()
+                })
+                .ToListAsync();
+
+            return (totalCount, instructors);
         }
     }
 }

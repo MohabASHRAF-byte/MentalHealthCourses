@@ -1,3 +1,4 @@
+using MentalHealthcare.Domain.Dtos;
 using MentalHealthcare.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace MentalHealthcare.Domain.Repositories
         public Task<(int TotalCount, IEnumerable<Instructor>)> GetInstructorsAsync(string? search, int requestPageNumber, int requestPageSize);
         public Task SaveChangesAsync();
 
+        public Task<(int TotalCount, IEnumerable<Instructor>)> GetRecentlyAddedInstructorsAsync(int count);
 
 
 

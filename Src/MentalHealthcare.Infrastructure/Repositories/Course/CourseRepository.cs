@@ -489,4 +489,20 @@ public class CourseRepository(
     {
         await dbContext.Database.RollbackTransactionAsync();
     }
+
+    public async Task<IEnumerable<CourseViewDto>> GetRecentlyAddedCoursesAsync(int count)
+    {
+        return await dbContext.Courses
+              .OrderByDescending(c => c.CreatedAt) // Assuming CreatedAt exists
+              .Take(count)
+              .Select(c => new CourseViewDto
+              {
+                  CourseId = c.CourseId,
+                  Name = c.Name,
+                  Price = c.Price,
+                  Rating = c.Rating,
+                  ThumbnailUrl = c.ThumbnailUrl
+              })
+              .ToListAsync();
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using MentalHealthcare.Domain.Dtos;
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Repositories;
+using MentalHealthcare.Domain.Repositories.Course;
 using MentalHealthcare.Infrastructure.Persistence;
 using MentalHealthcare.Infrastructure.Repositories.Course;
 using Microsoft.EntityFrameworkCore;
@@ -8,98 +9,71 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MentalHealthcare.Infrastructure.Repositories
 {
-    public class HomeScreenRepository(MentalHealthDbContext dbContext,
-    ILogger<HomeScreenRepository> logger) : IHomeScreenRepository
+    public class HomeScreenRepository(
+        MentalHealthDbContext dbContext,
+        ILogger<HomeScreenRepository> logger,
+        IInstructorRepository insRepo,
+        IAdvertisementRepository AdvRepo,
+        ICourseRepository CouRepo) : IHomeScreenRepository
     {
-        public async Task<(int TotalCount, IEnumerable<Advertisement>)> GetAdvertisementsAsync(int pageNumber, int pageSize, int isActive)
-        {
-            // Base query
-            var baseQuery = dbContext.Advertisements.AsQueryable();
-
-            // Filter based on isActive
-            if (isActive == 0)
-            {
-                baseQuery = baseQuery.Where(ad => !ad.IsActive);
-            }
-            else if (isActive == 1)
-            {
-                baseQuery = baseQuery.Where(ad => ad.IsActive);
-            }
-            // No filtering for other cases (get all advertisements)
-
-            // Add Include after filtering
-            baseQuery = baseQuery.Include(ad => ad.AdvertisementImageUrls);
-
-            // Total count before pagination
-            var totalCount = await baseQuery.CountAsync();
-
-            // Apply ordering and pagination
-            var advertisements = await baseQuery
-                .OrderBy(ad => ad.AdvertisementId) // Order by ID
-                .Skip(pageSize * (pageNumber - 1)) // Pagination: Skip
-                .Take(pageSize) // Pagination: Take
-                .Select(ad => new Advertisement
-                {
-                    AdvertisementId = ad.AdvertisementId,
-                    AdvertisementName = ad.AdvertisementName,
-                    AdvertisementDescription = ad.AdvertisementDescription,
-                    IsActive = ad.IsActive,
-                    AdvertisementImageUrls = ad.AdvertisementImageUrls
-                        .Select(img => new AdvertisementImageUrl { ImageUrl = img.ImageUrl })
-                        .ToList()
-                })
-                .ToListAsync();
-
-            return (totalCount, advertisements);
-        }
-
-        public async Task<(int TotalCount, IEnumerable<Instructor>)> GetInstructorsAsync(string? search, int requestPageNumber, int requestPageSize)
-        {
-            // Base query
-            var baseQuery = dbContext.Instructors.AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                baseQuery = baseQuery.Where(a => a.Name.Contains(search));
-            }
-
-            // Total count before pagination
-            var totalCount = await baseQuery.CountAsync();
-
-            // Apply ordering and pagination
-            var Instructors = await baseQuery
-                .OrderBy(ad => ad.InstructorId) // Order by ID
-                .Skip(requestPageSize * (requestPageNumber - 1)) // Pagination: Skip
-                .Take(requestPageSize) // Pagination: Take
-                .Select(ad => new Instructor
-                {
-                    InstructorId = ad.InstructorId,
-                    Name = ad.Name,
-                    About = ad.About,
-                    ImageUrl = ad.ImageUrl,
-                    Courses = new List<Domain.Entities.Courses.Course>
-                    {
-                        new Domain.Entities.Courses.Course
-                            { Name = ad.Name }
-                    }
-                })
-                .ToListAsync();
-
-            return (totalCount, Instructors);
-        }
-
-        public async Task<IEnumerable<CourseViewDto>> GetRecentlyAddedCoursesAsync(int count)
+        public async Task<HomeScreenDto> GetHomeScreenDataAsync(
+            int instructorCount,
+            int advertisementCount,
+            int recentlyAddedCoursesCount)
         {
 
 
-         return await dbContext.Courses
-        .OrderByDescending(c => c.CreatedAt) // Assuming CreatedAt exists
-        .Take(count)
+        // Fetch instructors (limited to instructorCount)
+    var (instructorsTotalCount, instructorEntities) = await insRepo.GetRecentlyAddedInstructorsAsync(instructorCount);
+
+ // Map instructors
+    var instructors = instructorEntities
+        .Select(i => new InstructorDto
+        {
+            InstructorId = i.InstructorId,
+            Name = i.Name,
+            About = i.About,
+            ImageUrl = i.ImageUrl,
+            RecentlyAddedCourses = i.Courses.Select(c => new CourseViewDto
+            {
+                CourseId = c.CourseId,
+                Name = c.Name,
+                Price = c.Price,
+                Rating = c.Rating,
+                ThumbnailUrl = c.ThumbnailUrl
+            }).ToList()
+        })
+        .ToList();
+
+
+
+
+    // Fetch advertisements (limited to advertisementCount)
+    var (advertisementsTotalCount, advertisementEntities) = await AdvRepo.GetRecentlyAddedAdvertisementsAsync(advertisementCount);
+  // Map advertisements
+    var advertisements = advertisementEntities
+        .Select(a => new AdvertisementDto
+        {
+            AdvertisementId = a.AdvertisementId,
+            AdvertisementName = a.AdvertisementName,
+            AdvertisementImageUrls = a.AdvertisementImageUrls?.Select(img => img.ImageUrl).ToList() ?? new List<string>(),
+            AdvertisementDescription = a.AdvertisementDescription,
+            IsActive = a.IsActive
+        })
+        .ToList();
+
+
+
+    // Fetch recently added courses (limited to recentlyAddedCoursesCount)
+    var recentlyAddedCourses = await CouRepo.GetRecentlyAddedCoursesAsync(recentlyAddedCoursesCount);
+
+  
+    // Map courses
+    var recentlyAddedCoursesList = recentlyAddedCourses
         .Select(c => new CourseViewDto
         {
             CourseId = c.CourseId,
@@ -108,15 +82,58 @@ namespace MentalHealthcare.Infrastructure.Repositories
             Rating = c.Rating,
             ThumbnailUrl = c.ThumbnailUrl
         })
-        .ToListAsync();
+        .ToList();
 
+   
 
-
-
-
-
-
-
+    // Return DTO
+    return new HomeScreenDto
+    {
+        Advertisements = advertisements,
+        AdvertisementsTotalCount = advertisementsTotalCount,
+        Instructors = instructors,
+        InstructorsTotalCount = instructorsTotalCount,
+        RecentlyAddedCourses = recentlyAddedCoursesList
+    };
         }
     }
-}
+} // // Fetch recently added courses (limited to recentlyAddedCoursesCount)
+            // var recentlyAddedCourses = await CouRepo.GetRecentlyAddedCoursesAsync(recentlyAddedCoursesCount);
+
+            // var (advertisementsTotalCount, advertisementEntities) = await AdvRepo.GetRecentlyAddedAdvertisementsAsync(advertisementCount);
+            //// var (instructorTotalCount, instructorEntities) = await AdvRepo.GetRecentlyAddedAdvertisementsAsync(advertisementCount);
+
+            // var advertisements = advertisementEntities
+            //     .Select(a => new AdvertisementDto
+            //     {
+            //         AdvertisementId = a.AdvertisementId,
+            //         AdvertisementName = a.AdvertisementName,
+            //         AdvertisementImageUrls = a.AdvertisementImageUrls?.Select(img => img.ImageUrl).ToList() ?? new List<string>(),
+            //         AdvertisementDescription = a.AdvertisementDescription,
+            //         IsActive = a.IsActive
+            //     })
+            //     .ToList();
+
+
+            // Map instructors
+            //var instructors = instructorEntities
+            //    .Select(i => new InstructorDto
+            //    {
+            //        InstructorId = i.InstructorId,
+            //        Name = i.Name,
+            //        About = i.About,
+            //        ImageUrl = i.ImageUrl,
+            //        RecentlyAddedCourses = i.Courses.Select(c => new CourseViewDto
+            //        {
+            //            Name = c.Name
+            //        }).ToList()
+            //    })
+            //    .ToList();
+
+            // Map courses
+            //var recentlyAddedCoursesList = recentlyAddedCourses
+            //    .Select(c => new CourseViewDto
+            //    {
+            //        Name = c.Name
+            //    })
+            //    .ToList();

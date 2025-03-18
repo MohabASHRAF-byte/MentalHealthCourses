@@ -87,7 +87,44 @@ To retrieve all advertisements with pagination and filter by status:
 ---`";
         #endregion
 
+        #region MostRecentCoursesSection:
+        public const string GetAllHomeScreenItems = @"
+### Get Home Screen Items
+Retrieves combined data for the home screen, including advertisements, instructors, and recently added courses.
 
+#### Request:
+- **AdvertisementPageNumber** (int): The page number for advertisements.
+- **AdvertisementPageSize** (int): Number of advertisements per page.
+- **IsActive** (int): 
+- `1` to get active advertisements.
+- `0` to get inactive advertisements.
+- Other values (or not provided) to get all advertisements.
+
+- **InstructorSearch** (string, optional): Text to filter instructors.
+- **InstructorPageNumber** (int): The page number for instructors.
+- **InstructorPageSize** (int): Number of instructors per page.
+
+- **RecentlyAddedCoursesCount** (int): Number of recently added courses to retrieve.
+
+#### Response:
+- Returns a `HomeScreenDto` object containing:
+- **Advertisements**: Paginated list of `AdvertisementDto`.
+- **Instructors**: Paginated list of `InstructorDto`.
+- **RecentlyAddedCourses**: List of `CourseViewDto`.
+---
+
+#### Example Request:
+```json
+""AdvertisementPageNumber"": 1,
+  ""AdvertisementPageSize"": 5,
+  ""IsActive"": 1,
+  ""InstructorSearch"": ""John"",
+  ""InstructorPageNumber"": 1,
+  ""InstructorPageSize"": 5,
+  ""RecentlyAddedCoursesCount"": 3
+
+---`";
+        #endregion
 
 
     }
