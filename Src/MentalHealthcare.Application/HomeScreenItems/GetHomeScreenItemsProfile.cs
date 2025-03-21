@@ -25,6 +25,9 @@ namespace MentalHealthcare.Application.HomeScreenItems
 
             // Map Course -> CourseViewDto ✅
             CreateMap<Course, CourseViewDto>();
+
+            CreateMap<Article, ArticleDto>();
+
         }
 
 

@@ -16,5 +16,8 @@ namespace MentalHealthcare.Domain.Dtos
         public int InstructorsTotalCount { get; set; }  // ✅ Added total count
 
         public IEnumerable<CourseViewDto> RecentlyAddedCourses { get; set; }
+
+        public IEnumerable<ArticleDto> Articles { get; set; }
+        public int ArticlesTotalCount { get; set; }  // ✅ Added total count
     }
 }

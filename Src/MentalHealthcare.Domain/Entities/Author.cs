@@ -6,5 +6,5 @@ public class Author : ContentCreatorBe
 {
     public int AuthorId { get; set; }
 
-    public List<Article> Articles { get; set; } = new();
+   // public List<Article> Articles { get; set; } = new();
 }

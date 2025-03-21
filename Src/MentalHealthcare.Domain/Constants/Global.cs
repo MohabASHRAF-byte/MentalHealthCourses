@@ -99,4 +99,16 @@ public class Global
     public const int UsersImgSize = 10;
 
     #endregion
+
+    #region Meditations
+
+    public const string MeditationFolderName = "Meditations";
+    public const int MeditationTitleMaxLength = 50;
+    public const int MeditationLinesMaxLength = 500;
+    public const int MeditationImgSize = 10;
+
+    #endregion
+
+
+
 }

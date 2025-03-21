@@ -18,12 +18,14 @@ namespace MentalHealthcare.Infrastructure.Repositories
         ILogger<HomeScreenRepository> logger,
         IInstructorRepository insRepo,
         IAdvertisementRepository AdvRepo,
-        ICourseRepository CouRepo) : IHomeScreenRepository
+        ICourseRepository CouRepo ,
+        IArticleRepository ArtRepo ) : IHomeScreenRepository
     {
         public async Task<HomeScreenDto> GetHomeScreenDataAsync(
             int instructorCount,
             int advertisementCount,
-            int recentlyAddedCoursesCount)
+            int recentlyAddedCoursesCount ,
+            int recentlyArticlesCount)
         {
 
 
@@ -84,17 +86,45 @@ namespace MentalHealthcare.Infrastructure.Repositories
         })
         .ToList();
 
-   
 
-    // Return DTO
-    return new HomeScreenDto
+
+
+
+
+            // Fetch advertisements (limited to advertisementCount)
+            var (ArticlesTotalCount, ArticlesEntities) = await ArtRepo.GetRecentlyAddedArticlesAsync(recentlyArticlesCount);
+            // Map advertisements
+            var Articles = ArticlesEntities
+                .Select(a => new ArticleDto
+                {
+                    ArticleId = a.ArticleId,
+                    Title = a.Title,
+                    ArticleImageUrls = a.ArticleImageUrls?.Select(img => img.ImageUrl).ToList() ?? new List<string>(),
+                    Content = a.Content,
+                    AuthorName = a.AuthorName 
+                })
+                .ToList();
+
+
+
+
+
+
+
+            // Return DTO
+            return new HomeScreenDto
     {
         Advertisements = advertisements,
         AdvertisementsTotalCount = advertisementsTotalCount,
+
         Instructors = instructors,
         InstructorsTotalCount = instructorsTotalCount,
-        RecentlyAddedCourses = recentlyAddedCoursesList
-    };
+
+        RecentlyAddedCourses = recentlyAddedCoursesList ,
+
+                Articles = Articles,    
+                ArticlesTotalCount = ArticlesTotalCount
+            };
         }
     }
 } // // Fetch recently added courses (limited to recentlyAddedCoursesCount)

@@ -16,8 +16,14 @@ public class Article : MaterialBe
     public int ArticleId { get; set; }
     public List<ArticleImageUrl> ArticleImageUrls { get; set; } = [];
 
-    public int AuthorId { get; set; } // Foreign Key property
-    public Author Author { get; set; } = default!;
+    //public int AuthorId { get; set; } // Foreign Key property
+    //public Author Author { get; set; } = default!;
+
+    public string AuthorName { get; set; }
+
+
+
+
 
     public string Content { get; set; } = default!;
 

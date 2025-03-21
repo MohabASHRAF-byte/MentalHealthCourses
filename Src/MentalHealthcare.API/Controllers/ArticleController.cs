@@ -42,7 +42,12 @@ namespace MentalHealthcare.API.Controllers
         public async Task<IActionResult> CreateArticle([FromForm] AddArticleCommand command)
         {
             var articleId = await mediator.Send(command);
-            return CreatedAtAction(nameof(GetArticleById), new { ArticleId = articleId }, null);
+            var op = OperationResult<object>
+                       .SuccessResult(new
+                       {
+                           articleId = articleId
+                       });
+            return Ok(op);
         }
 
 
@@ -58,7 +63,9 @@ namespace MentalHealthcare.API.Controllers
                 ArticleID = articleId
             };
             var Article = await mediator.Send(query);
-            return Ok(Article);
+            var op = OperationResult<ArticleDto>
+                        .SuccessResult(Article);
+            return Ok(op);
         }
 
 
@@ -69,8 +76,9 @@ namespace MentalHealthcare.API.Controllers
         public async Task<IActionResult> GetAllArticles([FromQuery] GetAllArticlesQuery query)
         {
             var Articles = await mediator.Send(query);
-            return Ok(Articles);
-        }
+var op = OperationResult<PageResult<ArticleDto> >
+            .SuccessResult(Articles);
+            return Ok(op);     }
 
 
         [SwaggerOperation(
@@ -83,7 +91,9 @@ namespace MentalHealthcare.API.Controllers
         {
             command.ArticleId = ArticletId;
             var Articlet = await mediator.Send(command);
-            return CreatedAtAction(nameof(GetArticleById), new { articleId = ArticletId }, null);
+            var op = OperationResult<object>
+                       .SuccessResult(new { ArticletId = Articlet });
+            return Ok(op);
         }
 
 

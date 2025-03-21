@@ -16,7 +16,9 @@ namespace MentalHealthcare.Domain.Repositories
         Task<HomeScreenDto> GetHomeScreenDataAsync(
             int instructorCount,
             int advertisementCount,
-            int recentlyAddedCoursesCount);
+            int recentlyAddedCoursesCount ,
+                        int recentlyArticlesCount
+);
 
 
 

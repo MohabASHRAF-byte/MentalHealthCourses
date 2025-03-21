@@ -18,9 +18,7 @@ namespace MentalHealthcare.Application.Articles
         {
             CreateMap<Domain.Entities.Article, ArticleDto>()
            .ForMember(dest => dest.ArticleImageUrls,
-               opt => opt.MapFrom(src => src.ArticleImageUrls.Select(img => img.ImageUrl).ToList()))
-           .ForMember(dest => dest.AuthorName,
-               opt => opt.MapFrom(src => src.Author.Name));
+               opt => opt.MapFrom(src => src.ArticleImageUrls.Select(img => img.ImageUrl).ToList()));
 
             // Reverse mapping (optional)
             CreateMap<ArticleDto, Domain.Entities.Article>()

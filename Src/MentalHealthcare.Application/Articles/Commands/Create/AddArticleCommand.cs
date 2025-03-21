@@ -14,7 +14,7 @@ namespace MentalHealthcare.Application.Articles.Commands.Create
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public List<IFormFile> Images { get; set; } = [];
-        public int? AuthorId { get; set; }
+        public string AuthorName { get; set; }
 
 
 

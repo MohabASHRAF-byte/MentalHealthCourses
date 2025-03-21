@@ -15,6 +15,9 @@ namespace MentalHealthcare.Application.HomeScreenItems.Queries.GetHomeScreenItem
         public int instructorCount { get; set; }
         public int advertisementCount { get; set; }
         public int recentlyAddedCoursesCount { get; set; }
+
+
+        public int recentlyArticlesCount { get; set; }  
     }   
 }
 

@@ -1,6 +1,5 @@
+using AutoMapper;
 using MediatR;
-using Microsoft.Extensions;
-using MentalHealthcare.Application.BunnyServices;
 using MentalHealthcare.Application.Common;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
@@ -8,8 +7,6 @@ using MentalHealthcare.Domain.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Logging;
-using AutoMapper;
-using Microsoft.Extensions.Configuration;
 
 namespace MentalHealthcare.Application.SystemUsers.Commands.Register;
 
@@ -18,8 +15,7 @@ public class RegisterCommandHandler(
     IUserRepository userRepository,
     IEmailSender emailSender,
     UserManager<User> userManager,
-    IMapper mapper ,
-    IConfiguration configuration
+    IMapper mapper
 ) : IRequestHandler<RegisterCommand, OperationResult<UserDto>>
 {
     public async Task<OperationResult<UserDto>> Handle(RegisterCommand request,
@@ -33,41 +29,6 @@ public class RegisterCommandHandler(
 
             return OperationResult<UserDto>.Failure("Bad Request");
         }
-
-
-        // Upload profile picture using Bunny service
-        logger.LogInformation("Uploading Profile Picture For User: {UserName}", request.UserName);
-        var bunny = new BunnyClient(configuration);
-
-        var uniqueFileName = $"{request.UserName}_{Guid.NewGuid()}{Path.GetExtension(request.ProfilePic.FileName)}";
-
-        var imageResponse = await bunny.UploadFileAsync(
-            request.ProfilePic, uniqueFileName, "Users"
-        );
-
-        if (!imageResponse.IsSuccessful)
-        {
-            logger.LogWarning("Failed to upload ProfilePic for User: {UserName}. Error: {ErrorMessage}",
-                request.UserName, imageResponse.Message);
-            return OperationResult<UserDto>.Failure("Failed to upload profile picture. Please try again.");
-        }
-
-        await bunny.ClearCacheAsync(imageResponse.Url!);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         User user = mapper.Map<User>(request);
         user.Roles = Roles.AddRole(user.Roles, UserRoles.User);

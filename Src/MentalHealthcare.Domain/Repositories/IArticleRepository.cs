@@ -13,6 +13,7 @@ public interface IArticleRepository
     public Task DeleteArticlePhotosUrlsAsync(int articleId);
 
 
+    public Task<(int TotalCount, IEnumerable<Article>)> GetRecentlyAddedArticlesAsync(int count);
 
 
 }

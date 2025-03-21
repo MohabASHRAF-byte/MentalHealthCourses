@@ -27,9 +27,17 @@ namespace MentalHealthcare.Infrastructure.Configurations
                 entity.Property(a => a.UploadedById)
                     .IsRequired(false); // Allows NULL values
 
-                // Ensure AuthorId is required
-                entity.Property(a => a.AuthorId)
-                    .IsRequired();
+
+
+
+                entity.Property(a => a.AuthorName)
+                   .IsRequired(false); // Allows NULL values
+
+
+
+                //// Ensure AuthorId is required
+                //entity.Property(a => a.AuthorId)
+                //    .IsRequired();
 
                 // Configure CreatedDate property
                 entity.Property(a => a.CreatedDate)
@@ -43,11 +51,11 @@ namespace MentalHealthcare.Infrastructure.Configurations
 
 
 
-                // Configure Author relationship (Cascade delete for Article)
-                entity.HasOne(a => a.Author) // Relationship to Author
-                    .WithMany(au => au.Articles) // One-to-many relationship
-                    .HasForeignKey(a => a.AuthorId) // Foreign key property
-                    .OnDelete(DeleteBehavior.Cascade); // Cascade delete when Author is deleted
+                //// Configure Author relationship (Cascade delete for Article)
+                //entity.HasOne(a => a.Author) // Relationship to Author
+                //    .WithMany(au => au.Articles) // One-to-many relationship
+                //    .HasForeignKey(a => a.AuthorId) // Foreign key property
+                //    .OnDelete(DeleteBehavior.Cascade); // Cascade delete when Author is deleted
 
 
 

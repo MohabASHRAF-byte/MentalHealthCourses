@@ -31,8 +31,8 @@ public interface IUserRepository
         string? firstName,
         string? lastName,
         string? phoneNumber,
-        DateOnly? birthDate ,
-        string? profilePicUrl
+        DateOnly? birthDate 
+        
     );
 
     public Task<UserProfileDto> GetUserProfileByIdAsync(int userId);

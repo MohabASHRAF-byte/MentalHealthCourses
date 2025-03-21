@@ -53,7 +53,8 @@ namespace MentalHealthcare.Application.HomeScreenItems.Queries.GetHomeScreenItem
             var homeScreenData = await homRepo.GetHomeScreenDataAsync(
                 request.instructorCount,
                 request.advertisementCount,
-                request.recentlyAddedCoursesCount
+                request.recentlyAddedCoursesCount ,
+                request.recentlyArticlesCount
             );
 
             // Wrap the result in PageResult

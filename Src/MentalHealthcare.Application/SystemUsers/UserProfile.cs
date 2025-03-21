@@ -15,11 +15,7 @@ public class UserProfile:AutoMapper.Profile
         CreateMap<RegisterCommand, UserDto>();
 
         CreateMap<SystemUser, UserProfileDto>();
-        CreateMap<SystemUser, UserProfileDto>()
-            .ForMember(dest => dest.ProfilePic, opt => opt.MapFrom(src =>
-                string.IsNullOrEmpty(src.ProfilePic)
-                ? null
-                : $"https://pullzonegeneralcommittee.b-cdn.net/ProfilePics/{src.ProfilePic}"));
+           
     }
 
 }

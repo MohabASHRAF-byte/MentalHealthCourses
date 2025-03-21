@@ -106,7 +106,12 @@ namespace MentalHealthcare.Application.Articles.Commands.Update
             if (!request.Content.IsNullOrEmpty())
             {
                 article.Content = request.Content!;
-                logger.LogInformation("Updated Content for Advertisement ID: {AdId}.", article.ArticleId);
+                logger.LogInformation("Updated Content for Article ID: {AdId}.", article.ArticleId);
+            }
+            if (!request.AuthorName.IsNullOrEmpty())
+            {
+                article.AuthorName = request.Content!;
+                logger.LogInformation("Updated Content for Article ID: {AdId}.", article.ArticleId);
             }
         }
 

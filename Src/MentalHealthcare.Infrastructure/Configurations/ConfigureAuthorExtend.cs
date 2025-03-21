@@ -13,11 +13,11 @@ namespace MentalHealthcare.Infrastructure.Configurations
                 entity.HasKey(a => a.AuthorId);
                 entity.Property(a => a.AuthorId).UseIdentityColumn(10, 2);
 
-                // Configure the relationship between Author and Articles
-                entity.HasMany(a => a.Articles)
-                    .WithOne(ar => ar.Author) // One-to-many relationship
-                    .HasForeignKey(ar => ar.AuthorId) // Use AuthorId as the foreign key
-                    .OnDelete(DeleteBehavior.Cascade); // Cascade delete from Author to Articles
+                //// Configure the relationship between Author and Articles
+                //entity.HasMany(a => a.Articles)
+                //    .WithOne(ar => ar.Author) // One-to-many relationship
+                //    .HasForeignKey(ar => ar.AuthorId) // Use AuthorId as the foreign key
+                //    .OnDelete(DeleteBehavior.Cascade); // Cascade delete from Author to Articles
             });
         }
     }

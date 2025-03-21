@@ -42,7 +42,6 @@ public class AdminSeeder(
             AccessFailedCount = 0,
             NormalizedUserName = "admin".ToUpper(),
             PhoneNumberConfirmed = true,
-            ProfilePic = "default.png"
 
         };
 
@@ -73,7 +72,6 @@ public class AdminSeeder(
             AccessFailedCount = 0,
             NormalizedUserName = "admin1".ToUpper(),
             PhoneNumberConfirmed = true,
-           ProfilePic = "default.png"
 
         };
         var admin1 = new Admin

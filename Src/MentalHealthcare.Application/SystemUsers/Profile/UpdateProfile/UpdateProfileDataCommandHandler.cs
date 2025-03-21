@@ -68,8 +68,8 @@ public class UpdateProfileDataCommandHandler(
             request.FirstName,
             request.LastName,
             request.PhoneNumber,
-            request.BirthDate ,
-            profilePicUrl
+            request.BirthDate 
+            
 
         );
 

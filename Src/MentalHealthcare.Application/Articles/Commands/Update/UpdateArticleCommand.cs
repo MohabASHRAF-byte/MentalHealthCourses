@@ -17,7 +17,7 @@ namespace MentalHealthcare.Application.Articles.Commands.Update
         public List<IFormFile>? Images { get; set; } = [];
         public List<string>? ImagesUrls { get; set; } = [];
 
-        public int? AuthorId { get; set; }
+        public string AuthorName { get; set; }
 
 
 

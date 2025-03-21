@@ -244,10 +244,7 @@ public class UserRepository(
                 userName = su.User.UserName!,
                 FirstName = su.FName,
                 LastName = su.LName,
-                BirthDate = su.BirthDate, // ✅ Combine the base URL with profile picture file name
-                ProfilePic = string.IsNullOrEmpty(su.User.ProfilePic)
-                ? null
-                : $"https://pullzonegeneralcommittee.b-cdn.net/Users/{su.User.ProfilePic}",
+                BirthDate = su.BirthDate ,
                 SecondsSinceCreate = (long)DateTime.UtcNow.Subtract(su.CreatedDate).TotalSeconds,
                 SecondsSinceUpdate = (long)DateTime.UtcNow.Subtract(su.LastUpdatedDate).TotalSeconds
             }).FirstOrDefaultAsync();
@@ -268,9 +265,8 @@ public class UserRepository(
         string? firstName,
         string? lastName,
         string? phoneNumber,
-        DateOnly? birthDate,
-        string? profilePicUrl
-
+        DateOnly? birthDate
+        
     )
     {
         var user = await dbContext.SystemUsers
@@ -294,8 +290,7 @@ public class UserRepository(
             user.User.PhoneNumber = phoneNumber;
         if (birthDate.HasValue)
             user.BirthDate = birthDate.Value;
-        if (!string.IsNullOrWhiteSpace(profilePicUrl)) 
-            user.User.ProfilePic = profilePicUrl;
+    ;
 
         await dbContext.SaveChangesAsync();
     }

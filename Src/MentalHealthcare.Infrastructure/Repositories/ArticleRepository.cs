@@ -61,9 +61,9 @@ namespace MentalHealthcare.Infrastructure.Repositories
                 {
                     ArticleId = ad.ArticleId,
                     Title = ad.Title,
+                    AuthorName=ad.AuthorName,
                     Content = ad.Content,
                     CreatedDate = ad.CreatedDate,
-                    Author = new Author { Name = ad.Author.Name },
                     ArticleImageUrls = ad.ArticleImageUrls
                  .Select(img => new ArticleImageUrl { ImageUrl = img.ImageUrl }).ToList(),
                 }).ToListAsync(); return (totalCount, Articles);
@@ -77,19 +77,14 @@ namespace MentalHealthcare.Infrastructure.Repositories
     {
         ArticleId = a.ArticleId,
         Title = a.Title,
+        AuthorName = a.AuthorName,
         Content = a.Content,
         CreatedDate = a.CreatedDate,
         LastUploadImgCnt = a.LastUploadImgCnt,
         ArticleImageUrls = a.ArticleImageUrls
             .Select(img => new ArticleImageUrl { ImageUrl = img.ImageUrl })
             .ToList(),
-        Author = new Author
-        {
-            AuthorId = a.Author.AuthorId,
-            Name = a.Author.Name,
-            ImageUrl = a.Author.ImageUrl,
-            About = a.Author.About
-        }
+       
     })
     .FirstOrDefaultAsync();
 
@@ -101,6 +96,35 @@ namespace MentalHealthcare.Infrastructure.Repositories
                 ); ; return article;
         }
 
+        public async Task<(int TotalCount, IEnumerable<Article>)> GetRecentlyAddedArticlesAsync(int count)
+        {
+
+
+
+            var totalCount = await dbContext.Articles.CountAsync();
+
+            var Articles = await dbContext.Articles
+                .OrderByDescending(a => a.ArticleId)
+                .Take(count)
+                .Include(a => a.ArticleImageUrls) // ✅ Ensure navigation property is loaded
+                .ToListAsync();
+
+            return (totalCount, Articles);
+
+
+
+
+
+
+
+
+
+
+
+
+
+        }
+
         public async Task UpdateArticleAsync(Article articles)
         {
 
@@ -108,5 +132,13 @@ namespace MentalHealthcare.Infrastructure.Repositories
 
             await dbContext.SaveChangesAsync();
         }
+
+
+
+
+
+
+
+
     }
 }

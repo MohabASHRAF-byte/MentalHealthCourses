@@ -17,6 +17,7 @@ public static class ConfigureMeditationExtend
             entity.Property(m => m.CreatedDate).IsRequired().HasAnnotation("DataType", DataType.DateTime);
             entity.Property(m => m.CreatedDate)
                 .HasDefaultValueSql("GETDATE()"); // Set the default value in the table instead of generating it.
+            entity.Property(m => m.Image).IsRequired(false); // Make Image nullable
 
             // Use UploadedById for foreign key configuration
             entity.HasOne(m => m.UploadedBy)
