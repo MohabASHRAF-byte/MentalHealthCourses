@@ -17,7 +17,7 @@ namespace MentalHealthcare.Domain.Repositories
             int instructorCount,
             int advertisementCount,
             int recentlyAddedCoursesCount ,
-                        int recentlyArticlesCount
+            int recentlyArticlesCount
 );
 
 

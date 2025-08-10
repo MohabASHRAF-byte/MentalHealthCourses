@@ -22,7 +22,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace MentalHealthcare.API.Controllers
 
-{using MentalHealthcare.Application.Advertisement.Commands.Create;
+{
     [AllowAnonymous]
 
     [ApiController]

@@ -30,17 +30,18 @@ public class ClientsUsersIdentityController(
     public async Task<IActionResult> Register(RegisterCommand command)
     {
         command.Tenant = Global.ApplicationTenant;
-        var commandResult = await mediator.Send(command);
-        return commandResult.StatusCode switch
-        {
-            StateCode.Created => Ok(commandResult),
-            _ => BadRequest(commandResult)
-        };
+
+        var result = await mediator.Send(command);
+
+        if (!result.Success)
+            return BadRequest(result);
+
+        return Ok(result);
     }
 
     [HttpPost("confirmEmail")]
     [SwaggerOperation(Description = ClientIdentityDocs.ConfirmEmailDescription)]
-    public async Task<IActionResult> ConfirmEmail(ConfirmEmailCommand command)
+    public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailCommand command)
     {
         command.Tenant = Global.ApplicationTenant;
         var commandResult = await mediator.Send(command);
@@ -50,6 +51,7 @@ public class ClientsUsersIdentityController(
             _ => BadRequest(commandResult)
         };
     }
+
 
     [HttpPost("resendConfirmationEmail")]
     public async Task<IActionResult> ResendConfirmationEmail(ResendEmailConfirmationCommand command)
@@ -71,7 +73,15 @@ public class ClientsUsersIdentityController(
     {
         command.Tenant = Global.ApplicationTenant;
         var commandResult = await mediator.Send(command);
-        return Ok(commandResult);
+        return commandResult.StatusCode switch
+        {
+            StateCode.Ok => Ok(commandResult),
+            StateCode.Unauthorized => Unauthorized(commandResult),
+            StateCode.BadRequest => BadRequest(commandResult),
+            StateCode.NotFound => NotFound(commandResult),
+            _ => StatusCode(500, commandResult)
+        };
+
     }
 
     [HttpPost("refresh")]

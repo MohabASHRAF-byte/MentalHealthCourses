@@ -126,7 +126,7 @@ public class LessonsController(IMediator mediator) : ControllerBase
             CourseSectionId = sectionId,
         };
         var result = await mediator.Send(command);
-        var op = OperationResult<List<CourseLessonViewDto> >
+        var op = OperationResult<List<CourseLessonViewDto>>
                  .SuccessResult(result);
         return Ok(op);
     }
@@ -149,4 +149,16 @@ public class LessonsController(IMediator mediator) : ControllerBase
                  .SuccessResult(result);
         return Ok(op);
     }
+
+    //[HttpGet("~/api/courses/{courseId}/lessons")] // Use ~ to avoid route conflict with /sections/{sectionId}
+    //[ProducesResponseType(typeof(List<CourseLessonViewDto>), 200)]
+    //public async Task<IActionResult> GetAllLessonsInCourse(
+    //[FromRoute] int courseId)
+    //{
+    //    var result = await mediator.Send(new GetAllLessonsInCourseQuery(courseId));
+    //    var op = OperationResult<List<CourseLessonViewDto>>.SuccessResult(result);
+    //    return Ok(op);
+    //}
+
+
 }

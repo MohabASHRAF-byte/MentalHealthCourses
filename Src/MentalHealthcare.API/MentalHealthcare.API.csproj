@@ -35,6 +35,12 @@
 		<Folder Include="Logs\" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Content Update="wwwroot\templates\WhatsApp Image 2025-04-05 at 6.28.17 PM-Edites.pdf">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>

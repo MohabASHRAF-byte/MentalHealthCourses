@@ -37,4 +37,39 @@ public class OperationResult<T>
             StatusCode = statusCode
         };
     }
+
+
+    public static OperationResult<T> Failure(IEnumerable<string> errors, StateCode code = StateCode.BadRequest)
+    {
+        var errorList = errors.ToList();
+        var combinedMessage = string.Join(" | ", errorList); // or use "\n" for line breaks
+
+        return new OperationResult<T>
+        {
+            Success = false,
+            StatusCode = code,
+            Message = combinedMessage,
+            Errors = errorList,
+            Data = default(T)
+        };
+    }
+
+
+
+
+
+
+
 }
+
+
+/*
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ */

@@ -9,5 +9,5 @@ public class ConfirmEmailCommand : IRequest<OperationResult<string>>
     [JsonIgnore]
     public string? Tenant { get; set; }
     public string Email { get; set; } = default!;
-    public string Token { get; set; } = default!;
+    public string Otp { get; set; } = default!;
 }

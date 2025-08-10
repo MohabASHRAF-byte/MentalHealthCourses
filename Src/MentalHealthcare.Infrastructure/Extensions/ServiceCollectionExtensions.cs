@@ -1,6 +1,7 @@
 using MentalHealthcare.Domain.Entities;
 using MentalHealthcare.Domain.Repositories;
 using MentalHealthcare.Domain.Repositories.Course;
+using MentalHealthcare.Domain.Repositories.EmailSender;
 using MentalHealthcare.Domain.Repositories.OrderProcessing;
 using MentalHealthcare.Domain.Repositories.PromoCode;
 using MentalHealthcare.Infrastructure.BackgroundService;
@@ -69,6 +70,14 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IHomeScreenRepository, HomeScreenRepository>();
         services.AddScoped<IArticleRepository, ArticleRepository>();
         services.AddScoped<IMeditationRepository, MeditationRepository>();
+        services.AddScoped<IPodcastSeriesRepository, PodcastSeriesRepository>();
+        services.AddScoped<IPodcastRepository, PodcastRepository>();
+       // services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<IEmailSenderWithAttachment, EmailSenderWithAttachment>();
+
+        services.AddScoped<ICertificateRepository, CertificateRepository>();
+
+        services.AddSingleton<IUserConnectionTracker, UserConnectionTracker>();
 
     }
 

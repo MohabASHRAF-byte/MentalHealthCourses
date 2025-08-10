@@ -15,4 +15,8 @@ public interface ICourseInteractionsRepository
         string? courseName
     );
     public Task<bool> IsCourseOwner(int courseId, int userId);
+    public Task<IEnumerable<CourseLessonDto>> GetAllLessonsForEnrolledUserAsync(int courseId, int userId);
+    public Task<CourseLessonDto> GetLessonV2(int courseId, int lessonId, int userId); 
+
+
 }

@@ -17,4 +17,6 @@ public interface ICourseLessonRepository
     public Task<CourseLesson> GetCourseFullLessonByIdAsync(int id);
     public Task UpdateCourseLessonDataAsync(int lessonId, string name);
     public Task RemoveLesson(int requestCourseId, int requestSectionId, int requestLessonId);
+   // Task<List<CourseLessonViewDto>> GetAllLessonsInCourseAsync(int courseId);
+
 }

@@ -32,6 +32,8 @@ public class MentalHealthDbContext : IdentityDbContext<User>
     public DbSet<Podcast> Podcasts { get; set; }
     public DbSet<Instructor> Instructors { get; set; }
     public DbSet<Author> Authors { get; set; }
+    public DbSet<PodcastSeries> podcastSeries { get; set; }
+
     public DbSet<PodCaster> PodCasters { get; set; }
     public DbSet<Payments> Payments { get; set; }
     public DbSet<Category> Categories { get; set; }
@@ -64,6 +66,11 @@ public class MentalHealthDbContext : IdentityDbContext<User>
 
     public DbSet<UserReview> UserReviews { get; set; }
 
+    public DbSet<Notification> Notifications { get; set; }
+
+    public DbSet<Certificate> Certificates { get; set; }
+
+
     #endregion
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -91,5 +98,7 @@ public class MentalHealthDbContext : IdentityDbContext<User>
         modelBuilder.ConfigureCourseProgress();
         modelBuilder.ConfigureCourseFavourite();
         modelBuilder.ConfigureCourseReview();
+        modelBuilder.ConfigureCertificate();
+        modelBuilder.ConfigureNotification();
     }
 }

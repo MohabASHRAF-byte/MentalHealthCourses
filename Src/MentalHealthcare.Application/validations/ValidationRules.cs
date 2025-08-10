@@ -197,6 +197,7 @@ public static class ValidationRules
             .WithMessage(
                 localizationService.GetMessage("EmailNoHtml", "Email address must not contain HTML or markup."));
     }
+    /////////////////////////////////////////////////Marslinoz
 
     /// <summary>
     /// Validates that a name is valid: not exceeding a configurable maximum length, not containing HTML, and not empty or null.
@@ -209,7 +210,7 @@ public static class ValidationRules
     public static IRuleBuilderOptions<T, string> CustomIsValidName<T>(
         this IRuleBuilder<T, string> ruleBuilder,
         ILocalizationService localizationService,
-        int maxLength = 30)
+        int maxLength = 500)
     {
         return ruleBuilder
             .NotNull()

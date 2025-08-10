@@ -262,4 +262,32 @@ public class CourseLessonRepository(
             );
         }
     }
+
+    //public async Task<List<CourseLessonViewDto>> GetAllLessonsInCourseAsync(int courseId)
+    //{
+
+    //    var lessons = await dbContext.CourseLessons
+    //  .Where(l => l.courseId == courseId)
+    //  .Include(l => l.CourseLessonResources)
+    //  .OrderBy(l => l.CourseSectionId) // Optional: organize by section
+    //  .ThenBy(l => l.Order)            // Optional: still return lessons sorted
+    //  .ToListAsync();
+
+    //    var lessonDtos = lessons.Select(lesson => new CourseLessonViewDto
+    //    {
+    //        CourseLessonId = lesson.CourseLessonId,
+    //        LessonName = lesson.LessonName,
+    //        Order = lesson.Order,
+    //        LessonResourcesCount = lesson.CourseLessonResources?.Count() ?? 0
+    //    }).ToList();
+
+    //    return lessonDtos;
+
+
+
+
+
+
+
+    //}
 }

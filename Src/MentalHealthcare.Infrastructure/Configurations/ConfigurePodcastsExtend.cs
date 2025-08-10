@@ -26,8 +26,7 @@ public static class ConfigurePodcastsExtend
                 .HasAnnotation("DataType", DataType.DateTime)
                 .HasDefaultValueSql("GETDATE()");
 
-            entity.Property(p => p.PodcastLength)
-                .IsRequired();
+            
 
             // Configure relationships
             entity.HasOne(p => p.UploadedBy)
@@ -35,9 +34,9 @@ public static class ConfigurePodcastsExtend
                 .HasForeignKey(p => p.UploadedById)
                 .OnDelete(DeleteBehavior.Restrict); // No cascading delete for UploadedBy
 
-            entity.HasOne(p => p.PodCaster)
+            entity.HasOne(p => p.podcastSeries)
                 .WithMany(pc => pc.Podcasts)
-                .HasForeignKey(p => p.PodCasterId)
+                .HasForeignKey(p => p.PodcastSeriesId)
                 .OnDelete(DeleteBehavior.Cascade); // Cascade delete when PodCaster is deleted
         });
     }

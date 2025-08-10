@@ -8,6 +8,6 @@
 public class PodCaster : ContentCreatorBe
 {
     public int PodCasterId { get; set; }
-
+    public string TitleOfTopic { get; set; }
     public List<Podcast>? Podcasts { get; set; }
 }

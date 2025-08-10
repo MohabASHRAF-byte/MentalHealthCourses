@@ -7,6 +7,8 @@ using MentalHealthcare.Application.OrderProcessing.Cart.Commands.Delete_from_car
 using MentalHealthcare.Application.OrderProcessing.Cart.Queries.GetCartItems;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos.OrderProcessing;
+using MentalHealthcare.Domain.Entities.Courses;
+using MentalHealthcare.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -28,8 +30,39 @@ public class CartController(
     [SwaggerOperation(Summary = "Add to Cart", Description = OrderProcessingDocs.AddToCartDescription)]
     public async Task<IActionResult> AddToCart(AddToCartCommand command)
     {
-        await mediator.Send(command);
+        var CourseId = await mediator.Send(command);
+        var op = OperationResult<object>
+            .SuccessResult(new
+            {
+                CourseId = CourseId
+            });
+        return Ok(op);
+
+
+
+
+
+
+
+        /*var CourseId = await mediator.Send(command);
+        var op = OperationResult<object>
+            .SuccessResult(new
+            {
+                advertisementId = advertisementId
+            });
+        return Ok(op);
+        
+         
+         await mediator.Send(command);
         return NoContent();
+
+         
+         
+         */
+
+
+
+
     }
 
     /// <summary>
@@ -58,7 +91,12 @@ public class CartController(
             CourseId = itemId
         };
         await mediator.Send(command);
-        return NoContent();
+        var op = OperationResult<object>
+                   .SuccessResult(new
+                   {
+                       CourseId = itemId
+                   });
+        return Ok(op);
     }
 
     /// <summary>
@@ -69,6 +107,37 @@ public class CartController(
     public async Task<IActionResult> ClearCart()
     {
         await mediator.Send(new ClearCartItemsCommand());
-        return NoContent();
+        var op = OperationResult<object>
+                     .SuccessResult(new
+                     {
+                         Message = "Your Cart cleared successfully"
+                     });
+        return Ok(op);
     }
 }
+
+
+
+/*
+ 
+ 
+ 
+  var CourseId = await mediator.Send(command);
+        var op = OperationResult<object>
+            .SuccessResult(new
+            {
+                CourseId = CourseId
+            });
+        return Ok(op);
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ */

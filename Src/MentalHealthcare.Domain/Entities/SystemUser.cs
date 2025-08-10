@@ -9,7 +9,7 @@ public class SystemUser : HumanBe
     public List<Logs>? Logs { get; set; } = new();
     public List<Payments>? Payments { get; set; } = new();
     public ICollection<EnrollmentDetails>? EnrollmentDetails { get; set; }
-
+    public ICollection<Notification>? Notifications { get; set; }
     //
     public User User { get; set; }
 }

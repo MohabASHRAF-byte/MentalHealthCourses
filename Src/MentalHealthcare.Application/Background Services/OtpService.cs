@@ -12,8 +12,8 @@ public class OtpService(
     private const int CleanupInterval = 10;
     private const int ExpirtyTime = 50;
 
-    private static readonly ConcurrentDictionary<(string,string), (string Otp, DateTime Expiry)> _otpStore =
-        new ();
+    private static readonly ConcurrentDictionary<(string, string), (string Otp, DateTime Expiry)> _otpStore =
+        new();
 
     /// <summary>
     /// Retrieves an OTP if it exists and hasn't expired, otherwise returns null.
@@ -25,14 +25,14 @@ public class OtpService(
         {
             return otpInfo.Otp; // OTP is still valid
         }
-    
+
         // If the OTP is not found or expired, remove it if it exists
         if (_otpStore.TryGetValue((key, tenant), out otpInfo))
         {
             _otpStore.Remove((key, tenant), out _);
             logger.LogInformation("Expired OTP removed for key: {Key}", key);
         }
-    
+
         // No valid OTP found
         return null;
     }
@@ -44,10 +44,10 @@ public class OtpService(
     /// </summary>
 
 
-    public void AddOrUpdateOtp(string key,string tenant, string otp)
+    public void AddOrUpdateOtp(string key, string tenant, string otp)
     {
         var expiryTime = DateTime.UtcNow.AddMinutes(ExpirtyTime); // OTP expires in 5 minutes
-        _otpStore.AddOrUpdate((key,tenant), (otp, expiryTime), (existingKey, existingValue) => (otp, expiryTime));
+        _otpStore.AddOrUpdate((key, tenant), (otp, expiryTime), (existingKey, existingValue) => (otp, expiryTime));
         logger.LogInformation("OTP added/updated for key: {Key}", key);
     }
 
@@ -89,4 +89,37 @@ public class OtpService(
     {
         _cleanupTimer?.Dispose();
     }
+
+
+
+    public string GenerateOtp(int length = 6)
+    {
+        var random = new Random();
+        return string.Join("", Enumerable.Range(0, length).Select(_ => random.Next(0, 10)));
+    }
+
+
+
+    public bool ValidateOtp(string key, string tenant, string otp)
+    {
+        var storedOtp = GetOtp(key, tenant);
+        if (storedOtp == null)
+            return false;
+
+        var isValid = storedOtp == otp;
+        if (isValid)
+        {
+            // Optionally: Remove OTP after successful validation to prevent reuse
+            _otpStore.Remove((key, tenant), out _);
+            logger.LogInformation("OTP validated and removed for key: {Key}", key);
+        }
+
+        return isValid;
+    }
+
+
+
+
+
+
 }

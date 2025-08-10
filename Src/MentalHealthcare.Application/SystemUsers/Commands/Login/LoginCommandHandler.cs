@@ -149,7 +149,7 @@ public class LoginCommandHandler(
         if (!await userManager.CheckPasswordAsync(user, request.Password))
         {
             logger.LogWarning("Invalid password attempt for user {UserIdentifier}.", request.UserIdentifier);
-            return OperationResult<LoginDto>.Failure("Unauthorized", StateCode.Unauthorized);
+            return OperationResult<LoginDto>.Failure("خطأ في كلمه المرور", StateCode.Unauthorized);
         }
 
         // Check for two-factor authentication

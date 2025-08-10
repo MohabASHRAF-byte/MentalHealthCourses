@@ -1,5 +1,6 @@
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
+using MentalHealthcare.Application.Background_Services;
 using MentalHealthcare.Application.Common;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Entities;
@@ -15,6 +16,7 @@ public class RegisterCommandHandler(
     IUserRepository userRepository,
     IEmailSender emailSender,
     UserManager<User> userManager,
+    OtpService _otpService,
     IMapper mapper
 ) : IRequestHandler<RegisterCommand, OperationResult<UserDto>>
 {
@@ -59,9 +61,28 @@ public class RegisterCommandHandler(
 
     private async Task SendConfirmation(User user)
     {
-        logger.LogInformation("Sending confirmation email to {@user}", user.Email);
-        var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+        var otpCode = GenerateOtp(); // ✅ your custom OTP
+        _otpService.AddOrUpdateOtp(user.Email!, "Default", otpCode); // ✅ store it
 
-        await emailSender.SendEmailAsync(user.Email!, "Token to confirm your Email ", token);
+        await emailSender.SendEmailAsync(
+     user.Email!,
+     "تأكيد البريد الإلكتروني",
+     "أهلاً بك في تطبيق اللجنة المجمعية للصحة النفسية ومكافحة الإدمان بالكنيسة القبطية الأرثوذكسية.\n" +
+     "نحن سعداء بانضمامك إلينا، ونتمنى لك تجربة مثرية ومفيدة من خلال خدماتنا وبرامجنا.\n" +
+     $"رمز التحقق الخاص بك هو: {otpCode}\n" +
+     "يرجى استخدام هذا الرمز لتأكيد بريدك الإلكتروني. صلاحية الرمز 5 دقائق فقط.\n" +
+     "إذا لم تطلب هذا الرمز، يمكنك تجاهل هذه الرسالة.\n\n" +
+     "مع تحياتنا،\nفريق تطبيق اللجنة المجمعية للصحة النفسية\nالكنيسة القبطية الأرثوذكسية"
+ );
+
+
     }
+
+
+    private string GenerateOtp()
+    {
+        var random = new Random();
+        return random.Next(100000, 999999).ToString(); // 6-digit OTP
+    }
+
 }

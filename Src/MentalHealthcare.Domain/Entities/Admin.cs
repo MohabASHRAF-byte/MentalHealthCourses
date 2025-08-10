@@ -13,6 +13,7 @@ public class Admin : HumanBe
 
 
     public List<CourseLessonResource> CourseLessonResources { get; set; } = new();
+    public ICollection<Certificate> Certificates { get; set; } = new List<Certificate>(); // An Admin can send many certificates
 
     #endregion
 }

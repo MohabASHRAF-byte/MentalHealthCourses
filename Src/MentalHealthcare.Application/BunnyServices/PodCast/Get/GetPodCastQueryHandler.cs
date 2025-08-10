@@ -23,7 +23,7 @@ public class GetPodCastQueryHandler(
         });
         return new PodCastDto()
         {
-            Url = signedUrl
+            AudioFileUrl = signedUrl
         };
     }
 }

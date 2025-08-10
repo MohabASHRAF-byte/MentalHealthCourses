@@ -73,8 +73,8 @@ public class Global
     public const int MaxCartItems = 20;
 
     #endregion
-    
-    
+
+
     #region Instructor
 
     public const string InstructorFolderName = "Instructors";
@@ -95,7 +95,7 @@ public class Global
     #region Users
 
     public const string UsersFolderName = "Users";
-   
+
     public const int UsersImgSize = 10;
 
     #endregion
@@ -109,6 +109,23 @@ public class Global
 
     #endregion
 
+    #region PodcastSeries
 
+    public const string PodcastSeriesFolderName = "PodcastSeries";
+    public const int PodcastSeriesNameMaxLength = 50;
+    public const int PodcastSeriesAboutMaxLength = 500;
+    public const int PodcastSeriesImgSize = 10;
+
+    #endregion
+
+
+    #region Podcast
+
+    public const string PodcastFolderName = "Podcasts";
+    public const int PodcastNameMaxLength = 50;
+    public const int PodcastAboutMaxLength = 500;
+    public const int PodcastAudioSize = 900;
+
+    #endregion
 
 }

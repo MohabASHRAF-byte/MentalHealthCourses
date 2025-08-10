@@ -5,6 +5,7 @@ namespace MentalHealthcare.Application.Courses.Lessons.Commands.CreateVideo;
 
 public class CreateVideoCommand : IRequest<CreateVideoCommandResponse>
 {
+    [MaxLength(500, ErrorMessage = "??? ??? ?????? ????? ??? ?????.")]
     public string Title { get; set; }
 
     [System.Text.Json.Serialization.JsonIgnore]

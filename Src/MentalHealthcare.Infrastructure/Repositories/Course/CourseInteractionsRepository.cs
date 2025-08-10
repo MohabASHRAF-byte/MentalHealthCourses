@@ -217,4 +217,163 @@ public class CourseInteractionsRepository(
         return await dbContext.CourseProgresses
             .AnyAsync(cp => cp.CourseId == courseId && cp.SystemUserId == userId);
     }
+
+    public async Task<IEnumerable<CourseLessonDto>> GetAllLessonsForEnrolledUserAsync(int courseId, int userId)
+    {
+        // Check if the user is enrolled in the course
+        var isEnrolled = await dbContext.CourseProgresses
+            .AnyAsync(cp => cp.CourseId == courseId && cp.SystemUserId == userId);
+
+        if (!isEnrolled)
+        {
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("NotEnrolledInCourse", "You are not enrolled in this course.")
+            );
+        }
+
+        // Retrieve all lessons for the course
+        var lessons = await dbContext.CourseLessons
+            .Include(cl => cl.CourseLessonResources)
+            .Where(cl => cl.courseId == courseId)
+            .OrderBy(cl => cl.OrderOnCourse)
+            .ToListAsync();
+
+        // Convert to DTOs
+        return lessons.Select(lesson => new CourseLessonDto
+        {
+            CourseLessonId = lesson.CourseLessonId,
+            LessonName = lesson.LessonName,
+            Url = lesson.Url,
+            LessonLengthInSeconds = lesson.LessonLengthInSeconds,
+            CourseLessonResources = lesson.CourseLessonResources?
+                .Select(resource => new CourseResourceDto
+                {
+                    CourseLessonResourceId = resource.CourseLessonResourceId,
+                    Title = resource.Title,
+                    ItemOrder = resource.ItemOrder,
+                    Url = resource.Url,
+                    ContentType = resource.ContentType
+                }).ToList() ?? []
+        }).ToList();
+    }
+
+    //public async Task<CourseLessonDto> GetNextLesson(int courseId, int currentLessonId)
+    //{
+    //    // Get the current lesson
+
+    //    var currentLesson = await dbContext.CourseLessons
+    //          .FirstOrDefaultAsync(cl => cl.CourseLessonId == currentLessonId && cl.courseId == courseId);
+
+    //    if (currentLesson == null)
+    //    {
+    //        throw new BadHttpRequestException(
+    //            localizationService.GetMessage("LessonNotFound", "The specified lesson does not exist in this course.")
+    //        );
+    //    }
+
+    //    // Find the next lesson based on OrderOnCourse
+    //    var nextLesson = await dbContext.CourseLessons
+    //        .Include(cl => cl.CourseLessonResources)
+    //        .Where(cl => cl.courseId == courseId && cl.OrderOnCourse == currentLesson.OrderOnCourse + 1)
+    //        .FirstOrDefaultAsync();
+
+    //    if (nextLesson == null)
+    //    {
+    //        throw new BadHttpRequestException(
+    //            localizationService.GetMessage("NoNextLesson", "There is no next lesson available.")
+    //        );
+    //    }
+
+    //    // Optionally increment views
+    //    nextLesson.views += 1;
+    //    await dbContext.SaveChangesAsync();
+
+    //    return new CourseLessonDto
+    //    {
+    //        CourseLessonId = nextLesson.CourseLessonId,
+    //        LessonName = nextLesson.LessonName,
+    //        Url = nextLesson.Url,
+    //        LessonLengthInSeconds = nextLesson.LessonLengthInSeconds,
+    //        CourseLessonResources = nextLesson.CourseLessonResources?
+    //            .Select(resource => new CourseResourceDto
+    //            {
+    //                CourseLessonResourceId = resource.CourseLessonResourceId,
+    //                Title = resource.Title,
+    //                ItemOrder = resource.ItemOrder,
+    //                Url = resource.Url,
+    //                ContentType = resource.ContentType
+    //            }).ToList() ?? []
+    //    };
+
+
+
+
+
+
+
+
+
+
+
+    //}
+
+    public async Task<CourseLessonDto> GetLessonV2(int courseId, int lessonId, int userId)
+    {
+
+
+
+        var lesson = await dbContext.CourseLessons
+           .Include(cl => cl.CourseLessonResources)
+           .FirstOrDefaultAsync(cl => cl.CourseLessonId == lessonId);
+
+        if (lesson == null)
+        {
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("LessonNotFound")
+            );
+        }
+
+        if (lesson.courseId != courseId)
+        {
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("LessonNotInCourse", "Lesson does not belong to this course.")
+            );
+        }
+
+        var progress = await dbContext
+            .CourseProgresses
+            .Where(cp => cp.CourseId == lesson.courseId && cp.SystemUserId == userId)
+            .FirstOrDefaultAsync();
+        if (progress == null)
+        {
+            throw new BadHttpRequestException(
+                localizationService.GetMessage("NotEnrolledInCourse", "You are not enrolled in this course.")
+            );
+        }
+   lesson.views += 1;
+        await dbContext.SaveChangesAsync();
+        return new CourseLessonDto
+        {
+            CourseLessonId = lesson.CourseLessonId,
+            LessonName = lesson.LessonName,
+            Url = lesson.Url,
+            LessonLengthInSeconds = lesson.LessonLengthInSeconds,
+            CourseLessonResources = lesson.CourseLessonResources?
+                .Select(resource => new CourseResourceDto
+                {
+                    CourseLessonResourceId = resource.CourseLessonResourceId,
+                    Title = resource.Title,
+                    ItemOrder = resource.ItemOrder,
+                    Url = resource.Url,
+                    ContentType = resource.ContentType
+                }).ToList() ?? []
+        };
+
+
+
+
+
+
+
+    }
 }

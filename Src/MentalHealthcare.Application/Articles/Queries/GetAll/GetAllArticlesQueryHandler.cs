@@ -25,17 +25,14 @@ namespace MentalHealthcare.Application.Articles.Queries.GetAll
         public async Task<PageResult<ArticleDto>> Handle(GetAllArticlesQuery request, CancellationToken cancellationToken)
         {
 
-            logger.LogInformation("Handling GetAllArticlesQuery with SearchText: {SearchText}, PageNumber: {PageNumber}, PageSize: {PageSize}",
-            request.SearchText, request.PageNumber, request.PageSize);
+            logger.LogInformation(
+                            "Starting Handle method for GetAllArticlesQuery. SearchText: {SearchText}, PageNumber: {PageNumber}, PageSize: {PageSize}",
+                            request.SearchText, request.PageNumber, request.PageSize);
 
+            var currentUser = userContext.UserHaveAny([UserRoles.Admin, UserRoles.User], logger);
+            int? userId = currentUser.HasRole(UserRoles.Admin) ? null : currentUser.SysUserId!.Value;
 
-            // Authorize user
-            logger.LogInformation("Authorizing user for retrieving all Articles.");
-            var currentUser = userContext.EnsureAuthorizedUser(new List<UserRoles> { UserRoles.Admin }, logger);
-            logger.LogInformation("User {UserId} authorized to retrieve all Articles.", currentUser.Id);
-
-            logger.LogInformation("Fetching Articles from the repository.");
-
+            logger.LogDebug("Calling repository to get all articles for UserId: {UserId}", userId);
 
 
 

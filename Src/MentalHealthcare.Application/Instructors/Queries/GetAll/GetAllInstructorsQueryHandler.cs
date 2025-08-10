@@ -28,7 +28,8 @@ namespace MentalHealthcare.Application.Instructors.Queries.GetAll
             CancellationToken cancellationToken)
         {
             logger.LogInformation("Handling GetAllInstructorsQuery");
-            userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
+            var currentUser = userContext.UserHaveAny([UserRoles.Admin, UserRoles.User], logger);
+            int? userId = currentUser.HasRole(UserRoles.Admin) ? null : currentUser.SysUserId!.Value;
             var Instructors = await insRepo.GetInstructorsAsync(request.SearchText,
                 request.PageNumber, request.PageSize);
             var InstructorsDto = mapper.Map<IEnumerable<InstructorDto>>(Instructors.Item2);

@@ -10,6 +10,7 @@ using MentalHealthcare.Application.Courses.Course.Commands.UpdateCourseCommand;
 using MentalHealthcare.Application.Courses.Course.Queries.EnrolledUsers;
 using MentalHealthcare.Application.Courses.Course.Queries.GetAll;
 using MentalHealthcare.Application.Courses.Course.Queries.GetById;
+using MentalHealthcare.Application.Courses.Course_Interactions.Queries.GetNext;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos;
 using MentalHealthcare.Domain.Dtos.course;
@@ -176,4 +177,10 @@ public class CourseController(IMediator mediator) : ControllerBase
         await mediator.Send(command);
         return NoContent();
     }
+
+
+
+
+
+
 }

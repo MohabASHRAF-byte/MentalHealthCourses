@@ -1,4 +1,5 @@
 using MediatR;
+using MentalHealthcare.Application.Background_Services;
 using MentalHealthcare.Application.Common;
 using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Domain.Constants;
@@ -63,12 +64,18 @@ public class ConfirmEmailCommandHandler(
     ILogger<ConfirmEmailCommandHandler> logger,
     UserManager<User> userManager,
     IUserRepository systemUserRepository,
-    ILocalizationService localizationService
+    ILocalizationService localizationService,
+    OtpService otpService
+
 ) : IRequestHandler<ConfirmEmailCommand, OperationResult<string>>
 {
     public async Task<OperationResult<string>> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Confirming email: {Email}", request.Email);
+
+
+        logger.LogInformation("Confirming email via OTP: {Email}", request.Email);
+
 
         // Validate tenant information
         if (string.IsNullOrEmpty(request.Tenant))
@@ -89,16 +96,35 @@ public class ConfirmEmailCommandHandler(
         }
 
         logger.LogInformation("Authenticating the token for email: {Email}", request.Email);
-        var result = await userManager.ConfirmEmailAsync(user, request.Token);
-        if (!result.Succeeded)
+        var isValidOtp = otpService.ValidateOtp(request.Email, "Default", request.Otp);
+        if (!isValidOtp)
         {
-            logger.LogWarning("Failed to authenticate the token for email: {Email}", request.Email);
+            logger.LogWarning("Invalid OTP for email: {Email}", request.Email);
             throw new BadHttpRequestException(
-                localizationService.GetMessage("EmailConfirmationFailed", request.Token)
+                localizationService.GetMessage("EmailConfirmationFailed", request.Otp)
             );
         }
 
-        logger.LogInformation("Email {Email} confirmed successfully.", request.Email);
-        return OperationResult<string>.SuccessResult("Email confirmed successfully", "Email confirmed successfully");
+
+        user.EmailConfirmed = true;
+        await userManager.UpdateAsync(user); // ✅ Confirm email manually
+
+        return OperationResult<string>.SuccessResult("Email confirmed successfully.");
+
+
     }
 }
+/*
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ */

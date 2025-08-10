@@ -32,11 +32,14 @@ ILocalizationService localizationService
         {
 
 
+            logger.LogInformation(
+               "Starting Handle method for GetAllMeditationsQuery. SearchText: {SearchText}, PageNumber: {PageNumber}, PageSize: {PageSize}",
+               request.SearchText, request.PageNumber, request.PageSize);
 
+            var currentUser = userContext.UserHaveAny([UserRoles.Admin, UserRoles.User], logger);
+            int? userId = currentUser.HasRole(UserRoles.Admin) ? null : currentUser.SysUserId!.Value;
 
-
-            logger.LogInformation("Handling GetAllMeditationsQuery");
-            userContext.EnsureAuthorizedUser([UserRoles.Admin], logger);
+            logger.LogDebug("Calling repository to get all meditations for UserId: {UserId}", userId);
             var Meditations = await MedRepo.GetAllMeditationsAsync(request.SearchText,
                 request.PageNumber, request.PageSize);
             var MeditationsDto = mapper.Map<IEnumerable<MeditationDto>>(Meditations.Item2);

@@ -1,16 +1,19 @@
-using MediatR;
+﻿using MediatR;
 using MentalHealthcare.API.Docs;
 using MentalHealthcare.Application.Common;
 using MentalHealthcare.Application.Courses.Course_Interactions.Commands.Complete_Lesson;
 using MentalHealthcare.Application.Courses.Course_Interactions.Commands.Enroll_Course;
 using MentalHealthcare.Application.Courses.Course_Interactions.Commands.RemoveCourseFromUser;
 using MentalHealthcare.Application.Courses.Course_Interactions.Queries.GetLesson;
+using MentalHealthcare.Application.Courses.Course_Interactions.Queries.GetLessonV2;
 using MentalHealthcare.Application.Courses.Course_Interactions.Queries.GetMyCourses;
+using MentalHealthcare.Application.Courses.Course_Interactions.Queries.GetNext;
 using MentalHealthcare.Domain.Constants;
 using MentalHealthcare.Domain.Dtos.course;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Net;
 
 namespace MentalHealthcare.API.Controllers.Course;
 
@@ -36,8 +39,17 @@ public class CourseInteractionsController(
         {
             CourseId = courseId
         };
+
         await mediator.Send(command);
-        return NoContent();
+
+        var result = new { CourseId = courseId };
+
+        var op = OperationResult<object>.SuccessResult(
+            result,
+            message: "تم الاشتراك في الدورة بنجاح."
+        );
+
+        return Ok(op);
     }
 
     /// <summary>
@@ -104,5 +116,51 @@ public class CourseInteractionsController(
         await mediator.Send(command);
         return NoContent();
     }
+
+
+
+    [HttpGet("{courseId}/lessons/all")]
+    [ProducesResponseType(typeof(OperationResult<List<CourseLessonDto>>), 200)]
+    [SwaggerOperation(
+       Summary = "Get All Course Lessons (V2)",
+       Description = "Get all lessons for a specific course for the currently authenticated and enrolled user."
+   )]
+    public async Task<IActionResult> GetAllLessons([FromRoute] int courseId)
+    {
+
+        var query = new GetAllCourseLessonsCommand
+        {
+            CourseId = courseId,
+        };
+
+        var result = await mediator.Send(query);
+        var op = OperationResult<List<CourseLessonDto>>.SuccessResult(result);
+        return Ok(op);
+    }
+
+
+
+
+    [HttpGet("next-lesson")]
+    [ProducesResponseType(typeof(CourseLessonDto), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> GetNextLesson([FromQuery] int courseId, [FromQuery] int lessonId)
+    {
+
+
+
+         
+        var query = new GetNextLessonQuery
+        {
+            CourseId = courseId,
+            LessonId = lessonId        };
+
+        var result = await mediator.Send(query);
+        var op = OperationResult<CourseLessonDto>.SuccessResult(result);
+        return Ok(op);}
 }
+
+
+
+
+
 // 62 19

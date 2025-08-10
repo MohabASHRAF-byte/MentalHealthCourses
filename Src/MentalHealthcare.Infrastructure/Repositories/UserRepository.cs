@@ -80,33 +80,83 @@ public class UserRepository(
         return user;
     }
 
-    public async Task<(bool, List<string>)> RegisterUser(User user, string password, SystemUser userToRegister )
+    //public async Task<(bool, List<string>)> RegisterUser(User user, string password, SystemUser userToRegister )
+    //{
+    //    var errors = new List<string>();
+    //    var existingUser = await dbContext.Users
+    //        .Where(u =>
+    //            u.NormalizedUserName == user.UserName ||
+    //            u.Email == user.Email
+
+    //        ).ToListAsync();
+    //    var validUserName = !existingUser.Any(u =>
+    //        u.NormalizedUserName!.Equals(user.UserName));
+    //    var validEmail = !existingUser.Any(u => u.Email!.Equals(user.Email));
+    //    if (!validUserName)
+    //        errors.Add($"{user.UserName} is already taken.");
+    //    if (!validEmail)
+    //        errors.Add($"{user.Email} is already taken.");
+    //    if (errors.Count != 0)
+    //        return (false, errors);
+    //    try
+    //    {
+
+
+
+    //        IdentityResult createUserResult = await userManager.CreateAsync(user, password);
+    //        if (!createUserResult.Succeeded)
+    //            return (false, new());
+
+
+    //        await dbContext.AddAsync(userToRegister);
+    //        await dbContext.SaveChangesAsync();
+    //        return (true, new());
+    //    }
+    //    catch (Exception e)
+    //    {
+    //        var userCred = await dbContext.Users.FindAsync(user.Id);
+    //        if (userCred != null)
+    //            dbContext.Users.Remove(user);
+    //        var sysUser = await dbContext.SystemUsers.FindAsync(userToRegister.SystemUserId);
+    //        if (sysUser != null)
+    //            dbContext.SystemUsers.Remove(sysUser);
+    //        logger.LogWarning(e.Message);
+    //        return (false, new());
+    //    }
+    //}
+
+    public async Task<(bool, List<string>)> RegisterUser(User user, string password, SystemUser userToRegister)
     {
         var errors = new List<string>();
+
         var existingUser = await dbContext.Users
             .Where(u =>
                 u.NormalizedUserName == user.UserName ||
-                u.Email == user.Email
-                
-            ).ToListAsync();
+                u.Email == user.Email)
+            .ToListAsync();
+
         var validUserName = !existingUser.Any(u =>
-            u.NormalizedUserName!.Equals(user.UserName));
-        var validEmail = !existingUser.Any(u => u.Email!.Equals(user.Email));
+            u.NormalizedUserName!.Equals(user.UserName, StringComparison.OrdinalIgnoreCase));
+        var validEmail = !existingUser.Any(u => u.Email!.Equals(user.Email, StringComparison.OrdinalIgnoreCase));
+
         if (!validUserName)
             errors.Add($"{user.UserName} is already taken.");
         if (!validEmail)
             errors.Add($"{user.Email} is already taken.");
         if (errors.Count != 0)
             return (false, errors);
+
         try
         {
-
-
-
-            IdentityResult createUserResult = await userManager.CreateAsync(user, password);
+            var createUserResult = await userManager.CreateAsync(user, password);
             if (!createUserResult.Succeeded)
-                return (false, new());
+            {
+                var identityErrors = createUserResult.Errors
+                    .Select(e => e.Description)
+                    .ToList();
 
+                return (false, identityErrors);
+            }
 
             await dbContext.AddAsync(userToRegister);
             await dbContext.SaveChangesAsync();
@@ -116,15 +166,16 @@ public class UserRepository(
         {
             var userCred = await dbContext.Users.FindAsync(user.Id);
             if (userCred != null)
-                dbContext.Users.Remove(user);
+                dbContext.Users.Remove(userCred);
+
             var sysUser = await dbContext.SystemUsers.FindAsync(userToRegister.SystemUserId);
             if (sysUser != null)
                 dbContext.SystemUsers.Remove(sysUser);
-            logger.LogWarning(e.Message);
-            return (false, new());
+
+            logger.LogWarning("Error during registration: {Message}", e.Message);
+            return (false, new() { "An unexpected error occurred during registration." });
         }
     }
-
 
     public async Task<Guid?> GetUserTokenCodeAsync(User user)
     {
