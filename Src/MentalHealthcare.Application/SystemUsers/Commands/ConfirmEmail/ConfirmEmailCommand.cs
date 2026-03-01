@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using MediatR;
 using MentalHealthcare.Application.Common;
 
@@ -9,5 +9,5 @@ public class ConfirmEmailCommand : IRequest<OperationResult<string>>
     [JsonIgnore]
     public string? Tenant { get; set; }
     public string Email { get; set; } = default!;
-    public string Otp { get; set; } = default!;
+    public string OtpCode { get; set; } = default!; // بديل الـ Token
 }

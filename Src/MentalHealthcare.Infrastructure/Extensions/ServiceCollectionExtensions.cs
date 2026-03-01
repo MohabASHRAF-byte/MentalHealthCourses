@@ -72,7 +72,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IMeditationRepository, MeditationRepository>();
         services.AddScoped<IPodcastSeriesRepository, PodcastSeriesRepository>();
         services.AddScoped<IPodcastRepository, PodcastRepository>();
-       // services.AddScoped<INotificationRepository, NotificationRepository>();
+        // services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IEmailSenderWithAttachment, EmailSenderWithAttachment>();
 
         services.AddScoped<ICertificateRepository, CertificateRepository>();
@@ -81,20 +81,44 @@ public static class ServiceCollectionExtensions
 
     }
 
+    //private static void AddIdentity(this IServiceCollection services)
+    //{
+    //    services.AddIdentity<User, IdentityRole>()
+    //        .AddEntityFrameworkStores<MentalHealthDbContext>()
+    //        .AddDefaultTokenProviders();
+    //    //Todo configure the password for letter 
+    //    services.Configure<IdentityOptions>(options =>
+    //    {
+    //        options.Password.RequireDigit = false;
+    //        options.Password.RequireLowercase = false;
+    //        options.Password.RequireUppercase = false;
+    //        options.Password.RequireNonAlphanumeric = false;
+    //        options.Password.RequiredUniqueChars = 1;
+    //        options.Password.RequiredLength = 3;
+    //    });
+    //}
+
+
+
+
+
+
     private static void AddIdentity(this IServiceCollection services)
     {
         services.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<MentalHealthDbContext>()
             .AddDefaultTokenProviders();
-        //Todo configure the password for letter 
+
+        // Allow any password (minimum length 1, no other requirements)
         services.Configure<IdentityOptions>(options =>
         {
             options.Password.RequireDigit = false;
             options.Password.RequireLowercase = false;
             options.Password.RequireUppercase = false;
             options.Password.RequireNonAlphanumeric = false;
-            options.Password.RequiredUniqueChars = 1;
-            options.Password.RequiredLength = 3;
+            options.Password.RequiredUniqueChars = 0;
+            options.Password.RequiredLength = 1;
         });
     }
+
 }

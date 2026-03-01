@@ -1,3 +1,4 @@
+using iText.Commons.Actions.Contexts;
 using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Domain.Dtos.User;
 using MentalHealthcare.Domain.Entities;
@@ -344,5 +345,23 @@ public class UserRepository(
     ;
 
         await dbContext.SaveChangesAsync();
+    }
+
+    public async Task MarkOtpAsVerifiedAsync(string userId)
+    {
+        var user = await dbContext.Users.FindAsync(userId);
+        if (user != null)
+        {
+            user.LastOtpVerifiedAt = DateTime.UtcNow;
+            await dbContext.SaveChangesAsync();
+        }
+    }
+
+    public async Task<bool> IsOtpVerifiedRecentlyAsync(string userId, TimeSpan timeWindow)
+    {
+        var user = await dbContext.Users.FindAsync(userId);
+        return user != null &&
+               user.LastOtpVerifiedAt.HasValue &&
+               (DateTime.UtcNow - user.LastOtpVerifiedAt.Value) <= timeWindow;
     }
 }

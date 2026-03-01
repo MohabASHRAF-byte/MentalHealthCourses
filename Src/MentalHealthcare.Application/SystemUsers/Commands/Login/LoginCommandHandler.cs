@@ -152,24 +152,31 @@ public class LoginCommandHandler(
             return OperationResult<LoginDto>.Failure("خطأ في كلمه المرور", StateCode.Unauthorized);
         }
 
-        // Check for two-factor authentication
-        if (await userManager.GetTwoFactorEnabledAsync(user))
-        {
-            logger.LogInformation("2FA is enabled for user {UserIdentifier}. Sending 2FA code.",
-                request.UserIdentifier);
+        //// Check for two-factor authentication
+        //if (await userManager.GetTwoFactorEnabledAsync(user))
+        //{
+        //    var otpVerified = await userRepository.IsOtpVerifiedRecentlyAsync(user.Id , TimeSpan.FromMinutes(5));
+        //    if (!otpVerified)
+        //    {
+        //        if (request.Otp == null)
+        //        {
+        //            var otpStillValid = await userRepository.IsOtpVerifiedRecentlyAsync(user.Id, TimeSpan.FromMinutes(5));
+        //            if (!otpStillValid)
+        //            {
+        //                var otp = await userManager.GenerateTwoFactorTokenAsync(user, "Email");
+        //                await emailSender.SendEmailAsync(user.Email!, "Your 2FA Code", $"Your code is {otp}");
+        //            }
+        //            return OperationResult<LoginDto>.SuccessResult(new LoginDto() { RequireOtp = true }, "2FA code sent");
+        //        }
+        //        if (!await userManager.VerifyTwoFactorTokenAsync(user, "Email", request.Otp))
+        //        {
+        //            return OperationResult<LoginDto>.Failure("Invalid 2FA code.", StateCode.BadRequest);
+        //        }
 
-            if (request.Otp == null)
-            {
-                var otp = await userManager.GenerateTwoFactorTokenAsync(user, "Email");
-                await emailSender.SendEmailAsync(user.Email!, "Your 2FA Code", $"Your code is {otp}");
-                return OperationResult<LoginDto>.SuccessResult(new LoginDto(){RequireOtp = true}, "2FA code sent"); 
-            }
-            if(!await userManager.VerifyTwoFactorTokenAsync(user, "Email", request.Otp))
-            {
-                return OperationResult<LoginDto>.Failure("Invalid 2FA code.", StateCode.BadRequest);
-            }
-           
-        }
+        //        await userRepository.MarkOtpAsVerifiedAsync(user.Id); // تخزن إن الـ OTP اتأكد
+        //    }
+        //}
+
 
         logger.LogInformation("Returning token for user {UserIdentifier}.", user.UserName);
         var tokens = await jwtToken.GetTokens(user);

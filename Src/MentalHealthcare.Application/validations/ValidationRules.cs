@@ -363,57 +363,89 @@ public static class ValidationRules
     /// <param name="minLength">The minimum allowed length for the password.</param>
     /// <param name="maxLength">The maximum allowed length for the password.</param>
     /// <returns>An IRuleBuilderOptions object for further configuration.</returns>
+
+
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////Marsoooz
+    //public static IRuleBuilderOptions<T, string> CustomIsValidPassword<T>(
+    //    this IRuleBuilder<T, string> ruleBuilder,
+    //    ILocalizationService localizationService,
+    //    int minLength = 7,
+    //    int maxLength = 50)
+    //{
+    //    return ruleBuilder
+    //        .NotEmpty()
+    //        .WithMessage(localizationService.GetMessage("PasswordRequired", "Password must not be empty."))
+    //        .MinimumLength(minLength)
+    //        .WithMessage(
+    //            string.Format(
+    //                localizationService.GetMessage("PasswordMinLength",
+    //                    "Password must be at least {0} characters long."),
+    //                localizationService.TranslateNumber(minLength)
+    //            ))
+    //        .MaximumLength(maxLength)
+    //        .WithMessage(
+    //            string.Format(
+    //                localizationService.GetMessage("PasswordMaxLength", "Password must not exceed {0} characters."),
+    //                localizationService.TranslateNumber(maxLength)
+    //            ))
+    //        .Must(value => !ContainsHtml(value))
+    //        .WithMessage(localizationService.GetMessage("PasswordNoHtml", "Password must not contain HTML or markup."))
+    //        .Must(value => !ContainsCommonSequences(value))
+    //        .WithMessage(localizationService.GetMessage("PasswordNoCommonSequences",
+    //            "Password must not contain common password sequences."))
+    //        .Matches("(?=.*[a-z])")
+    //        .WithMessage(localizationService.GetMessage("PasswordLowercase",
+    //            "Password must contain at least one lowercase letter."))
+    //        .Matches("(?=.*[A-Z])")
+    //        .WithMessage(localizationService.GetMessage("PasswordUppercase",
+    //            "Password must contain at least one uppercase letter."))
+    //        .Matches("(?=.*\\d)")
+    //        .WithMessage(localizationService.GetMessage("PasswordNumber",
+    //            "Password must contain at least one number."));
+    //}
+
+
+    ///// <summary>
+    ///// Checks if a string contains common password sequences.
+    ///// </summary>
+    ///// <param name="input">The string to check.</param>
+    ///// <returns>True if the string contains common sequences; otherwise, false.</returns>
+    //private static bool ContainsCommonSequences(string input)
+    //{
+    //    if (string.IsNullOrEmpty(input)) return false;
+
+    //    var commonSequences = new[] { "123", "password123", "qwerty51", "abcdefghi", "admin123", "testpass123" };
+    //    return commonSequences.Any(seq => input.ToLower().Contains(seq));
+    //}
+
+
+
     public static IRuleBuilderOptions<T, string> CustomIsValidPassword<T>(
-        this IRuleBuilder<T, string> ruleBuilder,
-        ILocalizationService localizationService,
-        int minLength = 7,
-        int maxLength = 50)
+    this IRuleBuilder<T, string> ruleBuilder,
+    ILocalizationService localizationService)
     {
         return ruleBuilder
             .NotEmpty()
-            .WithMessage(localizationService.GetMessage("PasswordRequired", "Password must not be empty."))
-            .MinimumLength(minLength)
-            .WithMessage(
-                string.Format(
-                    localizationService.GetMessage("PasswordMinLength",
-                        "Password must be at least {0} characters long."),
-                    localizationService.TranslateNumber(minLength)
-                ))
-            .MaximumLength(maxLength)
-            .WithMessage(
-                string.Format(
-                    localizationService.GetMessage("PasswordMaxLength", "Password must not exceed {0} characters."),
-                    localizationService.TranslateNumber(maxLength)
-                ))
-            .Must(value => !ContainsHtml(value))
-            .WithMessage(localizationService.GetMessage("PasswordNoHtml", "Password must not contain HTML or markup."))
-            .Must(value => !ContainsCommonSequences(value))
-            .WithMessage(localizationService.GetMessage("PasswordNoCommonSequences",
-                "Password must not contain common password sequences."))
-            .Matches("(?=.*[a-z])")
-            .WithMessage(localizationService.GetMessage("PasswordLowercase",
-                "Password must contain at least one lowercase letter."))
-            .Matches("(?=.*[A-Z])")
-            .WithMessage(localizationService.GetMessage("PasswordUppercase",
-                "Password must contain at least one uppercase letter."))
-            .Matches("(?=.*\\d)")
-            .WithMessage(localizationService.GetMessage("PasswordNumber",
-                "Password must contain at least one number."));
+            .WithMessage(localizationService.GetMessage("PasswordRequired", "Password must not be empty."));
     }
 
 
-    /// <summary>
-    /// Checks if a string contains common password sequences.
-    /// </summary>
-    /// <param name="input">The string to check.</param>
-    /// <returns>True if the string contains common sequences; otherwise, false.</returns>
-    private static bool ContainsCommonSequences(string input)
-    {
-        if (string.IsNullOrEmpty(input)) return false;
 
-        var commonSequences = new[] { "123", "password123", "qwerty51", "abcdefghi", "admin123", "testpass123" };
-        return commonSequences.Any(seq => input.ToLower().Contains(seq));
-    }
+
+
+
+
+
+
+
+
+
+
+
 
     /// <summary>
     /// Checks if a string contains any personal information such as first name, last name, or username.

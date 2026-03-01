@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MentalHealthcare.Application.Background_Services;
@@ -77,5 +77,5 @@ namespace MentalHealthcare.Application.Extensions
 
         }
     }
-    
+
 }

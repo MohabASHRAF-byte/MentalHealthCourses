@@ -61,28 +61,57 @@ public class RegisterCommandHandler(
 
     private async Task SendConfirmation(User user)
     {
-        var otpCode = GenerateOtp(); // ✅ your custom OTP
-        _otpService.AddOrUpdateOtp(user.Email!, "Default", otpCode); // ✅ store it
+        //logger.LogInformation("Sending confirmation email to {@user}", user.Email);
+        //var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
 
-        await emailSender.SendEmailAsync(
-     user.Email!,
-     "تأكيد البريد الإلكتروني",
-     "أهلاً بك في تطبيق اللجنة المجمعية للصحة النفسية ومكافحة الإدمان بالكنيسة القبطية الأرثوذكسية.\n" +
-     "نحن سعداء بانضمامك إلينا، ونتمنى لك تجربة مثرية ومفيدة من خلال خدماتنا وبرامجنا.\n" +
-     $"رمز التحقق الخاص بك هو: {otpCode}\n" +
-     "يرجى استخدام هذا الرمز لتأكيد بريدك الإلكتروني. صلاحية الرمز 5 دقائق فقط.\n" +
-     "إذا لم تطلب هذا الرمز، يمكنك تجاهل هذه الرسالة.\n\n" +
-     "مع تحياتنا،\nفريق تطبيق اللجنة المجمعية للصحة النفسية\nالكنيسة القبطية الأرثوذكسية"
- );
+        //await emailSender.SendEmailAsync(user.Email!, "Token to confirm your Email ", token);
+
+        // توليد OTP باستخدام provider اسمه "Email"
+        var otp = await userManager.GenerateTwoFactorTokenAsync(user, "Email");
+
+        // صياغة رسالة البريد
+        var emailBody = $@"
+        أهلاً بك في تطبيق اللجنة المجمعية للصحة النفسية ومكافحة الإدمان بالكنيسة القبطية الأرثوذكسية.
+        نحن سعداء بانضمامك إلينا، ونتمنى لك تجربة مثرية ومفيدة من خلال خدماتنا وبرامجنا.
+        رمز التحقق الخاص بك هو: {otp}
+        صلاحية الرمز 5 دقائق فقط.
+        إذا لم تقم بطلب هذا الرمز، يمكنك تجاهل هذه الرسالة.
+    ";
+
+        // إرسال البريد
+        await emailSender.SendEmailAsync(user.Email!, "رمز تأكيد البريد الإلكتروني", emailBody);
+
+
 
 
     }
 
 
-    private string GenerateOtp()
-    {
-        var random = new Random();
-        return random.Next(100000, 999999).ToString(); // 6-digit OTP
-    }
+    
+
+
+   
 
 }
+
+
+
+
+/*
+ 
+  if (request.Otp == null)
+            {
+                var otp = await userManager.GenerateTwoFactorTokenAsync(user, "Email");
+                await emailSender.SendEmailAsync(user.Email!, "Your 2FA Code", $"Your code is {otp}");
+                return OperationResult<LoginDto>.SuccessResult(new LoginDto(){RequireOtp = true}, "2FA code sent"); 
+            }
+            if(!await userManager.VerifyTwoFactorTokenAsync(user, "Email", request.Otp))
+            {
+                return OperationResult<LoginDto>.Failure("Invalid 2FA code.", StateCode.BadRequest);
+            }
+ 
+ 
+ 
+ 
+ 
+ */

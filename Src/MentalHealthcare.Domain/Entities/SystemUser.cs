@@ -12,4 +12,7 @@ public class SystemUser : HumanBe
     public ICollection<Notification>? Notifications { get; set; }
     //
     public User User { get; set; }
+
+
+
 }

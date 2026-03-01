@@ -10,6 +10,7 @@ public class User : IdentityUser
 
     public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
 
+    public DateTime? LastOtpVerifiedAt { get; set; }
 
 
 }

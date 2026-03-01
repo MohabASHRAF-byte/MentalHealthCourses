@@ -1,5 +1,4 @@
 using MediatR;
-using MentalHealthcare.Application.Background_Services;
 using MentalHealthcare.Application.Common;
 using MentalHealthcare.Application.Resources.Localization.Resources;
 using MentalHealthcare.Domain.Constants;
@@ -64,67 +63,43 @@ public class ConfirmEmailCommandHandler(
     ILogger<ConfirmEmailCommandHandler> logger,
     UserManager<User> userManager,
     IUserRepository systemUserRepository,
-    ILocalizationService localizationService,
-    OtpService otpService
-
+    ILocalizationService localizationService
 ) : IRequestHandler<ConfirmEmailCommand, OperationResult<string>>
 {
     public async Task<OperationResult<string>> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Confirming email: {Email}", request.Email);
-
-
         logger.LogInformation("Confirming email via OTP: {Email}", request.Email);
 
-
-        // Validate tenant information
+        // 1. Validate tenant
         if (string.IsNullOrEmpty(request.Tenant))
         {
             logger.LogWarning("Invalid Tenant information provided for email confirmation.");
             return OperationResult<string>.Failure("Bad Request", StateCode.BadRequest);
         }
 
-        // Retrieve user by email and tenant
+        // 2. Get user
         var user = await systemUserRepository.GetUserByEmailAsync(request.Email, request.Tenant!);
         if (user == null)
         {
             logger.LogError("User with email {Email} does not exist.", request.Email);
-            throw new ResourceNotFound(
-                "User", 
-                "المستخدم", 
-                request.Email); 
+            throw new ResourceNotFound("User", "المستخدم", request.Email);
         }
 
-        logger.LogInformation("Authenticating the token for email: {Email}", request.Email);
-        var isValidOtp = otpService.ValidateOtp(request.Email, "Default", request.Otp);
-        if (!isValidOtp)
+        // 3. Verify OTP instead of token
+        logger.LogInformation("Verifying OTP for email: {Email}", request.Email);
+        var isOtpValid = await userManager.VerifyTwoFactorTokenAsync(user, "Email", request.OtpCode);
+
+        if (!isOtpValid)
         {
             logger.LogWarning("Invalid OTP for email: {Email}", request.Email);
-            throw new BadHttpRequestException(
-                localizationService.GetMessage("EmailConfirmationFailed", request.Otp)
-            );
+            throw new BadHttpRequestException(localizationService.GetMessage("InvalidOtp", request.OtpCode));
         }
 
-
+        // 4. Mark email as confirmed
         user.EmailConfirmed = true;
-        await userManager.UpdateAsync(user); // ✅ Confirm email manually
+        await userManager.UpdateAsync(user);
 
-        return OperationResult<string>.SuccessResult("Email confirmed successfully.");
-
-
+        logger.LogInformation("Email {Email} confirmed successfully via OTP.", request.Email);
+        return OperationResult<string>.SuccessResult("Email confirmed successfully", "Email confirmed successfully");
     }
 }
-/*
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- */
